@@ -22,6 +22,7 @@ export function CreateClassForm() {
   const { t } = useLanguage();
   const queryClient = useQueryClient();
   const nameInput = useRef<HTMLInputElement>(null);
+  const seatsInput = useRef<HTMLInputElement>(null);
   const [name, setName] = useState("");
   const [seats, setSeats] = useState("");
   const [fieldErrors, setFieldErrors] = useState<FieldErrors>({});
@@ -53,7 +54,11 @@ export function CreateClassForm() {
     const totalSeats = Number(seatsText);
     const errors = checkLocally(trimmedName, seatsText, totalSeats);
     setFieldErrors(errors);
-    if (errors.name || errors.totalSeats) return;
+    if (errors.name || errors.totalSeats) {
+      // Take the person straight to the first field that needs fixing.
+      (errors.name ? nameInput : seatsInput).current?.focus();
+      return;
+    }
 
     create.mutate(
       { name: trimmedName, totalSeats },
@@ -94,6 +99,7 @@ export function CreateClassForm() {
         error={fieldErrors.name}
       />
       <TextField
+        ref={seatsInput}
         label={t("office.seats")}
         hint={t("office.seatsHint")}
         type="text"

@@ -6,7 +6,7 @@
   /* 60%: clean warm white for pages and cards. */
   --paper: #faf7f2;
   --paper-line: #f1ebe2;
-  --doodle: rgb(215 38 61 / 0.2);
+  --pattern-ink: rgb(215 38 61 / 0.2);
   --sheet: #ffffff;
   --rule: #e7dfd4;
   --margin-line: #d7263d;
@@ -44,7 +44,7 @@
   --text-17: 1.0625rem;
   --text-20: 1.25rem;
   --text-24: 1.5rem;
-  --text-32: 2.125rem;
+  --text-32: 2rem;
   --text-56: 3.5rem;
 
   --space-1: 4px;
@@ -67,7 +67,7 @@
   color-scheme: dark;
   --paper: #141011;
   --paper-line: #1a1516;
-  --doodle: rgb(255 84 104 / 0.18);
+  --pattern-ink: rgb(255 84 104 / 0.18);
   --sheet: #1f191a;
   --rule: #352c2d;
   --margin-line: #ff5468;

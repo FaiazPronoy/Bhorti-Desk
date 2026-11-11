@@ -44,7 +44,7 @@ export const en = {
   "classes.emptyTitle": "No classes yet",
   "classes.emptyBody": "The school office has not opened any class for admission.",
   "classes.emptyAction": "Create class",
-  "classes.loading": "Loading classes",
+  "classes.loading": "Loading classes…",
   "classes.loadFailed": "We could not load the classes.",
   "classes.seatPicture": "Seat picture",
 
@@ -57,6 +57,9 @@ export const en = {
   "application.class": "Class",
   "application.student": "Birth registration number",
   "application.serial": "Serial",
+  "application.issued": "Applied {time}",
+  "application.sealPaid": "Fee paid",
+  "application.print": "Print admission slip",
   "application.timeLeft": "Time left",
   "application.lastMinute": "Less than a minute left. Pay now to keep the seat.",
   "application.expiresAt": "Hold ends at {time}",
@@ -71,7 +74,7 @@ export const en = {
   "application.cancelledNote": "This application was cancelled. The seat went back to the class.",
   "application.applyAgain": "Apply again",
   "application.noSeatsToApplyAgain": "No seats are free in this class right now.",
-  "application.loading": "Loading the application",
+  "application.loading": "Loading the application…",
   "application.backToClasses": "Back to classes",
 
   "myApplications.title": "My applications",
@@ -122,7 +125,7 @@ export const en = {
   "notFound.title": "Page not found",
   "notFound.body": "This page does not exist. It may have moved.",
 
-  "common.loading": "Loading",
+  "common.loading": "Loading…",
   "common.close": "Close",
 } as const;
 
