@@ -106,7 +106,7 @@ The AI proposed most of these. I chose them after the reviews. I can explain eac
 | # | What was wrong | Caught by | Fix |
 |---|---|---|---|
 | 8 | A quick "class is full" check ran before the student's own hold was checked. A student holding the last seat got CLASS_FULL. ALREADY_APPLIED was right. | Claude Code, while writing tests | The locked transaction answers now. A test covers it. |
-| 9 | A body of just `null` would have given a 500 on `POST /classes`. The assignment says bad input is never a 5xx. | The bad-input test | `null` is an empty form, so 400. |
+| 9 | A body of just `null` would have given a 500 on `POST /classes`. The assignment says bad input is never a 5xx. | Claude Code, while writing the bad-input test | `null` is an empty form, so 400. |
 | 10 | The countdown used the phone's clock for its first second. | A failing frontend test | A new server time redraws every countdown. |
 | 11 | The connection pool was never closed. Each test host left 40 connections open. | The second AI's code review | The container owns the pool and closes it. |
 | 12 | Server time was cut to whole seconds. The frontend replaced its clock estimate on every answer. An expired hold could show "on hold" again for a moment. | The second AI's code review | Milliseconds on the server. The client keeps its best estimate. |
@@ -116,6 +116,7 @@ The AI proposed most of these. I chose them after the reviews. I can explain eac
 | 16 | On a phone, the sticky header covered half the screen. The 17 digit number did not fit. | Browser check at 360 px | The header scrolls away on phones. |
 | 17 | The first design looked generic. | My own review | New palette, dark header, dark mode. |
 | 18 | The first README draft described the project wrongly. | A re-read against the brief | Fixed before the first commit. |
+| 19 | A file rename was staged and went out inside an unrelated commit. On the pushed version the background picture did not load for a few minutes. | Claude Code, checking what each commit contained | The file was restored, then the rename was finished in the next commit. |
 
 ---
 
