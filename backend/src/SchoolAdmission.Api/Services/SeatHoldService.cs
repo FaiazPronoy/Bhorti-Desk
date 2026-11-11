@@ -178,14 +178,29 @@ public class SeatHoldService(AdmissionDatabase database, AdmissionSettings setti
     {
         int changedRows;
         await using (var connection = await database.OpenConnectionAsync())
+        await using (var transaction = await connection.BeginTransactionAsync(IsolationLevel.ReadCommitted))
         {
-            // One statement, so there is nothing to lock. confirmedSeats is a count of
-            // CONFIRMED rows, so confirming the same hold twice can only count it once.
+            await connection.ExecuteAsync("set local lock_timeout = '20s'", transaction: transaction);
+
+            // Take the same class row lock that applying takes. Without it, a confirm sent in
+            // the very second the hold expires could commit after a new applicant had already
+            // counted this seat as free, and two students would end up with one seat.
+            await connection.ExecuteAsync("""
+                select c.id from admission_classes c
+                  join seat_holds h on h.admission_class_id = c.id
+                 where h.id = @holdId
+                   for update of c
+                """, new { holdId }, transaction);
+
+            // confirmedSeats is a count of CONFIRMED rows, so confirming the same hold twice
+            // can only count it once.
             changedRows = await connection.ExecuteAsync("""
                 update seat_holds set status = 'CONFIRMED', confirmed_at = clock_timestamp()
                  where id = @holdId and student_birth_registration_number = @studentId
                    and status = 'HELD' and expires_at > clock_timestamp()
-                """, new { holdId, studentId });
+                """, new { holdId, studentId }, transaction);
+
+            await transaction.CommitAsync();
         }
 
         if (changedRows == 1)

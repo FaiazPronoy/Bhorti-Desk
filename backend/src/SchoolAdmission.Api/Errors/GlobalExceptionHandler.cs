@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
+using Npgsql;
 using SchoolAdmission.Api.Contracts;
 
 namespace SchoolAdmission.Api.Errors;
@@ -36,6 +37,19 @@ public class GlobalExceptionHandler(ILogger<GlobalExceptionHandler> logger) : IE
                     "The request could not be read."))
                 {
                     StatusCode = badRequest.StatusCode,
+                };
+                break;
+
+            // A lock wait that ran out, or a deadlock, anywhere outside the hold retry: the
+            // database is busy, not broken. Ask the caller to try again.
+            case PostgresException { SqlState: PostgresErrorCodes.LockNotAvailable or PostgresErrorCodes.DeadlockDetected } busy:
+                logger.LogWarning("503 SERVER_BUSY ({SqlState}) on {Method} {Path}", busy.SqlState,
+                    context.HttpContext.Request.Method, context.HttpContext.Request.Path);
+                context.HttpContext.Response.Headers.RetryAfter = "2";
+                context.Result = new ObjectResult(new ApiErrorResponse(ApiErrorCode.ServerBusy,
+                    "Many people are applying right now. Please try again in a moment."))
+                {
+                    StatusCode = StatusCodes.Status503ServiceUnavailable,
                 };
                 break;
 
