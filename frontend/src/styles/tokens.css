@@ -1,0 +1,49 @@
+/* Design tokens. Components use these names only, never raw hex values. */
+:root {
+  --paper: #f4f5f2;
+  --sheet: #ffffff;
+  --rule: #d8dee6;
+  --margin-line: #d9605c;
+  --ink: #1b2130;
+  --ink-soft: #4b5565;
+  --stamp: #4a3aa7;
+  --stamp-strong: #392c87;
+  --stamp-tint: #eceafb;
+
+  --held: #8a5200;
+  --held-tint: #fff3d6;
+  --confirmed: #17694a;
+  --confirmed-tint: #e2f3ea;
+  --expired: #5a6372;
+  --expired-tint: #eceef1;
+  --cancelled: #8c2f2b;
+  --cancelled-tint: #fbe9e7;
+  --danger: #b3261e;
+
+  --font-text: "Atkinson Hyperlegible Next", "Noto Sans Bengali", system-ui, sans-serif;
+  --font-mono: "Atkinson Hyperlegible Mono", ui-monospace, monospace;
+
+  --text-13: 0.8125rem;
+  --text-15: 0.9375rem;
+  --text-17: 1.0625rem;
+  --text-20: 1.25rem;
+  --text-24: 1.5rem;
+  --text-32: 2rem;
+  --text-56: 3.5rem;
+
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-6: 24px;
+  --space-8: 32px;
+  --space-12: 48px;
+  --space-16: 64px;
+
+  --radius-control: 2px;
+  --radius-sheet: 4px;
+  --token-lift: 0 6px 18px rgb(27 33 48 / 0.09);
+  --fade: 150ms ease-out;
+  --header-height: 56px;
+  --content-width: 1120px;
+}
