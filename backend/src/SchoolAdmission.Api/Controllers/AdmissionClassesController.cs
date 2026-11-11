@@ -15,8 +15,10 @@ public class AdmissionClassesController(AdmissionClassService classService, Seat
 
     // 1. POST /classes
     [HttpPost]
-    public async Task<ActionResult<AdmissionClassResponse>> Create([FromBody] CreateAdmissionClassRequest request)
+    public async Task<ActionResult<AdmissionClassResponse>> Create([FromBody] CreateAdmissionClassRequest? request)
     {
+        // A body of just "null" (or nothing) reaches here as null. Treat it as an empty form.
+        request ??= new CreateAdmissionClassRequest(null, null);
         var fieldErrors = new Dictionary<string, string>();
         var name = request.Name?.Trim() ?? "";
 

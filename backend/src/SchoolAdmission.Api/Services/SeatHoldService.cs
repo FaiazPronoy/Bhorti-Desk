@@ -32,7 +32,8 @@ public class SeatHoldService(AdmissionDatabase database, AdmissionSettings setti
         // A quick look before taking any lock. It can only say "full", never "free", so it
         // cannot break the seat limit. It keeps a crowd from queueing on a class that is
         // already full. The real check is the one inside the locked transaction below.
-        if (await IsClassFullAsync(classId))
+        // A student who already holds a seat here is told so even when the class is full.
+        if (await IsClassFullAsync(classId, studentId))
         {
             throw AdmissionRuleException.ClassFull();
         }
@@ -139,19 +140,24 @@ public class SeatHoldService(AdmissionDatabase database, AdmissionSettings setti
             created.ExpiresAt, created.ClassName, created.ServerTime);
     }
 
-    private async Task<bool> IsClassFullAsync(Guid classId)
+    private async Task<bool> IsClassFullAsync(Guid classId, string studentId)
     {
         await using var connection = await database.OpenConnectionAsync();
         var row = await connection.QuerySingleOrDefaultAsync<SeatCountRow>("""
             select c.total_seats,
                    (select count(*) from seat_holds h
                      where h.admission_class_id = c.id
-                       and (h.status = 'CONFIRMED' or (h.status = 'HELD' and h.expires_at > clock_timestamp()))) as taken_seats
+                       and (h.status = 'CONFIRMED' or (h.status = 'HELD' and h.expires_at > clock_timestamp()))) as taken_seats,
+                   exists (select 1 from seat_holds h
+                            where h.admission_class_id = c.id
+                              and h.student_birth_registration_number = @studentId
+                              and (h.status = 'CONFIRMED' or (h.status = 'HELD' and h.expires_at > clock_timestamp()))) as student_has_seat
             from admission_classes c
             where c.id = @classId
-            """, new { classId });
-        // Unknown class: let the transaction answer 404.
-        return row is not null && row.TakenSeats >= row.TotalSeats;
+            """, new { classId, studentId });
+        // Unknown class, or a student who already has a seat: the transaction gives the
+        // right answer (404 or ALREADY_APPLIED with the hold id).
+        return row is not null && !row.StudentHasSeat && row.TakenSeats >= row.TotalSeats;
     }
 
     private static bool IsWorthOneRetry(PostgresException error) =>
@@ -279,6 +285,7 @@ public class SeatHoldService(AdmissionDatabase database, AdmissionSettings setti
     {
         public int TotalSeats { get; set; }
         public long TakenSeats { get; set; }
+        public bool StudentHasSeat { get; set; }
     }
 
     private class CreatedHoldRow
