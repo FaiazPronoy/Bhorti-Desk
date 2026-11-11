@@ -190,22 +190,6 @@
   outline: none;
 }
 
-/* The one red margin line, as in a ruled register, on wide screens only. */
-@media (min-width: 1024px) {
-  .main::before {
-    content: "";
-    position: absolute;
-    top: 0;
-    bottom: 0;
-    left: 0;
-    width: 1px;
-    background: var(--margin-line);
-  }
-  .main {
-    padding-left: var(--space-8);
-  }
-}
-
 .site-header {
   z-index: 20;
   background: var(--header-bg);
@@ -1359,8 +1343,7 @@
   .site-footer,
   .token-actions,
   .token__print,
-  .back-link,
-  .main::before {
+  .back-link {
     display: none !important;
   }
 
