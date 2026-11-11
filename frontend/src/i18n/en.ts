@@ -94,8 +94,6 @@ export const en = {
   "office.created": "Class \"{name}\" is open for admission.",
   "office.liveTable": "All classes",
   "office.nameRequired": "Enter a class name.",
-  "office.nameTooShort": "The class name needs at least 2 characters.",
-  "office.nameNeedsLetter": "The class name must have at least one letter.",
   "office.seatsWhole": "Use a whole number of seats, like 40.",
   "office.seatsHint": "Whole number from 1 to 100000.",
   "office.nameTooLong": "The class name can be at most 100 characters.",

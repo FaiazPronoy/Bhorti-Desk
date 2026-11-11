@@ -10,7 +10,6 @@ import type { MessageKey } from "../../i18n/en";
 import { classListKey } from "../classes/useClassList";
 import { toLatinDigits } from "../student-identity/birthRegistrationNumber";
 
-const MIN_NAME_LENGTH = 2;
 const MAX_NAME_LENGTH = 100;
 const MAX_SEATS = 100_000;
 
@@ -38,9 +37,7 @@ export function CreateClassForm() {
   function checkLocally(trimmedName: string, seatsText: string, totalSeats: number): FieldErrors {
     const errors: FieldErrors = {};
     if (trimmedName.length === 0) errors.name = t("office.nameRequired");
-    else if (trimmedName.length < MIN_NAME_LENGTH) errors.name = t("office.nameTooShort");
     else if (trimmedName.length > MAX_NAME_LENGTH) errors.name = t("office.nameTooLong");
-    else if (!/\p{L}/u.test(trimmedName)) errors.name = t("office.nameNeedsLetter");
     if (!/^[0-9]+$/.test(seatsText)) errors.totalSeats = t("office.seatsWhole");
     else if (!Number.isInteger(totalSeats) || totalSeats < 1 || totalSeats > MAX_SEATS) errors.totalSeats = t("office.seatsRange");
     return errors;
@@ -51,8 +48,7 @@ export function CreateClassForm() {
     setFormError(null);
     setCreatedName(null);
 
-    // Extra spaces inside the name are squeezed to one, so "Class  6" and "Class 6" match.
-    const trimmedName = name.trim().replace(/\s+/g, " ");
+    const trimmedName = name.trim();
     const seatsText = toLatinDigits(seats.trim());
     const totalSeats = Number(seatsText);
     const errors = checkLocally(trimmedName, seatsText, totalSeats);
