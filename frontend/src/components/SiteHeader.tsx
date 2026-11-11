@@ -21,7 +21,7 @@ export function SiteHeader() {
             <rect x="9" y="13" width="3" height="10" fill="var(--sheet)" />
             <rect x="20" y="13" width="3" height="10" fill="var(--sheet)" />
           </svg>
-          <span>{t("site.name")}</span>
+          <span translate="no">{t("site.name")}</span>
         </NavLink>
         <nav className="nav" aria-label={t("nav.main")}>
           <NavLink to="/" end className={linkClass}>

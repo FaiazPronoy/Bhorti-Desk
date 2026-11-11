@@ -146,9 +146,16 @@ function ApplicationView({ holdId }: { holdId: string }) {
     <section className="page page--narrow">
       <h1 className="page-title">{t("application.title")}</h1>
 
-      <SeatToken className={className} holdId={data.holdId} status={currentStatus} studentId={studentId}>
+      <SeatToken className={className} holdId={data.holdId} status={currentStatus} studentId={studentId} createdAt={data.createdAt}>
         {currentStatus === "HELD" && <HoldCountdown expiresAt={data.expiresAt} now={now} />}
-        {currentStatus === "CONFIRMED" && <p className="token__note token__note--confirmed">{t("application.confirmedNote")}</p>}
+        {currentStatus === "CONFIRMED" && (
+          <>
+            <p className="token__note token__note--confirmed">{t("application.confirmedNote")}</p>
+            <Button variant="secondary" className="token__print" onClick={() => window.print()}>
+              {t("application.print")}
+            </Button>
+          </>
+        )}
         {currentStatus === "EXPIRED" && <p className="token__note">{t("application.expiredNote")}</p>}
         {currentStatus === "CANCELLED" && <p className="token__note">{t("application.cancelledNote")}</p>}
       </SeatToken>

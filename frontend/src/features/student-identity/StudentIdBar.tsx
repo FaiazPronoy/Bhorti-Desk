@@ -47,7 +47,7 @@ export function StudentIdBar() {
   const isValid = check.kind === "ok";
 
   return (
-    <div className="student-bar">
+    <div className={`student-bar ${isValid ? "student-bar--saved" : ""}`}>
       <div className="student-bar__row">
         <label htmlFor={inputId} className="student-bar__label">
           {t("student.label")}

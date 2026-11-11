@@ -62,6 +62,20 @@
     color: var(--stamp-strong);
   }
 
+  ::selection {
+    background: var(--stamp-tint);
+    color: var(--ink);
+  }
+
+  input {
+    caret-color: var(--stamp);
+  }
+
+  html {
+    scrollbar-color: var(--rule) var(--paper);
+    accent-color: var(--stamp);
+  }
+
   :focus-visible {
     outline: 3px solid var(--stamp);
     outline-offset: 2px;
@@ -71,6 +85,13 @@
   input {
     font: inherit;
     color: inherit;
+  }
+
+  /* No 300 ms double-tap delay on phones. */
+  a,
+  button,
+  input {
+    touch-action: manipulation;
   }
 }
 
@@ -139,7 +160,7 @@
   flex-direction: column;
 }
 
-/* School doodles behind everything: a building, a bench, books, a bell and Bangla
+/* School pictures behind everything: a building, a bench, books, a bell and Bangla
    letters, drawn in one SVG and used as a mask so the colour follows the theme. */
 .app::before {
   content: "";
@@ -147,9 +168,9 @@
   inset: 0;
   z-index: -1;
   pointer-events: none;
-  background-color: var(--doodle);
-  -webkit-mask-image: url("/school-doodles.svg");
-  mask-image: url("/school-doodles.svg");
+  background-color: var(--pattern-ink);
+  -webkit-mask-image: url("/school-pattern.svg");
+  mask-image: url("/school-pattern.svg");
   -webkit-mask-size: 320px 320px;
   mask-size: 320px 320px;
   -webkit-mask-repeat: repeat;
@@ -161,6 +182,8 @@
   flex: 1;
   padding-top: var(--space-8);
   padding-bottom: var(--space-16);
+  /* The pictures stay in the margins: the reading column sits on plain paper. */
+  background: color-mix(in srgb, var(--paper) 94%, transparent);
 }
 
 .main:focus {
@@ -397,6 +420,14 @@
   max-width: 70ch;
 }
 
+/* On a phone, once the number is in, the help line steps aside so the page starts
+   higher. It is still shown while the box is empty or wrong. */
+@media (max-width: 767px) {
+  .student-bar--saved .student-bar__help {
+    display: none;
+  }
+}
+
 @media (min-width: 768px) {
   .student-bar__row {
     flex-direction: row;
@@ -433,8 +464,15 @@
   color: var(--held);
 }
 
+/* On a phone the clock icon would sit alone on its own line, so it steps aside. */
+@media (max-width: 767px) {
+  .running-hold__inner > svg {
+    display: none;
+  }
+}
+
 .running-hold__text {
-  flex: 1 1 12rem;
+  flex: 0 1 auto;
   font-size: var(--text-15);
   color: var(--ink);
 }
@@ -443,6 +481,8 @@
   display: inline-flex;
   align-items: center;
   min-height: 44px;
+  /* The darker red keeps 4.5:1 on the yellow bar. */
+  color: var(--stamp-strong);
   font-weight: 700;
 }
 
@@ -518,7 +558,8 @@
 
 .inline-alert {
   padding: var(--space-3) var(--space-4);
-  border-left: 3px solid currentColor;
+  border: 1px solid currentColor;
+  border-radius: var(--radius-control);
   font-size: var(--text-15);
 }
 
@@ -746,8 +787,8 @@
 
 .figure__value {
   margin: 0;
-  font-size: var(--text-20);
-  font-weight: 700;
+  font-size: var(--text-17);
+  font-weight: 600;
   font-variant-numeric: tabular-nums;
 }
 
@@ -762,6 +803,8 @@
 /* Free seats are good news, not an alert, so they stay in plain ink. */
 .figure--free .figure__value {
   color: var(--ink);
+  font-size: var(--text-24);
+  font-weight: 700;
 }
 
 .register-row__applied {
@@ -798,13 +841,13 @@
 
 .seat-grid {
   display: grid;
-  grid-template-columns: repeat(10, 9px);
-  gap: 3px;
+  grid-template-columns: repeat(10, 8px);
+  gap: 2px;
 }
 
 .seat {
-  width: 9px;
-  height: 9px;
+  width: 8px;
+  height: 8px;
   box-sizing: border-box;
   border-radius: 1px;
   transition: background-color var(--fade), border-color var(--fade);
@@ -827,14 +870,14 @@
 @media (min-width: 768px) {
   .register__head,
   .register-row {
-    grid-template-columns: minmax(9rem, 1.6fr) minmax(124px, 1fr) repeat(4, 4.5rem) 10rem;
-    column-gap: var(--space-4);
+    grid-template-columns: minmax(7rem, 1.6fr) 100px repeat(4, minmax(3rem, 4rem)) 8.5rem;
+    column-gap: var(--space-3);
     align-items: center;
   }
 
   .register__head--office,
   .register-row--office {
-    grid-template-columns: minmax(9rem, 1.6fr) minmax(124px, 1fr) repeat(4, 4rem);
+    grid-template-columns: minmax(7rem, 1.6fr) 100px repeat(4, minmax(3rem, 4rem));
   }
 
   .register__head {
@@ -852,6 +895,10 @@
 
   .register-row__free-big {
     display: none;
+  }
+
+  .register__head span:nth-child(6) {
+    color: var(--ink);
   }
 
   .register-row__figures {
@@ -977,7 +1024,48 @@
 .token__serial {
   display: block;
   font-size: var(--text-13);
-  overflow-wrap: anywhere;
+  line-height: 1.4;
+  letter-spacing: 0.02em;
+  word-break: break-all;
+}
+
+.token__issued {
+  display: block;
+  margin-top: var(--space-3);
+  font-size: var(--text-13);
+  color: var(--ink-soft);
+}
+
+/* The paid seal: a round double ring in green, like an office seal pressed on paper. */
+.seal {
+  display: grid;
+  place-items: center;
+  width: 96px;
+  height: 96px;
+  margin-top: var(--space-4);
+  border: 4px double var(--confirmed);
+  border-radius: 50%;
+  color: var(--confirmed);
+  background: var(--confirmed-tint);
+  text-align: center;
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: var(--text-13);
+  line-height: 1.2;
+  transform: rotate(-8deg);
+}
+
+.seal svg {
+  display: block;
+  margin: 0 auto 2px;
+}
+
+.token--confirmed {
+  border: 2px solid var(--confirmed);
+}
+
+.token__print {
+  align-self: flex-start;
 }
 
 .token__note {
@@ -1235,5 +1323,59 @@
   *::after {
     transition: none !important;
     animation: none !important;
+  }
+}
+
+/* ---------------------------------------------------------------- print */
+
+/* A confirmed application prints as a plain admission slip: just the token, in ink,
+   on white paper. */
+@media print {
+  :root,
+  :root[data-theme="dark"] {
+    --paper: #ffffff;
+    --sheet: #ffffff;
+    --ink: #000000;
+    --ink-soft: #333333;
+    --rule: #999999;
+    --confirmed: #000000;
+    --confirmed-tint: #ffffff;
+    --held: #000000;
+    --held-tint: #ffffff;
+    --expired: #000000;
+    --expired-tint: #ffffff;
+    --cancelled: #000000;
+    --cancelled-tint: #ffffff;
+  }
+
+  body {
+    background: #ffffff;
+  }
+
+  .app::before,
+  .site-header,
+  .server-banner,
+  .running-hold,
+  .site-footer,
+  .token-actions,
+  .token__print,
+  .back-link,
+  .main::before {
+    display: none !important;
+  }
+
+  .main {
+    padding: 0;
+    background: none;
+  }
+
+  .token {
+    box-shadow: none;
+    break-inside: avoid;
+  }
+
+  .stamp,
+  .seal {
+    transform: none;
   }
 }

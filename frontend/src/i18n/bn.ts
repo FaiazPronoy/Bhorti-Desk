@@ -45,7 +45,7 @@ export const bn: Record<MessageKey, string> = {
   "classes.emptyTitle": "এখনো কোনো ক্লাস নেই",
   "classes.emptyBody": "স্কুল অফিস এখনো কোনো ক্লাসে ভর্তি শুরু করেনি।",
   "classes.emptyAction": "ক্লাস তৈরি করুন",
-  "classes.loading": "ক্লাস তালিকা আসছে",
+  "classes.loading": "ক্লাস তালিকা আসছে…",
   "classes.loadFailed": "ক্লাস তালিকা আনা যায়নি।",
   "classes.seatPicture": "সিটের ছবি",
 
@@ -58,6 +58,9 @@ export const bn: Record<MessageKey, string> = {
   "application.class": "ক্লাস",
   "application.student": "জন্ম নিবন্ধন নম্বর",
   "application.serial": "ক্রমিক",
+  "application.issued": "আবেদন {time}",
+  "application.sealPaid": "ফি জমা",
+  "application.print": "ভর্তির রসিদ প্রিন্ট করুন",
   "application.timeLeft": "সময় বাকি",
   "application.lastMinute": "এক মিনিটেরও কম সময় বাকি। সিট রাখতে এখনই ফি দিন।",
   "application.expiresAt": "হোল্ড শেষ হবে {time}",
@@ -72,7 +75,7 @@ export const bn: Record<MessageKey, string> = {
   "application.cancelledNote": "এই আবেদন বাতিল করা হয়েছে। সিটটি ক্লাসে ফিরে গেছে।",
   "application.applyAgain": "আবার আবেদন করুন",
   "application.noSeatsToApplyAgain": "এই ক্লাসে এখন কোনো সিট খালি নেই।",
-  "application.loading": "আবেদন আসছে",
+  "application.loading": "আবেদন আসছে…",
   "application.backToClasses": "ক্লাস তালিকায় ফিরুন",
 
   "myApplications.title": "আমার আবেদন",
@@ -123,6 +126,6 @@ export const bn: Record<MessageKey, string> = {
   "notFound.title": "পাতাটি পাওয়া যায়নি",
   "notFound.body": "এই পাতাটি নেই। হয়তো সরানো হয়েছে।",
 
-  "common.loading": "আসছে",
+  "common.loading": "আসছে…",
   "common.close": "বন্ধ করুন",
 };

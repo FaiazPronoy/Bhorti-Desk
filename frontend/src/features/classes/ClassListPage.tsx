@@ -27,6 +27,8 @@ export function ClassListPage() {
     <section className="page">
       <h1 className="page-title">{t("classes.title")}</h1>
       <p className="page-intro">{t("classes.intro")}</p>
+      {/* Keeps the heading order h1, h2, h3 for screen readers; the table speaks for itself on screen. */}
+      <h2 className="sr-only">{t("office.liveTable")}</h2>
       <ClassRegister showActions />
     </section>
   );
@@ -89,7 +91,11 @@ export function ClassRegister({ showActions }: { showActions: boolean }) {
   if (classes.isError && !classes.data) {
     return (
       <div className="sheet empty-state">
-        <InlineAlert>{t(errorMessageKey(classes.error))}</InlineAlert>
+        {/* A network failure is already explained by the banner at the top, so this
+            box only says what is missing here instead of repeating it. */}
+        <InlineAlert>
+          {t(isApiError(classes.error) && classes.error.kind === "network" ? "classes.loadFailed" : errorMessageKey(classes.error))}
+        </InlineAlert>
         <Button variant="secondary" pending={classes.isFetching} onClick={() => void classes.refetch()}>
           {t("server.retry")}
         </Button>
