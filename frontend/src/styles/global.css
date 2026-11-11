@@ -166,8 +166,17 @@
 
 .site-header {
   z-index: 20;
-  background: var(--sheet);
+  background: var(--header-bg);
+  color: var(--header-ink);
   border-bottom: 1px solid var(--rule);
+}
+
+.site-header .button--quiet {
+  color: var(--header-ink);
+}
+
+.site-header .button--quiet:hover:not(:disabled) {
+  background: rgb(255 255 255 / 0.1);
 }
 
 /* Sticky only where there is room. On a phone the header with the number box would
@@ -199,8 +208,9 @@
   margin-right: auto;
 }
 
+.site-name,
 .site-name:hover {
-  color: var(--ink);
+  color: var(--header-ink);
 }
 
 .nav {
@@ -218,22 +228,28 @@
   align-items: center;
   min-height: 44px;
   padding-inline: var(--space-3);
-  color: var(--ink);
-  font-weight: 700;
+  color: var(--header-ink);
+  font-weight: 600;
   font-size: var(--text-15);
   text-decoration: none;
-  border-bottom: 2px solid transparent;
+  border-bottom: 3px solid transparent;
   white-space: nowrap;
 }
 
+.nav__link:hover {
+  color: var(--header-ink);
+  background: rgb(255 255 255 / 0.06);
+}
+
 .nav__link--quiet {
-  color: var(--ink-soft);
+  color: var(--header-ink-soft);
   font-weight: 400;
 }
 
-.nav__link--active {
-  color: var(--stamp);
-  border-bottom-color: var(--stamp);
+.nav__link--active,
+.nav__link--active:hover {
+  color: var(--header-ink);
+  border-bottom-color: var(--header-accent);
 }
 
 @media (min-width: 768px) {
@@ -258,9 +274,19 @@
   gap: var(--space-1);
 }
 
+/* The number box sits on the light page colour, so it uses the normal ink again. */
 .site-header__student {
   border-top: 1px solid var(--rule);
   background: var(--paper);
+  color: var(--ink);
+}
+
+.site-header__student .button--quiet {
+  color: var(--stamp);
+}
+
+.site-header__student .button--quiet:hover:not(:disabled) {
+  background: var(--stamp-tint);
 }
 
 .site-footer {
@@ -714,8 +740,9 @@
   color: var(--confirmed);
 }
 
+/* Free seats are good news, not an alert, so they stay in plain ink. */
 .figure--free .figure__value {
-  color: var(--stamp);
+  color: var(--ink);
 }
 
 .register-row__applied {
