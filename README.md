@@ -12,8 +12,8 @@ First come, first served. If the fee is not paid in time, the seat goes back to 
 
 | | |
 |---|---|
-| ![Class list with live seat numbers](docs/images/class-list.jpg) | ![Application with the countdown](docs/images/application.jpg) |
-| ![Class list in dark mode](docs/images/class-list-dark.jpg) | ![Application on a phone](docs/images/phone.jpg) |
+| ![Class list with live seat numbers](docs/images/class-list.png) | ![Confirmed application with the paid seal](docs/images/application.png) |
+| ![Class list in dark mode](docs/images/class-list-dark.png) | ![My applications with every status](docs/images/my-applications.png) |
 
 ---
 
