@@ -2,6 +2,7 @@ import { NavLink } from "react-router";
 import { StudentIdBar } from "../features/student-identity/StudentIdBar";
 import { useLanguage } from "../i18n/LanguageProvider";
 import { LanguageToggle } from "./LanguageToggle";
+import { ThemeToggle } from "./ThemeToggle";
 
 export function SiteHeader() {
   const { t } = useLanguage();
@@ -33,7 +34,10 @@ export function SiteHeader() {
             {t("nav.schoolOffice")}
           </NavLink>
         </nav>
-        <LanguageToggle />
+        <div className="header-tools">
+          <ThemeToggle />
+          <LanguageToggle />
+        </div>
       </div>
       <div className="site-header__student">
         <div className="page-width">

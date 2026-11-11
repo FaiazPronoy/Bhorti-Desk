@@ -3,7 +3,7 @@ import { bn } from "./bn";
 import { en, type MessageKey } from "./en";
 import { formatNumber, type Language } from "./formatNumber";
 
-const STORAGE_KEY = "first-bench.language";
+const STORAGE_KEY = "bhorti-desk.language";
 
 interface LanguageContextValue {
   language: Language;

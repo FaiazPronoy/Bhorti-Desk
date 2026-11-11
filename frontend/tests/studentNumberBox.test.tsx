@@ -48,7 +48,7 @@ describe("number box", () => {
     await user.clear(box);
     await user.type(box, "২০১৫-০১২৩-৪৫৬৭-৮৯০১২");
     expect(screen.getByText("17 of 17")).toBeInTheDocument();
-    expect(localStorage.getItem("first-bench.student-id")).toBe(VALID_STUDENT_ID);
+    expect(localStorage.getItem("bhorti-desk.student-id")).toBe(VALID_STUDENT_ID);
 
     await user.click(await screen.findByRole("button", { name: "Apply" }));
 
@@ -71,7 +71,7 @@ describe("number box", () => {
   });
 
   it("reads a stored number on load and shows the running hold", async () => {
-    localStorage.setItem("first-bench.student-id", VALID_STUDENT_ID);
+    localStorage.setItem("bhorti-desk.student-id", VALID_STUDENT_ID);
     const soon = new Date(Date.now() + 5 * 60_000).toISOString().replace(/\.\d+Z$/, "Z");
     mockApi((url) => {
       if (url === "/classes") return { status: 200, body: oneClass };

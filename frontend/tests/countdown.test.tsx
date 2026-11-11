@@ -29,7 +29,7 @@ describe("countdown", () => {
 
   it("reaches zero, shows EXPIRED and disables the pay button without a reload", async () => {
     vi.useFakeTimers({ shouldAdvanceTime: true });
-    localStorage.setItem("first-bench.student-id", VALID_STUDENT_ID);
+    localStorage.setItem("bhorti-desk.student-id", VALID_STUDENT_ID);
     const start = Date.now();
     holdApi(isoInSeconds(start + 3000), isoInSeconds(start));
 

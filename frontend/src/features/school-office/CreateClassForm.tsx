@@ -8,7 +8,9 @@ import { TextField } from "../../components/TextField";
 import { useLanguage } from "../../i18n/LanguageProvider";
 import type { MessageKey } from "../../i18n/en";
 import { classListKey } from "../classes/useClassList";
+import { toLatinDigits } from "../student-identity/birthRegistrationNumber";
 
+const MIN_NAME_LENGTH = 2;
 const MAX_NAME_LENGTH = 100;
 const MAX_SEATS = 100_000;
 
@@ -33,11 +35,14 @@ export function CreateClassForm() {
   });
 
   // The server checks everything again; this is only so people see mistakes early.
-  function checkLocally(trimmedName: string, totalSeats: number): FieldErrors {
+  function checkLocally(trimmedName: string, seatsText: string, totalSeats: number): FieldErrors {
     const errors: FieldErrors = {};
     if (trimmedName.length === 0) errors.name = t("office.nameRequired");
+    else if (trimmedName.length < MIN_NAME_LENGTH) errors.name = t("office.nameTooShort");
     else if (trimmedName.length > MAX_NAME_LENGTH) errors.name = t("office.nameTooLong");
-    if (!Number.isInteger(totalSeats) || totalSeats < 1 || totalSeats > MAX_SEATS) errors.totalSeats = t("office.seatsRange");
+    else if (!/\p{L}/u.test(trimmedName)) errors.name = t("office.nameNeedsLetter");
+    if (!/^[0-9]+$/.test(seatsText)) errors.totalSeats = t("office.seatsWhole");
+    else if (!Number.isInteger(totalSeats) || totalSeats < 1 || totalSeats > MAX_SEATS) errors.totalSeats = t("office.seatsRange");
     return errors;
   }
 
@@ -46,9 +51,11 @@ export function CreateClassForm() {
     setFormError(null);
     setCreatedName(null);
 
-    const trimmedName = name.trim();
-    const totalSeats = Number(seats.trim());
-    const errors = checkLocally(trimmedName, totalSeats);
+    // Extra spaces inside the name are squeezed to one, so "Class  6" and "Class 6" match.
+    const trimmedName = name.trim().replace(/\s+/g, " ");
+    const seatsText = toLatinDigits(seats.trim());
+    const totalSeats = Number(seatsText);
+    const errors = checkLocally(trimmedName, seatsText, totalSeats);
     setFieldErrors(errors);
     if (errors.name || errors.totalSeats) return;
 
@@ -84,20 +91,22 @@ export function CreateClassForm() {
         label={t("office.className")}
         hint={t("office.classNameHint")}
         value={name}
-        maxLength={MAX_NAME_LENGTH + 20}
+        maxLength={MAX_NAME_LENGTH}
+        required
         autoComplete="off"
         onChange={(event) => setName(event.target.value)}
         error={fieldErrors.name}
       />
       <TextField
         label={t("office.seats")}
-        type="number"
+        hint={t("office.seatsHint")}
+        type="text"
         inputMode="numeric"
-        min={1}
-        max={MAX_SEATS}
-        step={1}
+        autoComplete="off"
+        maxLength={6}
         value={seats}
-        onChange={(event) => setSeats(event.target.value)}
+        // Only digits can be typed (English or Bangla), so "1.5", "-3" or "1e3" never get in.
+        onChange={(event) => setSeats(event.target.value.replace(/[^0-9০-৯]/g, ""))}
         error={fieldErrors.totalSeats}
         className="field--short"
       />

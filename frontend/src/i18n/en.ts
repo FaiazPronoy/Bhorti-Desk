@@ -1,7 +1,7 @@
 // English words for every visible string. bn.ts must have exactly the same keys;
 // a test checks that. Values in {braces} are filled in by t().
 export const en = {
-  "site.name": "First Bench",
+  "site.name": "Bhorti Desk",
   "site.footerBuiltBy": "Built by Faiaz Abrar Zaman Pronoy.",
   "site.skipToContent": "Skip to main content",
 
@@ -12,6 +12,8 @@ export const en = {
 
   "language.switchTo": "বাংলা",
   "language.switchLabel": "Show the site in Bangla",
+  "theme.toDark": "Switch to dark mode",
+  "theme.toLight": "Switch to light mode",
 
   "student.label": "Student's birth registration number",
   "student.placeholder": "17 digits",
@@ -92,6 +94,10 @@ export const en = {
   "office.created": "Class \"{name}\" is open for admission.",
   "office.liveTable": "All classes",
   "office.nameRequired": "Enter a class name.",
+  "office.nameTooShort": "The class name needs at least 2 characters.",
+  "office.nameNeedsLetter": "The class name must have at least one letter.",
+  "office.seatsWhole": "Use a whole number of seats, like 40.",
+  "office.seatsHint": "Whole number from 1 to 100000.",
   "office.nameTooLong": "The class name can be at most 100 characters.",
   "office.seatsRange": "The number of seats must be from 1 to 100000.",
 
