@@ -10,6 +10,11 @@ First come, first served. If the fee is not paid in time, the seat goes back to 
 | **History** | Built in November 2026 |
 | **Docs** | [Assumptions](ASSUMPTIONS.md), [AI usage](AI_USAGE.md) |
 
+| | |
+|---|---|
+| ![Class list with live seat numbers](docs/images/class-list.jpg) | ![Application with the countdown](docs/images/application.jpg) |
+| ![Class list in dark mode](docs/images/class-list-dark.jpg) | ![Application on a phone](docs/images/phone.jpg) |
+
 ---
 
 ## Features
