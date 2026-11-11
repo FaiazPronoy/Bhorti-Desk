@@ -2,6 +2,9 @@
 #   docker compose -f docker-compose.tests.yml run --rm backend-tests
 #   docker compose -f docker-compose.tests.yml run --rm frontend-tests
 #   docker compose -f docker-compose.tests.yml down
+# Its own project name, so these containers never mix with the app from docker-compose.yml.
+name: school-admission-tests
+
 services:
   test-postgres:
     image: postgres:17-alpine
