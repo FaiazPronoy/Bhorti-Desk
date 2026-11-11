@@ -131,10 +131,29 @@
 /* ---------------------------------------------------------------- app frame */
 
 .app {
+  position: relative;
+  isolation: isolate;
   min-height: 100vh;
   min-height: 100dvh;
   display: flex;
   flex-direction: column;
+}
+
+/* School doodles behind everything: a building, a bench, books, a bell and Bangla
+   letters, drawn in one SVG and used as a mask so the colour follows the theme. */
+.app::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  background-color: var(--doodle);
+  -webkit-mask-image: url("/school-doodles.svg");
+  mask-image: url("/school-doodles.svg");
+  -webkit-mask-size: 320px 320px;
+  mask-size: 320px 320px;
+  -webkit-mask-repeat: repeat;
+  mask-repeat: repeat;
 }
 
 .main {
