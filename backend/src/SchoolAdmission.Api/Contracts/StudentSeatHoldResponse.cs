@@ -9,4 +9,4 @@ public record StudentSeatHoldResponse(
     string Status,
     [property: JsonConverter(typeof(UtcSecondsDateTimeConverter))] DateTime ExpiresAt,
     [property: JsonConverter(typeof(UtcSecondsDateTimeConverter))] DateTime CreatedAt,
-    [property: JsonConverter(typeof(UtcSecondsDateTimeConverter))] DateTime ServerTime);
+    [property: JsonConverter(typeof(UtcMillisecondsDateTimeConverter))] DateTime ServerTime);

@@ -11,4 +11,4 @@ public record SeatHoldCreatedResponse(
     string Status,
     [property: JsonConverter(typeof(UtcSecondsDateTimeConverter))] DateTime ExpiresAt,
     string ClassName,
-    [property: JsonConverter(typeof(UtcSecondsDateTimeConverter))] DateTime ServerTime);
+    [property: JsonConverter(typeof(UtcMillisecondsDateTimeConverter))] DateTime ServerTime);

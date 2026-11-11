@@ -4,13 +4,19 @@ import { useEffect, useState } from "react";
 // off. Every hold response carries serverTime; we keep the difference and add it to
 // Date.now() whenever we need "now".
 let offsetMs = 0;
+let hasOffset = false;
 const listeners = new Set<() => void>();
 
 export function rememberServerTime(serverTime: string | undefined) {
   if (!serverTime) return;
   const parsed = Date.parse(serverTime);
   if (Number.isNaN(parsed)) return;
-  offsetMs = parsed - Date.now();
+  // Network delay only ever makes an answer look older than it is, so the largest
+  // offset seen is the best guess. Taking the newest one instead could move the clock
+  // back and flip an EXPIRED hold back to HELD for a moment.
+  const measured = parsed - Date.now();
+  offsetMs = hasOffset ? Math.max(offsetMs, measured) : measured;
+  hasOffset = true;
   // Countdowns already on screen redraw at once instead of on their next tick.
   listeners.forEach((listener) => listener());
 }

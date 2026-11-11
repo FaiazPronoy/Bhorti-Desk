@@ -174,7 +174,7 @@ public class SeatHoldService(AdmissionDatabase database, AdmissionSettings setti
 
     // ---------------------------------------------------------------- endpoint 6
 
-    public async Task<SeatHoldConfirmedResponse> ConfirmAsync(Guid holdId, string studentId)
+    public async Task<SeatHoldConfirmedResponse> ConfirmAsync(Guid holdId, string studentId, bool isRetry = false)
     {
         int changedRows;
         await using (var connection = await database.OpenConnectionAsync())
@@ -201,13 +201,16 @@ public class SeatHoldService(AdmissionDatabase database, AdmissionSettings setti
             SeatHoldStatus.Confirmed => new SeatHoldConfirmedResponse(holdId, SeatHoldStatus.Confirmed),
             SeatHoldStatus.Expired => throw AdmissionRuleException.Expired(),
             SeatHoldStatus.Cancelled => throw AdmissionRuleException.Cancelled(),
-            _ => throw new InvalidOperationException($"Confirm changed no row but the hold is {hold.Status}."),
+            // Still HELD although the update matched nothing: a race with the expiry
+            // second. Try once more, then treat it as expired. Never a 500.
+            _ when !isRetry => await ConfirmAsync(holdId, studentId, isRetry: true),
+            _ => throw AdmissionRuleException.Expired(),
         };
     }
 
     // ---------------------------------------------------------------- endpoint 7
 
-    public async Task CancelAsync(Guid holdId, string studentId)
+    public async Task CancelAsync(Guid holdId, string studentId, bool isRetry = false)
     {
         int changedRows;
         await using (var connection = await database.OpenConnectionAsync())
@@ -235,7 +238,13 @@ public class SeatHoldService(AdmissionDatabase database, AdmissionSettings setti
             case SeatHoldStatus.Expired:
                 throw AdmissionRuleException.Expired();
             default:
-                throw new InvalidOperationException($"Cancel changed no row but the hold is {hold.Status}.");
+                // Same race as in ConfirmAsync: try once more, then treat it as expired.
+                if (!isRetry)
+                {
+                    await CancelAsync(holdId, studentId, isRetry: true);
+                    return;
+                }
+                throw AdmissionRuleException.Expired();
         }
     }
 

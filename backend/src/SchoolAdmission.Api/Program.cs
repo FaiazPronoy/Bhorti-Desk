@@ -18,8 +18,9 @@ DefaultTypeMap.MatchNamesWithUnderscores = true;
 var settings = AdmissionSettings.Load(builder.Configuration);
 builder.Services.AddSingleton(settings);
 
-var dataSource = NpgsqlDataSource.Create(settings.ConnectionString);
-builder.Services.AddSingleton(dataSource);
+// Registered with a factory so the container owns it and closes its connections when
+// the host stops. Each test host would otherwise leave a full pool open.
+builder.Services.AddSingleton(_ => NpgsqlDataSource.Create(settings.ConnectionString));
 builder.Services.AddSingleton<AdmissionDatabase>();
 builder.Services.AddScoped<AdmissionClassService>();
 builder.Services.AddScoped<SeatHoldService>();
@@ -73,6 +74,7 @@ foreach (var warning in settings.Warnings)
 }
 
 // The tables exist before port 8080 answers anything.
+var dataSource = app.Services.GetRequiredService<NpgsqlDataSource>();
 await DatabaseSchemaInitializer.RunAsync(dataSource, app.Logger);
 
 // CORS first, so every response carries CORS headers, errors included. Otherwise the
