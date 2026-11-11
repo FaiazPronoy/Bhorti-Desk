@@ -1,0 +1,42 @@
+# Runs every test in containers. Nothing here touches the normal database volume.
+#   docker compose -f docker-compose.tests.yml run --rm backend-tests
+#   docker compose -f docker-compose.tests.yml run --rm frontend-tests
+#   docker compose -f docker-compose.tests.yml down
+services:
+  test-postgres:
+    image: postgres:17-alpine
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: postgres
+    # Two API instances at 40 connections each, plus the admin connection.
+    command: ["postgres", "-c", "max_connections=200"]
+    # No volume: the data lives only as long as the container.
+    tmpfs:
+      - /var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 2s
+      timeout: 3s
+      retries: 30
+
+  backend-tests:
+    build:
+      context: ./backend
+      target: test
+    environment:
+      TEST_DATABASE_ADMIN_CONNECTION_STRING: "Host=test-postgres;Port=5432;Username=postgres;Password=postgres;Database=postgres"
+    depends_on:
+      test-postgres:
+        condition: service_healthy
+
+  frontend-tests:
+    image: node:22-alpine
+    working_dir: /app
+    volumes:
+      - ./frontend:/app
+      - frontend_test_node_modules:/app/node_modules
+    command: ["sh", "-c", "npm ci && npm run typecheck && npm test"]
+
+volumes:
+  frontend_test_node_modules:
