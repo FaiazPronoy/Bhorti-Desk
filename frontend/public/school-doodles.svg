@@ -48,6 +48,9 @@
   <!-- Bangla letters -->
   <text x="214" y="270" font-family="Noto Sans Bengali, sans-serif" font-size="30" stroke-width="1.4">অ আ</text>
   <text x="240" y="306" font-family="Noto Sans Bengali, sans-serif" font-size="22" stroke-width="1.2">ক খ</text>
+  <!-- English letters and numbers -->
+  <text x="150" y="150" font-family="Arial, sans-serif" font-size="26" font-weight="700" stroke-width="1.2">A B C</text>
+  <text x="120" y="300" font-family="Arial, sans-serif" font-size="20" font-weight="700" stroke-width="1">1 2 3</text>
   <!-- small stars -->
   <path d="M170 30 l3 6 6 1 -5 4 1 6 -5 -3 -5 3 1 -6 -5 -4 6 -1z"/>
   <path d="M290 110 l2 4 4 1 -3 3 1 4 -4 -2 -4 2 1 -4 -3 -3 4 -1z"/>
