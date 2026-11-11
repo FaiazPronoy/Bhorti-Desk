@@ -12,9 +12,11 @@ export type NumberCheck =
 // Guardians copy the number from a paper certificate, often in Bangla digits and with
 // spaces or hyphens. Turn whatever they type into the 17 ASCII digits the API wants.
 export function cleanDigits(input: string): string {
-  return input
-    .replace(/[০-৯]/g, (digit) => String(banglaDigits.indexOf(digit)))
-    .replace(/[\s-]/g, "");
+  return toLatinDigits(input).replace(/[\s-]/g, "");
+}
+
+export function toLatinDigits(input: string): string {
+  return input.replace(/[০-৯]/g, (digit) => String(banglaDigits.indexOf(digit)));
 }
 
 export function checkBirthRegistrationNumber(input: string): NumberCheck {

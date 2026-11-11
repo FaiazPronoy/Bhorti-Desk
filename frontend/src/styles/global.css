@@ -160,11 +160,18 @@
 }
 
 .site-header {
-  position: sticky;
-  top: 0;
   z-index: 20;
   background: var(--sheet);
   border-bottom: 1px solid var(--rule);
+}
+
+/* Sticky only where there is room. On a phone the header with the number box would
+   cover half the screen, so there it scrolls away with the page. */
+@media (min-width: 768px) {
+  .site-header {
+    position: sticky;
+    top: 0;
+  }
 }
 
 .site-header__top {
@@ -287,9 +294,15 @@
   border-radius: var(--radius-control);
   background: var(--sheet);
   font-family: var(--font-mono);
-  font-size: var(--text-20);
+  font-size: var(--text-17);
   font-variant-numeric: tabular-nums;
-  letter-spacing: 0.04em;
+}
+
+@media (min-width: 480px) {
+  .student-bar__input {
+    font-size: var(--text-20);
+    letter-spacing: 0.04em;
+  }
 }
 
 .student-bar__input[aria-invalid="true"] {

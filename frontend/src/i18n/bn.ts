@@ -15,7 +15,7 @@ export const bn: Record<MessageKey, string> = {
   "language.switchLabel": "সাইটটি ইংরেজিতে দেখুন",
 
   "student.label": "শিক্ষার্থীর জন্ম নিবন্ধন নম্বর",
-  "student.placeholder": "১৭ অঙ্ক",
+  "student.placeholder": "17 অঙ্ক",
   "student.count": "{count} / 17",
   "student.tooShort": "নম্বরটি ছোট। জন্ম নিবন্ধন নম্বর ১৭ অঙ্কের।",
   "student.tooLong": "নম্বরটি বড়। জন্ম নিবন্ধন নম্বর ১৭ অঙ্কের।",

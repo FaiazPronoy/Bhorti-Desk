@@ -1,7 +1,7 @@
 import { useId, useState } from "react";
 import { useLanguage } from "../../i18n/LanguageProvider";
 import type { MessageKey } from "../../i18n/en";
-import { BIRTH_REGISTRATION_LENGTH, checkBirthRegistrationNumber, countDigits } from "./birthRegistrationNumber";
+import { BIRTH_REGISTRATION_LENGTH, checkBirthRegistrationNumber, countDigits, toLatinDigits } from "./birthRegistrationNumber";
 import { useStudentId } from "./useStudentId";
 
 // The number box at the top of every page. It is a plain input that is always visible
@@ -18,7 +18,9 @@ export function StudentIdBar() {
   const check = checkBirthRegistrationNumber(draft);
   const count = countDigits(draft);
 
-  function onChange(value: string) {
+  function onChange(typed: string) {
+    // The box always shows Latin digits, so Bangla digits are swapped as they are typed.
+    const value = toLatinDigits(typed);
     setDraft(value);
     const next = checkBirthRegistrationNumber(value);
     if (next.kind === "ok") {
