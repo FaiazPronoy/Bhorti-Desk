@@ -10,7 +10,6 @@ namespace SchoolAdmission.Api.Controllers;
 [Route("classes")]
 public class AdmissionClassesController(AdmissionClassService classService, SeatHoldService holdService) : ControllerBase
 {
-    private const int MinNameLength = 2;
     private const int MaxNameLength = 100;
     private const int MaxSeats = 100_000;
 
@@ -21,20 +20,11 @@ public class AdmissionClassesController(AdmissionClassService classService, Seat
         // A body of just "null" (or nothing) reaches here as null. Treat it as an empty form.
         request ??= new CreateAdmissionClassRequest(null, null);
         var fieldErrors = new Dictionary<string, string>();
-        // Runs of spaces inside the name become one space.
-        var name = string.Join(' ', (request.Name ?? "").Split((char[]?)null, StringSplitOptions.RemoveEmptyEntries));
+        var name = (request.Name ?? "").Trim();
 
         if (name.Length == 0)
         {
             fieldErrors["name"] = "Enter a class name.";
-        }
-        else if (name.Length < MinNameLength)
-        {
-            fieldErrors["name"] = $"The class name needs at least {MinNameLength} characters.";
-        }
-        else if (!name.Any(char.IsLetter))
-        {
-            fieldErrors["name"] = "The class name must have at least one letter.";
         }
         else if (name.Length > MaxNameLength)
         {

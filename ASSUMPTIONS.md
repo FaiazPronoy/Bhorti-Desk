@@ -8,7 +8,7 @@
 6. **Repeats are safe.** A second confirm by the owner returns 200. A second cancel returns 204. Cancel after expiry returns 409 HOLD_EXPIRED.
 7. **Status codes.** 400 bad input or bad header, 403 another student's hold, 404 unknown class or hold, 409 for rule conflicts (full, already applied, expired, cancelled, confirmed), 503 when the database stays busy. Checks run in the order 404, then 403, then status.
 8. **X-Student-Id** must be exactly 17 ASCII digits after trimming spaces, as the assignment's example shows. Anything else is 400. The frontend turns Bangla digits into ASCII before sending.
-9. **Class names** are not unique. They need 2 to 100 characters and at least one letter, and extra spaces are squeezed. `totalSeats` is a whole number from 1 to 100000.
+9. **Class names** are not unique. Spaces at the ends are trimmed. A name may not be empty, longer than 100 characters, or contain control characters. `totalSeats` is a whole number from 1 to 100000.
 10. **GET /holds/{holdId} needs no header**, as the assignment shows none, so it never returns the student number.
 11. **expiresAt is in whole seconds** (`2026-11-01T04:10:00Z`) to match the assignment's example, so a hold can be up to one second shorter than the setting.
 12. **Classes cannot be edited or deleted.** The assignment has no endpoint for it.
