@@ -24,7 +24,9 @@ public class InputValidationTests
             "{\"name\":\"   \",\"totalSeats\":10}",
             "{\"name\":\"Class 6\"}",
             "{\"name\":\"Class 6\",\"totalSeats\":0}",
-            "{\"name\":\"Class 6\",\"totalSeats\":-5}",
+            "{\"name\":\"Class 6\",\"totalSeats\":-1}",
+            "{\"name\":\"Class 6\",\"totalSeats\":null}",
+            "{\"name\":\"Class 6\",\"totalSeats\":\"abc\"}",
             "{\"name\":\"Class 6\",\"totalSeats\":1.5}",
             "{\"name\":\"Class 6\",\"totalSeats\":\"ten\"}",
             "{\"name\":\"Class 6\",\"totalSeats\":99999999999999}",
@@ -60,7 +62,7 @@ public class InputValidationTests
         responses.Add(("confirm with no header", await client.PostAsync($"/holds/{holdId}/confirm", null)));
         responses.Add(("cancel with no header", await client.DeleteAsync($"/holds/{holdId}")));
 
-        foreach (var badId in new[] { "not-a-guid", "123", "00000000-0000-0000-0000-000000000000", Guid.NewGuid().ToString(), "%27%20or%201%3D1" })
+        foreach (var badId in new[] { "not-a-guid", "c_123", "123", "00000000-0000-0000-0000-000000000000", Guid.NewGuid().ToString(), "%27%20or%201%3D1" })
         {
             responses.Add(($"GET /classes/{badId}", await client.GetAsync($"/classes/{badId}")));
             responses.Add(($"GET /holds/{badId}", await client.GetAsync($"/holds/{badId}")));

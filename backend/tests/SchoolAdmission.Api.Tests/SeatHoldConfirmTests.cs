@@ -16,10 +16,9 @@ public class SeatHoldConfirmTests
         var student = ApiCalls.NewStudentId();
         var holdId = await ApiCalls.ApplyAndGetHoldIdAsync(client, classId, student);
 
-        // Two clicks on the pay button at the same moment, then one more later.
-        var together = await Task.WhenAll(
-            ApiCalls.ConfirmAsync(client, holdId, student),
-            ApiCalls.ConfirmAsync(client, holdId, student));
+        // Ten clicks on the pay button at the same moment, then one more later.
+        var together = await Task.WhenAll(Enumerable.Range(0, 10)
+            .Select(_ => ApiCalls.ConfirmAsync(client, holdId, student)));
         var later = await ApiCalls.ConfirmAsync(client, holdId, student);
 
         foreach (var response in together.Append(later))
