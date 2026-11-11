@@ -95,6 +95,9 @@ After each stress test, the database is checked with plain SQL. No class may hav
 
 You only need Docker.
 
+- **Windows:** double-click `RUN-BhortiDesk.bat`. It starts Docker if needed, builds and starts the containers, waits for the API and opens the app.
+- **Any system:**
+
 ```bash
 docker compose up
 ```
