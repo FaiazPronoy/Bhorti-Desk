@@ -1,26 +1,34 @@
-/* Design tokens. Components use these names only, never raw hex values. */
+/* Design tokens. Components use these names only, never raw hex values.
+   Kraft paper, a terracotta rubber stamp and a green "paid" mark, like a school
+   office counter. Light by default, dark on request or by system setting. */
 :root {
-  --paper: #f4f5f2;
-  --sheet: #ffffff;
-  --rule: #d8dee6;
-  --margin-line: #d9605c;
-  --ink: #1b2130;
-  --ink-soft: #4b5565;
-  --stamp: #4a3aa7;
-  --stamp-strong: #392c87;
-  --stamp-tint: #eceafb;
+  color-scheme: light;
+  --paper: #f3eee3;
+  --paper-line: #e6dccb;
+  --sheet: #fffcf6;
+  --rule: #e2d8c6;
+  --margin-line: #c8553d;
+  --ink: #2b2420;
+  --ink-soft: #6a5d52;
+  --stamp: #b24a2e;
+  --stamp-strong: #8e3a23;
+  --stamp-tint: #f7e3da;
+  --on-stamp: #fffcf6;
 
-  --held: #8a5200;
-  --held-tint: #fff3d6;
-  --confirmed: #17694a;
-  --confirmed-tint: #e2f3ea;
-  --expired: #5a6372;
-  --expired-tint: #eceef1;
+  --held: #8a5a00;
+  --held-tint: #fbefd3;
+  --confirmed: #2f6b3a;
+  --confirmed-tint: #e3f0e1;
+  --expired: #6b635a;
+  --expired-tint: #eeeae3;
   --cancelled: #8c2f2b;
-  --cancelled-tint: #fbe9e7;
+  --cancelled-tint: #f7e1de;
   --danger: #b3261e;
+  --backdrop: rgb(43 36 32 / 0.5);
+  --token-lift: 0 10px 24px rgb(43 36 32 / 0.1), 0 1px 2px rgb(43 36 32 / 0.08);
 
-  --font-text: "Atkinson Hyperlegible Next", "Noto Sans Bengali", system-ui, sans-serif;
+  --font-text: "Onest", "Noto Sans Bengali", system-ui, sans-serif;
+  --font-display: "Baloo Da 2", "Noto Sans Bengali", system-ui, sans-serif;
   --font-mono: "Atkinson Hyperlegible Mono", ui-monospace, monospace;
 
   --text-13: 0.8125rem;
@@ -28,7 +36,7 @@
   --text-17: 1.0625rem;
   --text-20: 1.25rem;
   --text-24: 1.5rem;
-  --text-32: 2rem;
+  --text-32: 2.125rem;
   --text-56: 3.5rem;
 
   --space-1: 4px;
@@ -40,10 +48,37 @@
   --space-12: 48px;
   --space-16: 64px;
 
-  --radius-control: 2px;
-  --radius-sheet: 4px;
-  --token-lift: 0 6px 18px rgb(27 33 48 / 0.09);
+  --radius-control: 6px;
+  --radius-sheet: 10px;
   --fade: 150ms ease-out;
-  --header-height: 56px;
+  --header-height: 60px;
   --content-width: 1120px;
+}
+
+/* Dark: a desk lamp over the same counter. Warm, never blue. */
+:root[data-theme="dark"] {
+  color-scheme: dark;
+  --paper: #1c1916;
+  --paper-line: #25211d;
+  --sheet: #26221e;
+  --rule: #3a342d;
+  --margin-line: #d9705a;
+  --ink: #f1eadf;
+  --ink-soft: #b8ac9d;
+  --stamp: #e88a66;
+  --stamp-strong: #f4a483;
+  --stamp-tint: #3b2a22;
+  --on-stamp: #1c1916;
+
+  --held: #e9b45a;
+  --held-tint: #3a2e17;
+  --confirmed: #7cc48a;
+  --confirmed-tint: #1f3324;
+  --expired: #a79f95;
+  --expired-tint: #2e2a26;
+  --cancelled: #ee8b80;
+  --cancelled-tint: #3b2220;
+  --danger: #ff8a80;
+  --backdrop: rgb(0 0 0 / 0.6);
+  --token-lift: 0 10px 28px rgb(0 0 0 / 0.45);
 }

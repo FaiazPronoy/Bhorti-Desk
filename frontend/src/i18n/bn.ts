@@ -2,7 +2,7 @@ import type { MessageKey } from "./en";
 
 // বাংলা লেখা। Keys must match en.ts exactly; a test checks both ways.
 export const bn: Record<MessageKey, string> = {
-  "site.name": "প্রথম বেঞ্চ",
+  "site.name": "ভর্তি ডেস্ক",
   "site.footerBuiltBy": "তৈরি করেছেন ফাইয়াজ আবরার জামান প্রনয়।",
   "site.skipToContent": "মূল অংশে যান",
 
@@ -13,6 +13,8 @@ export const bn: Record<MessageKey, string> = {
 
   "language.switchTo": "English",
   "language.switchLabel": "সাইটটি ইংরেজিতে দেখুন",
+  "theme.toDark": "ডার্ক মোড চালু করুন",
+  "theme.toLight": "লাইট মোড চালু করুন",
 
   "student.label": "শিক্ষার্থীর জন্ম নিবন্ধন নম্বর",
   "student.placeholder": "17 অঙ্ক",
@@ -93,6 +95,10 @@ export const bn: Record<MessageKey, string> = {
   "office.created": "\"{name}\" ক্লাসে ভর্তি শুরু হয়েছে।",
   "office.liveTable": "সব ক্লাস",
   "office.nameRequired": "ক্লাসের নাম লিখুন।",
+  "office.nameTooShort": "ক্লাসের নাম কমপক্ষে ২ অক্ষরের হতে হবে।",
+  "office.nameNeedsLetter": "ক্লাসের নামে অন্তত একটি অক্ষর থাকতে হবে।",
+  "office.seatsWhole": "সিট সংখ্যা পূর্ণ সংখ্যায় লিখুন, যেমন ৪০।",
+  "office.seatsHint": "১ থেকে ১০০০০০ এর মধ্যে পূর্ণ সংখ্যা।",
   "office.nameTooLong": "ক্লাসের নাম সর্বোচ্চ ১০০ অক্ষরের হতে পারে।",
   "office.seatsRange": "সিট সংখ্যা ১ থেকে ১০০০০০ এর মধ্যে হতে হবে।",
 

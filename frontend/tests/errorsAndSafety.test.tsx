@@ -22,7 +22,7 @@ describe("errors and safety", () => {
   });
 
   it("shows the plain message for CLASS_FULL next to the button", async () => {
-    localStorage.setItem("first-bench.student-id", VALID_STUDENT_ID);
+    localStorage.setItem("bhorti-desk.student-id", VALID_STUDENT_ID);
     mockApi((url, init) => {
       if (url === "/classes") return { status: 200, body: [openClass] };
       if (url === "/me/holds") return { status: 200, body: [] };

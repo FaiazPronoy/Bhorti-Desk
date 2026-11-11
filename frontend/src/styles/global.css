@@ -24,9 +24,12 @@
     -webkit-text-size-adjust: 100%;
   }
 
+  /* A ruled exercise-book page: faint lines every 32 px on kraft paper. */
   body {
     margin: 0;
-    background: var(--paper);
+    background-color: var(--paper);
+    background-image: repeating-linear-gradient(to bottom, transparent 0 31px, var(--paper-line) 31px 32px);
+    background-attachment: fixed;
     font-size: var(--text-17);
     line-height: 1.5;
   }
@@ -39,7 +42,9 @@
   h2,
   h3 {
     margin: 0;
-    line-height: 1.25;
+    font-family: var(--font-display);
+    font-weight: 700;
+    line-height: 1.2;
     text-wrap: balance;
   }
 
@@ -186,8 +191,9 @@
   display: inline-flex;
   align-items: center;
   gap: var(--space-2);
+  font-family: var(--font-display);
   font-weight: 700;
-  font-size: var(--text-20);
+  font-size: var(--text-24);
   color: var(--ink);
   text-decoration: none;
   margin-right: auto;
@@ -241,8 +247,15 @@
   }
 }
 
-.language-toggle {
+.language-toggle,
+.theme-toggle {
   min-height: 44px;
+}
+
+.header-tools {
+  display: flex;
+  align-items: center;
+  gap: var(--space-1);
 }
 
 .site-header__student {
@@ -510,12 +523,13 @@
 
 .button--primary {
   background: var(--stamp);
-  color: var(--sheet);
+  color: var(--on-stamp);
+  box-shadow: inset 0 -2px 0 rgb(0 0 0 / 0.15);
 }
 
 .button--primary:hover:not(:disabled) {
   background: var(--stamp-strong);
-  color: var(--sheet);
+  color: var(--on-stamp);
 }
 
 .button--primary:disabled {
@@ -552,6 +566,10 @@
 .button--danger {
   background: var(--cancelled);
   color: var(--sheet);
+}
+
+:root[data-theme="dark"] .button--danger {
+  color: var(--paper);
 }
 
 .button--danger:hover:not(:disabled) {
@@ -950,6 +968,7 @@
 
 .countdown {
   font-family: var(--font-mono);
+  letter-spacing: -0.02em;
   font-variant-numeric: tabular-nums;
   font-size: var(--text-56);
   font-weight: 700;
@@ -1033,11 +1052,13 @@
 
 /* ---------------------------------------------------------------- status stamp */
 
+/* Drawn like a rubber stamp: a double ring of ink. */
 .stamp {
   display: inline-block;
   padding: var(--space-1) var(--space-3);
-  border: 2px solid currentColor;
-  border-radius: var(--radius-control);
+  border: 3px double currentColor;
+  border-radius: 4px;
+  font-family: var(--font-display);
   font-weight: 700;
   font-size: var(--text-15);
   letter-spacing: 0.02em;
@@ -1136,7 +1157,7 @@
   display: grid;
   place-items: center;
   padding: var(--space-4);
-  background: rgb(27 33 48 / 0.45);
+  background: var(--backdrop);
 }
 
 .dialog {

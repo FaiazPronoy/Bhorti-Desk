@@ -1,7 +1,7 @@
 import { createContext, createElement, useCallback, useContext, useMemo, useRef, useState, type ReactNode, type RefObject } from "react";
 import { useQueryClient } from "@tanstack/react-query";
 
-const STORAGE_KEY = "first-bench.student-id";
+const STORAGE_KEY = "bhorti-desk.student-id";
 
 interface StudentIdContextValue {
   studentId: string | null;
