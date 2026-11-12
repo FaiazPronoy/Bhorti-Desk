@@ -1,8 +1,10 @@
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.RateLimiting;
 using SchoolAdmission.Api.Auth;
 using SchoolAdmission.Api.Contracts;
 using SchoolAdmission.Api.Domain;
 using SchoolAdmission.Api.Errors;
+using SchoolAdmission.Api.Security;
 using SchoolAdmission.Api.Services;
 
 namespace SchoolAdmission.Api.Controllers;
@@ -20,6 +22,7 @@ public class SeatHoldsController(SeatHoldService holdService, StudentService stu
 
     // 6. POST /holds/{holdId}/confirm, with X-Student-Id. This is the "pay the fee" step.
     [HttpPost("{holdId}/confirm")]
+    [EnableRateLimiting(RateLimits.Apply)]
     public async Task<SeatHoldConfirmedResponse> Confirm(string holdId)
     {
         var studentId = StudentIdHeader.Read(Request);
@@ -29,6 +32,7 @@ public class SeatHoldsController(SeatHoldService holdService, StudentService stu
 
     // 7. DELETE /holds/{holdId}, with X-Student-Id.
     [HttpDelete("{holdId}")]
+    [EnableRateLimiting(RateLimits.Apply)]
     public async Task<IActionResult> Cancel(string holdId)
     {
         var studentId = StudentIdHeader.Read(Request);

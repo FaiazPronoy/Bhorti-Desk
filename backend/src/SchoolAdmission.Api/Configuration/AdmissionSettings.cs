@@ -8,6 +8,11 @@ public class AdmissionSettings
     public required int HoldDurationSeconds { get; init; }
     public required string[] CorsAllowedOrigins { get; init; }
 
+    // Anti-abuse limits. Tests turn some of them off to measure seats alone.
+    public int MaxActiveHoldsPerGuardian { get; init; } = 3;
+    public int HoldCooldownSeconds { get; init; } = 600;
+    public bool RateLimitsEnabled { get; init; } = true;
+
     // First admin account, created at start when there is no staff yet.
     public string? AdminEmail { get; init; }
     public string? AdminPassword { get; init; }
@@ -59,6 +64,9 @@ public class AdmissionSettings
             ConnectionString = connectionString,
             HoldDurationSeconds = holdSeconds,
             CorsAllowedOrigins = origins,
+            MaxActiveHoldsPerGuardian = PositiveOr(configuration["MAX_ACTIVE_HOLDS_PER_GUARDIAN"], 3, allowZero: false),
+            HoldCooldownSeconds = PositiveOr(configuration["HOLD_COOLDOWN_SECONDS"], 600, allowZero: true),
+            RateLimitsEnabled = !IsFalse(configuration["RATE_LIMITS_ENABLED"]),
             AdminEmail = configuration["ADMIN_EMAIL"]?.Trim(),
             AdminPassword = configuration["ADMIN_PASSWORD"],
             LogOtpCodes = IsTrue(configuration["OTP_LOG_CODES"]),
@@ -71,6 +79,9 @@ public class AdmissionSettings
         }
         return settings;
     }
+
+    private static int PositiveOr(string? value, int fallback, bool allowZero) =>
+        int.TryParse(value, out var parsed) && (parsed > 0 || (allowZero && parsed == 0)) ? parsed : fallback;
 
     private static bool IsTrue(string? value) => value?.Trim().ToLowerInvariant() is "true" or "1" or "yes";
     private static bool IsFalse(string? value) => value?.Trim().ToLowerInvariant() is "false" or "0" or "no";

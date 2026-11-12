@@ -14,13 +14,19 @@ public class AdmissionApiFactory : WebApplicationFactory<Program>
     private readonly int holdSeconds;
     private readonly string? adminEmail;
     private readonly string? adminPassword;
+    private readonly int cooldownSeconds;
+    private readonly bool rateLimits;
 
     public string ConnectionString { get; }
 
     // Pass a connection string to put a second API process on the same database.
     public AdmissionApiFactory(int holdSeconds = 600, string? connectionString = null,
-        string? adminEmail = null, string? adminPassword = null)
+        string? adminEmail = null, string? adminPassword = null, int cooldownSeconds = 0, bool rateLimits = false)
     {
+        // Off by default: the seat tests send hundreds of requests from one address and
+        // re-apply right after an expiry. The anti-abuse tests switch them on.
+        this.cooldownSeconds = cooldownSeconds;
+        this.rateLimits = rateLimits;
         this.holdSeconds = holdSeconds;
         this.adminEmail = adminEmail;
         this.adminPassword = adminPassword;
@@ -58,6 +64,8 @@ public class AdmissionApiFactory : WebApplicationFactory<Program>
         builder.UseSetting("HOLD_DURATION_SECONDS", holdSeconds.ToString());
         builder.UseSetting("CORS_ALLOWED_ORIGINS", "*");
         builder.UseSetting("COOKIE_SECURE", "false");
+        builder.UseSetting("HOLD_COOLDOWN_SECONDS", cooldownSeconds.ToString());
+        builder.UseSetting("RATE_LIMITS_ENABLED", rateLimits ? "true" : "false");
         if (adminEmail is not null) builder.UseSetting("ADMIN_EMAIL", adminEmail);
         if (adminPassword is not null) builder.UseSetting("ADMIN_PASSWORD", adminPassword);
         builder.ConfigureTestServices(services => services.AddSingleton<ISmsSender>(Sms));

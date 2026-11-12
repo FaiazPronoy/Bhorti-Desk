@@ -49,6 +49,9 @@ const messageByCode: Record<string, MessageKey> = {
   LOGIN_FAILED: "error.loginFailed",
   STUDENT_NOT_YOURS: "error.studentNotYours",
   STUDENT_TAKEN: "error.studentTaken",
+  RATE_LIMITED: "error.rateLimited",
+  TOO_MANY_HOLDS: "error.tooManyHolds",
+  APPLY_COOLDOWN: "error.applyCooldown",
 };
 
 // The plain words to show for an error, as a dictionary key.

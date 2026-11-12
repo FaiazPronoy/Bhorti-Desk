@@ -128,6 +128,9 @@ export const en = {
   "common.loading": "Loading…",
   "common.close": "Close",
 
+  "error.rateLimited": "Too many tries in a short time. Wait a little and try again.",
+  "error.tooManyHolds": "Your family already has 3 unpaid seats on hold. Pay for one or cancel one first.",
+  "error.applyCooldown": "Your last hold in this class ran out without payment. Please try again in a few minutes.",
   "error.signInRequired": "Please sign in first.",
   "error.notAllowed": "Your account cannot do this.",
   "error.phoneInvalid": "Enter an 11 digit mobile number, like 01712345678.",

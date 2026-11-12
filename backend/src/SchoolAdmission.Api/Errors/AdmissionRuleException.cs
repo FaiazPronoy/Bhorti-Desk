@@ -70,4 +70,15 @@ public class AdmissionRuleException(int statusCode, string code, string message,
     public static AdmissionRuleException StudentTaken() =>
         new(StatusCodes.Status409Conflict, ApiErrorCode.StudentTaken,
             "This birth registration number is already on another account. Contact the school office if this is your child.");
+
+    public static AdmissionRuleException TooManyHolds(int limit) =>
+        new(StatusCodes.Status409Conflict, ApiErrorCode.TooManyHolds,
+            $"Your family already has {limit} unpaid seats on hold. Pay for one or cancel one first.");
+
+    public static AdmissionRuleException Cooldown(int seconds) =>
+        new(StatusCodes.Status409Conflict, ApiErrorCode.Cooldown,
+            $"Your last hold in this class ran out without payment. You can apply again in {Math.Max(1, (seconds + 59) / 60)} minutes.")
+        { RetryAfterSeconds = seconds };
+
+    public int? RetryAfterSeconds { get; init; }
 }

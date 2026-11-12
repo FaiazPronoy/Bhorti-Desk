@@ -1,8 +1,10 @@
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.RateLimiting;
 using SchoolAdmission.Api.Auth;
 using SchoolAdmission.Api.Contracts;
 using SchoolAdmission.Api.Domain;
 using SchoolAdmission.Api.Errors;
+using SchoolAdmission.Api.Security;
 using SchoolAdmission.Api.Services;
 
 namespace SchoolAdmission.Api.Controllers;
@@ -75,6 +77,7 @@ public class AdmissionClassesController(AdmissionClassService classService, Seat
 
     // 4. POST /classes/{classId}/holds, with the X-Student-Id header. No request body.
     [HttpPost("{classId}/holds")]
+    [EnableRateLimiting(RateLimits.Apply)]
     public async Task<ActionResult<SeatHoldCreatedResponse>> CreateHold(string classId)
     {
         var studentId = StudentIdHeader.Read(Request);

@@ -30,4 +30,7 @@ public static class ApiErrorCode
     public const string LoginFailed = "LOGIN_FAILED";
     public const string StudentNotYours = "STUDENT_NOT_YOURS";
     public const string StudentTaken = "STUDENT_TAKEN";
+    public const string RateLimited = "RATE_LIMITED";
+    public const string TooManyHolds = "TOO_MANY_HOLDS";
+    public const string Cooldown = "APPLY_COOLDOWN";
 }

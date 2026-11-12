@@ -8,6 +8,7 @@ using SchoolAdmission.Api.Configuration;
 using SchoolAdmission.Api.Contracts;
 using SchoolAdmission.Api.Data;
 using SchoolAdmission.Api.Domain;
+using SchoolAdmission.Api.Security;
 using SchoolAdmission.Api.Errors;
 using SchoolAdmission.Api.Services;
 
@@ -28,6 +29,7 @@ builder.Services.AddScoped<SeatHoldService>();
 builder.Services.AddScoped<AuthService>();
 builder.Services.AddScoped<StudentService>();
 builder.Services.AddSingleton<ISmsSender, NoSmsSender>();
+RateLimits.Add(builder.Services, settings);
 
 builder.WebHost.ConfigureKestrel(options =>
 {
@@ -88,6 +90,9 @@ using (var scope = app.Services.CreateScope())
 
 // CORS first, so every response carries CORS headers, errors included. Otherwise the
 // browser reports a plain "class full" answer as a network error.
+// The real client address from nginx, before anything uses it.
+app.UseForwardedHeaders();
+
 app.UseCors();
 
 // Last resort for anything that escapes the MVC filter.
@@ -121,6 +126,8 @@ app.Use(async (context, next) =>
 });
 
 app.UseMiddleware<SessionCookie>();
+// After the session is known, so a signed-in person is limited as themselves.
+app.UseRateLimiter();
 
 app.MapControllers();
 

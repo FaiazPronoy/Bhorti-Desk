@@ -1,4 +1,5 @@
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.RateLimiting;
 using SchoolAdmission.Api.Auth;
 using SchoolAdmission.Api.Configuration;
 using SchoolAdmission.Api.Contracts;
@@ -14,6 +15,7 @@ public class AuthController(AuthService auth, AdmissionSettings settings) : Cont
 {
     // Always the same answer for a valid number, whether or not it has an account.
     [HttpPost("otp/request")]
+    [EnableRateLimiting(RateLimits.SignIn)]
     public async Task<IActionResult> RequestOtp([FromBody] RequestOtpRequest? request)
     {
         await auth.RequestOtpAsync(request?.Phone);
@@ -21,6 +23,7 @@ public class AuthController(AuthService auth, AdmissionSettings settings) : Cont
     }
 
     [HttpPost("otp/verify")]
+    [EnableRateLimiting(RateLimits.SignIn)]
     public async Task<MeResponse> VerifyOtp([FromBody] VerifyOtpRequest? request)
     {
         var token = await auth.VerifyOtpAsync(request?.Phone, request?.Code);
@@ -28,6 +31,7 @@ public class AuthController(AuthService auth, AdmissionSettings settings) : Cont
     }
 
     [HttpPost("staff/login")]
+    [EnableRateLimiting(RateLimits.SignIn)]
     public async Task<MeResponse> StaffLogin([FromBody] StaffLoginRequest? request)
     {
         var token = await auth.StaffLoginAsync(request?.Email, request?.Password);
