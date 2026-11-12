@@ -1,4 +1,5 @@
 using Microsoft.AspNetCore.Mvc;
+using SchoolAdmission.Api.Auth;
 using SchoolAdmission.Api.Contracts;
 using SchoolAdmission.Api.Domain;
 using SchoolAdmission.Api.Errors;
@@ -8,7 +9,7 @@ namespace SchoolAdmission.Api.Controllers;
 
 [ApiController]
 [Route("holds")]
-public class SeatHoldsController(SeatHoldService holdService) : ControllerBase
+public class SeatHoldsController(SeatHoldService holdService, StudentService students) : ControllerBase
 {
     // 5. GET /holds/{holdId}. No header, as in the assignment.
     [HttpGet("{holdId}")]
@@ -22,6 +23,7 @@ public class SeatHoldsController(SeatHoldService holdService) : ControllerBase
     public async Task<SeatHoldConfirmedResponse> Confirm(string holdId)
     {
         var studentId = StudentIdHeader.Read(Request);
+        await StudentAccess.RequireOwnAsync(HttpContext, students, studentId);
         return await holdService.ConfirmAsync(ParseHoldId(holdId), studentId);
     }
 
@@ -30,6 +32,7 @@ public class SeatHoldsController(SeatHoldService holdService) : ControllerBase
     public async Task<IActionResult> Cancel(string holdId)
     {
         var studentId = StudentIdHeader.Read(Request);
+        await StudentAccess.RequireOwnAsync(HttpContext, students, studentId);
         await holdService.CancelAsync(ParseHoldId(holdId), studentId);
         return NoContent();
     }

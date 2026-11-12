@@ -12,5 +12,5 @@ FROM nginxinc/nginx-unprivileged:1.31-alpine
 # and writes the result to /etc/nginx/conf.d.
 COPY nginx/default.conf.template /etc/nginx/templates/default.conf.template
 COPY --from=build /app/dist /usr/share/nginx/html
-ENV API_BASE_URL=http://localhost:8080
+ENV API_BASE_URL=/api
 EXPOSE 8080

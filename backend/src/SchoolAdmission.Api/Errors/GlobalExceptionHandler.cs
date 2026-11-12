@@ -30,6 +30,14 @@ public class GlobalExceptionHandler(ILogger<GlobalExceptionHandler> logger) : IE
                 };
                 break;
 
+            case FieldValidationException fields:
+                context.Result = new ObjectResult(new ApiErrorResponse(ApiErrorCode.InvalidRequest,
+                    "Some information is not correct.", fields.FieldErrors))
+                {
+                    StatusCode = StatusCodes.Status400BadRequest,
+                };
+                break;
+
             // Kestrel throws this for a body that is too large or cut off.
             case BadHttpRequestException badRequest:
                 logger.LogInformation("{StatusCode} INVALID_REQUEST: {Message}", badRequest.StatusCode, badRequest.Message);

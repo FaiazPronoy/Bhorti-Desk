@@ -11,7 +11,7 @@ public class SeatHoldCancelTests
     public async Task Cancel_returns_the_seat_and_repeat_cancel_is_fine()
     {
         await using var api = new AdmissionApiFactory();
-        var client = api.CreateClient();
+        var client = api.CreateSignedInClient();
         var classId = await ApiCalls.CreateClassAsync(client, 1);
         var student = ApiCalls.NewStudentId();
         var holdId = await ApiCalls.ApplyAndGetHoldIdAsync(client, classId, student);
@@ -33,7 +33,7 @@ public class SeatHoldCancelTests
     public async Task Confirmed_hold_cannot_be_cancelled()
     {
         await using var api = new AdmissionApiFactory();
-        var client = api.CreateClient();
+        var client = api.CreateSignedInClient();
         var classId = await ApiCalls.CreateClassAsync(client, 2);
         var student = ApiCalls.NewStudentId();
         var holdId = await ApiCalls.ApplyAndGetHoldIdAsync(client, classId, student);
@@ -51,7 +51,7 @@ public class SeatHoldCancelTests
     public async Task Applying_again_while_holding_points_to_the_existing_hold()
     {
         await using var api = new AdmissionApiFactory();
-        var client = api.CreateClient();
+        var client = api.CreateSignedInClient();
         // One seat, so the class is full too. The student should still hear about their own hold.
         var classId = await ApiCalls.CreateClassAsync(client, 1);
         var student = ApiCalls.NewStudentId();

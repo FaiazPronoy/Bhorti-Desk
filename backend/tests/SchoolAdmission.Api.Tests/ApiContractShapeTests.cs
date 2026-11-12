@@ -33,7 +33,7 @@ public partial class ApiContractShapeTests
     public async Task Responses_match_the_contract()
     {
         await using var api = new AdmissionApiFactory();
-        var client = api.CreateClient();
+        var client = api.CreateSignedInClient();
         var student = ApiCalls.NewStudentId();
 
         // 1. POST /classes
@@ -108,7 +108,7 @@ public partial class ApiContractShapeTests
     public async Task Errors_have_the_same_shape_everywhere()
     {
         await using var api = new AdmissionApiFactory();
-        var client = api.CreateClient();
+        var client = api.CreateSignedInClient();
 
         var notFound = await client.GetAsync($"/classes/{Guid.NewGuid()}");
         Assert.Equal(HttpStatusCode.NotFound, notFound.StatusCode);
@@ -132,7 +132,7 @@ public partial class ApiContractShapeTests
     public async Task Browser_from_another_origin_can_read_the_answers()
     {
         await using var api = new AdmissionApiFactory();
-        var client = api.CreateClient();
+        var client = api.CreateSignedInClient();
 
         var preflight = new HttpRequestMessage(HttpMethod.Options, "/classes/x/holds");
         preflight.Headers.Add("Origin", "http://localhost:3000");

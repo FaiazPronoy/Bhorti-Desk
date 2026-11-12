@@ -11,8 +11,8 @@ public class TwoBackendInstancesTests
         // database. Nothing is kept in memory, so the row lock is the only guard.
         await using var first = new AdmissionApiFactory();
         await using var second = new AdmissionApiFactory(connectionString: first.ConnectionString);
-        var firstClient = first.CreateClient();
-        var secondClient = second.CreateClient();
+        var firstClient = first.CreateSignedInClient();
+        var secondClient = second.CreateSignedInClient();
 
         const int totalSeats = 7;
         var classId = await ApiCalls.CreateClassAsync(firstClient, totalSeats);

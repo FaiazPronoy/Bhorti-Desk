@@ -39,4 +39,35 @@ public class AdmissionRuleException(int statusCode, string code, string message,
     public static AdmissionRuleException ServerBusy() =>
         new(StatusCodes.Status503ServiceUnavailable, ApiErrorCode.ServerBusy,
             "Too many requests are waiting for this class. Try again in a moment.");
+
+    public static AdmissionRuleException SignInRequired() =>
+        new(StatusCodes.Status401Unauthorized, ApiErrorCode.SignInRequired, "Sign in first.");
+
+    public static AdmissionRuleException NotAllowed() =>
+        new(StatusCodes.Status403Forbidden, ApiErrorCode.NotAllowed, "Your account cannot do this.");
+
+    public static AdmissionRuleException CsrfRequired() =>
+        new(StatusCodes.Status403Forbidden, ApiErrorCode.CsrfRequired, "This request did not come from the Bhorti Desk app.");
+
+    public static AdmissionRuleException PhoneInvalid() =>
+        new(StatusCodes.Status400BadRequest, ApiErrorCode.PhoneInvalid, "Enter an 11 digit Bangladeshi mobile number, like 01712345678.");
+
+    public static AdmissionRuleException OtpWrong() =>
+        new(StatusCodes.Status400BadRequest, ApiErrorCode.OtpWrong, "The code is wrong or has expired. Ask for a new one.");
+
+    public static AdmissionRuleException OtpTooSoon() =>
+        new(StatusCodes.Status429TooManyRequests, ApiErrorCode.OtpTooSoon, "A code was sent just now. Wait a minute before asking again.");
+
+    public static AdmissionRuleException OtpTooMany() =>
+        new(StatusCodes.Status429TooManyRequests, ApiErrorCode.OtpTooMany, "Too many codes for this number. Try again in an hour.");
+
+    public static AdmissionRuleException LoginFailed() =>
+        new(StatusCodes.Status401Unauthorized, ApiErrorCode.LoginFailed, "The email or password is wrong.");
+
+    public static AdmissionRuleException StudentNotYours() =>
+        new(StatusCodes.Status403Forbidden, ApiErrorCode.StudentNotYours, "This student is not on your account. Add the student first.");
+
+    public static AdmissionRuleException StudentTaken() =>
+        new(StatusCodes.Status409Conflict, ApiErrorCode.StudentTaken,
+            "This birth registration number is already on another account. Contact the school office if this is your child.");
 }

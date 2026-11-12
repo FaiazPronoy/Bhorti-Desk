@@ -8,6 +8,16 @@ public class AdmissionSettings
     public required int HoldDurationSeconds { get; init; }
     public required string[] CorsAllowedOrigins { get; init; }
 
+    // First admin account, created at start when there is no staff yet.
+    public string? AdminEmail { get; init; }
+    public string? AdminPassword { get; init; }
+
+    // Without an SMS provider the one-time code is written to the log. Only for local use.
+    public bool LogOtpCodes { get; init; }
+
+    // Off only for plain http on localhost. Behind HTTPS it must be on.
+    public bool SecureCookies { get; init; } = true;
+
     // Problems found while reading the settings. Logged once the app has a logger.
     public List<string> Warnings { get; } = new();
 
@@ -49,8 +59,19 @@ public class AdmissionSettings
             ConnectionString = connectionString,
             HoldDurationSeconds = holdSeconds,
             CorsAllowedOrigins = origins,
+            AdminEmail = configuration["ADMIN_EMAIL"]?.Trim(),
+            AdminPassword = configuration["ADMIN_PASSWORD"],
+            LogOtpCodes = IsTrue(configuration["OTP_LOG_CODES"]),
+            SecureCookies = !IsFalse(configuration["COOKIE_SECURE"]),
         };
         settings.Warnings.AddRange(warnings);
+        if (settings.LogOtpCodes)
+        {
+            settings.Warnings.Add("OTP_LOG_CODES is on: sign-in codes are written to the log. Never use this in production.");
+        }
         return settings;
     }
+
+    private static bool IsTrue(string? value) => value?.Trim().ToLowerInvariant() is "true" or "1" or "yes";
+    private static bool IsFalse(string? value) => value?.Trim().ToLowerInvariant() is "false" or "0" or "no";
 }

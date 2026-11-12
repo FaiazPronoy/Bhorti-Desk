@@ -11,7 +11,7 @@ public class SeatHoldConcurrencyTests
     public async Task Many_students_apply_at_once_and_holds_never_exceed_seats(int totalSeats)
     {
         await using var api = new AdmissionApiFactory();
-        var client = api.CreateClient();
+        var client = api.CreateSignedInClient();
 
         // Five rounds, each on a new class, so a lucky run cannot hide a race.
         for (var round = 1; round <= 5; round++)
@@ -37,7 +37,7 @@ public class SeatHoldConcurrencyTests
     public async Task Same_student_applying_twice_at_once_gets_one_hold()
     {
         await using var api = new AdmissionApiFactory();
-        var client = api.CreateClient();
+        var client = api.CreateSignedInClient();
         var classId = await ApiCalls.CreateClassAsync(client, 50);
         var studentId = ApiCalls.NewStudentId();
 
@@ -59,7 +59,7 @@ public class SeatHoldConcurrencyTests
     public async Task Mixed_actions_never_exceed_seats()
     {
         await using var api = new AdmissionApiFactory();
-        var client = api.CreateClient();
+        var client = api.CreateSignedInClient();
         const int totalSeats = 5;
         var classId = await ApiCalls.CreateClassAsync(client, totalSeats);
 

@@ -11,7 +11,7 @@ public class SeatHoldConfirmTests
     public async Task Confirm_twice_counts_one_confirmed_seat()
     {
         await using var api = new AdmissionApiFactory();
-        var client = api.CreateClient();
+        var client = api.CreateSignedInClient();
         var classId = await ApiCalls.CreateClassAsync(client, 3);
         var student = ApiCalls.NewStudentId();
         var holdId = await ApiCalls.ApplyAndGetHoldIdAsync(client, classId, student);
@@ -39,7 +39,7 @@ public class SeatHoldConfirmTests
     public async Task Another_student_cannot_confirm_or_cancel_my_hold()
     {
         await using var api = new AdmissionApiFactory();
-        var client = api.CreateClient();
+        var client = api.CreateSignedInClient();
         var classId = await ApiCalls.CreateClassAsync(client, 3);
         var owner = ApiCalls.NewStudentId();
         var stranger = ApiCalls.NewStudentId();
@@ -61,7 +61,7 @@ public class SeatHoldConfirmTests
     public async Task Unknown_hold_is_not_found_before_ownership_is_checked()
     {
         await using var api = new AdmissionApiFactory();
-        var client = api.CreateClient();
+        var client = api.CreateSignedInClient();
         var missing = Guid.NewGuid().ToString();
 
         var confirm = await ApiCalls.ConfirmAsync(client, missing, ApiCalls.NewStudentId());
@@ -77,7 +77,7 @@ public class SeatHoldConfirmTests
     public async Task Cancelled_hold_cannot_be_confirmed()
     {
         await using var api = new AdmissionApiFactory();
-        var client = api.CreateClient();
+        var client = api.CreateSignedInClient();
         var classId = await ApiCalls.CreateClassAsync(client, 2);
         var student = ApiCalls.NewStudentId();
         var holdId = await ApiCalls.ApplyAndGetHoldIdAsync(client, classId, student);

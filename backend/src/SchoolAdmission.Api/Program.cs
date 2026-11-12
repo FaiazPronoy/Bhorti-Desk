@@ -3,6 +3,7 @@
 using Dapper;
 using Microsoft.AspNetCore.Mvc;
 using Npgsql;
+using SchoolAdmission.Api.Auth;
 using SchoolAdmission.Api.Configuration;
 using SchoolAdmission.Api.Contracts;
 using SchoolAdmission.Api.Data;
@@ -24,6 +25,9 @@ builder.Services.AddSingleton(_ => NpgsqlDataSource.Create(settings.ConnectionSt
 builder.Services.AddSingleton<AdmissionDatabase>();
 builder.Services.AddScoped<AdmissionClassService>();
 builder.Services.AddScoped<SeatHoldService>();
+builder.Services.AddScoped<AuthService>();
+builder.Services.AddScoped<StudentService>();
+builder.Services.AddSingleton<ISmsSender, NoSmsSender>();
 
 builder.WebHost.ConfigureKestrel(options =>
 {
@@ -41,9 +45,10 @@ builder.Services.AddCors(options => options.AddDefaultPolicy(policy =>
     {
         policy.WithOrigins(settings.CorsAllowedOrigins);
     }
-    // No cookies are used anywhere, so allowing any origin does not expose a session.
+    // Credentials are never allowed cross-origin: the web app reaches the API through its
+    // own nginx at the same origin, so the session cookie never needs CORS.
     policy.WithMethods("GET", "POST", "DELETE")
-          .WithHeaders("Content-Type", StudentIdHeader.HeaderName)
+          .WithHeaders("Content-Type", StudentIdHeader.HeaderName, SessionCookie.CsrfHeader)
           .WithExposedHeaders("Retry-After");
 }));
 
@@ -76,6 +81,10 @@ foreach (var warning in settings.Warnings)
 // The tables exist before port 8080 answers anything.
 var dataSource = app.Services.GetRequiredService<NpgsqlDataSource>();
 await DatabaseSchemaInitializer.RunAsync(dataSource, app.Logger);
+using (var scope = app.Services.CreateScope())
+{
+    await scope.ServiceProvider.GetRequiredService<AuthService>().EnsureFirstAdminAsync();
+}
 
 // CORS first, so every response carries CORS headers, errors included. Otherwise the
 // browser reports a plain "class full" answer as a network error.
@@ -110,6 +119,8 @@ app.Use(async (context, next) =>
     context.Response.Headers.XContentTypeOptions = "nosniff";
     await next();
 });
+
+app.UseMiddleware<SessionCookie>();
 
 app.MapControllers();
 

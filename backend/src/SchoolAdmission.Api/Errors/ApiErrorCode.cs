@@ -18,4 +18,16 @@ public static class ApiErrorCode
     public const string MethodNotAllowed = "METHOD_NOT_ALLOWED";
     public const string ServerBusy = "SERVER_BUSY";
     public const string InternalError = "INTERNAL_ERROR";
+
+    // Accounts and sign-in.
+    public const string SignInRequired = "SIGN_IN_REQUIRED";
+    public const string NotAllowed = "NOT_ALLOWED";
+    public const string CsrfRequired = "CSRF_REQUIRED";
+    public const string PhoneInvalid = "PHONE_INVALID";
+    public const string OtpWrong = "OTP_WRONG";
+    public const string OtpTooSoon = "OTP_TOO_SOON";
+    public const string OtpTooMany = "OTP_TOO_MANY";
+    public const string LoginFailed = "LOGIN_FAILED";
+    public const string StudentNotYours = "STUDENT_NOT_YOURS";
+    public const string StudentTaken = "STUDENT_TAKEN";
 }

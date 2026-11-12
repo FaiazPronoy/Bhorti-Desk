@@ -1,4 +1,5 @@
 using Microsoft.AspNetCore.Mvc;
+using SchoolAdmission.Api.Auth;
 using SchoolAdmission.Api.Contracts;
 using SchoolAdmission.Api.Domain;
 using SchoolAdmission.Api.Errors;
@@ -8,7 +9,7 @@ namespace SchoolAdmission.Api.Controllers;
 
 [ApiController]
 [Route("classes")]
-public class AdmissionClassesController(AdmissionClassService classService, SeatHoldService holdService) : ControllerBase
+public class AdmissionClassesController(AdmissionClassService classService, SeatHoldService holdService, StudentService students) : ControllerBase
 {
     private const int MaxNameLength = 100;
     private const int MaxSeats = 100_000;
@@ -17,6 +18,8 @@ public class AdmissionClassesController(AdmissionClassService classService, Seat
     [HttpPost]
     public async Task<ActionResult<AdmissionClassResponse>> Create([FromBody] CreateAdmissionClassRequest? request)
     {
+        // Only the school office opens classes.
+        Access.Staff(HttpContext);
         // A body of just "null" (or nothing) reaches here as null. Treat it as an empty form.
         request ??= new CreateAdmissionClassRequest(null, null);
         var fieldErrors = new Dictionary<string, string>();
@@ -75,6 +78,7 @@ public class AdmissionClassesController(AdmissionClassService classService, Seat
     public async Task<ActionResult<SeatHoldCreatedResponse>> CreateHold(string classId)
     {
         var studentId = StudentIdHeader.Read(Request);
+        await StudentAccess.RequireOwnAsync(HttpContext, students, studentId);
         var created = await holdService.CreateHoldAsync(ParseClassId(classId), studentId);
         return Created($"/holds/{created.HoldId}", created);
     }
