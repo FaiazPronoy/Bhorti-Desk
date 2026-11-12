@@ -1362,3 +1362,19 @@
     transform: none;
   }
 }
+
+/* ---------------------------------------------------------------- account */
+
+/* Student names in the picker are words, not digits, so they use the text font. */
+.student-bar__select,
+.field__select {
+  font-family: var(--font-text);
+  font-size: var(--text-17);
+  letter-spacing: normal;
+  background: var(--sheet);
+  color: var(--ink);
+}
+
+.student-bar--loading {
+  min-height: 60px;
+}

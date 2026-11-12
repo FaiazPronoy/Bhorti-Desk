@@ -40,6 +40,15 @@ const messageByCode: Record<string, MessageKey> = {
   NOT_FOUND: "error.notFound",
   SERVER_BUSY: "error.serverBusy",
   NETWORK: "error.network",
+  SIGN_IN_REQUIRED: "error.signInRequired",
+  NOT_ALLOWED: "error.notAllowed",
+  PHONE_INVALID: "error.phoneInvalid",
+  OTP_WRONG: "error.otpWrong",
+  OTP_TOO_SOON: "error.otpTooSoon",
+  OTP_TOO_MANY: "error.otpTooMany",
+  LOGIN_FAILED: "error.loginFailed",
+  STUDENT_NOT_YOURS: "error.studentNotYours",
+  STUDENT_TAKEN: "error.studentTaken",
 };
 
 // The plain words to show for an error, as a dictionary key.

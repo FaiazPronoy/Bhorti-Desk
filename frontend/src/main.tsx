@@ -3,7 +3,6 @@ import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
 import { createBrowserRouter, RouterProvider } from "react-router";
 import { isApiError } from "./api/apiErrors";
-import { StudentIdProvider } from "./features/student-identity/useStudentId";
 import { LanguageProvider } from "./i18n/LanguageProvider";
 import { routes } from "./routes";
 import { applyTheme, startingTheme } from "./components/ThemeToggle";
@@ -39,9 +38,7 @@ createRoot(document.getElementById("root")!).render(
   <StrictMode>
     <QueryClientProvider client={queryClient}>
       <LanguageProvider>
-        <StudentIdProvider>
-          <RouterProvider router={router} />
-        </StudentIdProvider>
+        <RouterProvider router={router} />
       </LanguageProvider>
     </QueryClientProvider>
   </StrictMode>,

@@ -55,3 +55,26 @@ export interface ApiErrorBody {
   fieldErrors?: Record<string, string>;
   holdId?: string;
 }
+
+export interface Me {
+  kind: "GUARDIAN" | "STAFF";
+  id: string;
+  role: "ADMIN" | "OFFICER" | null;
+}
+
+export type Gender = "MALE" | "FEMALE" | "OTHER";
+
+export interface Student {
+  id: string;
+  birthRegistrationNumber: string;
+  fullName: string;
+  dateOfBirth: string;
+  gender: Gender;
+}
+
+export interface NewStudent {
+  birthRegistrationNumber: string;
+  fullName: string;
+  dateOfBirth: string;
+  gender: Gender | "";
+}

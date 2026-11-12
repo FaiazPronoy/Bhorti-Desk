@@ -1,13 +1,13 @@
 import { act, screen } from "@testing-library/react";
 import { describe, expect, it, vi } from "vitest";
 import { formatCountdown, secondsLeft } from "../src/features/applications/holdStatus";
-import { mockApi, renderApp, VALID_STUDENT_ID } from "./renderApp";
+import { asGuardian, mockApi, renderApp } from "./renderApp";
 
 // Whole seconds, like the API sends them.
 const isoInSeconds = (ms: number) => new Date(ms).toISOString().replace(/\.\d+Z$/, "Z");
 
 function holdApi(expiresAt: string, serverTime: string) {
-  return mockApi((url) => {
+  return mockApi(asGuardian((url) => {
     if (url === "/holds/h1") {
       // The server keeps saying HELD for a moment after the time passes, as it may
       // between polls. The page must not believe it.
@@ -17,7 +17,7 @@ function holdApi(expiresAt: string, serverTime: string) {
       return { status: 200, body: [{ id: "c1", name: "Class 6", totalSeats: 1, heldSeats: 1, confirmedSeats: 0, availableSeats: 0 }] };
     }
     if (url === "/me/holds") return { status: 200, body: [] };
-  });
+  }));
 }
 
 describe("countdown", () => {
@@ -29,7 +29,6 @@ describe("countdown", () => {
 
   it("reaches zero, shows EXPIRED and disables the pay button without a reload", async () => {
     vi.useFakeTimers({ shouldAdvanceTime: true });
-    localStorage.setItem("bhorti-desk.student-id", VALID_STUDENT_ID);
     const start = Date.now();
     holdApi(isoInSeconds(start + 3000), isoInSeconds(start));
 

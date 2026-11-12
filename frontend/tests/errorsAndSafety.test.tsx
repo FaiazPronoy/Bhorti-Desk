@@ -1,7 +1,7 @@
 import { screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { describe, expect, it } from "vitest";
-import { mockApi, renderApp, VALID_STUDENT_ID } from "./renderApp";
+import { asGuardian, mockApi, renderApp } from "./renderApp";
 
 const fullClass = { id: "c1", name: "Class 6", totalSeats: 2, heldSeats: 1, confirmedSeats: 1, availableSeats: 0 };
 const openClass = { id: "c2", name: "Class 7", totalSeats: 2, heldSeats: 0, confirmedSeats: 0, availableSeats: 2 };
@@ -22,14 +22,13 @@ describe("errors and safety", () => {
   });
 
   it("shows the plain message for CLASS_FULL next to the button", async () => {
-    localStorage.setItem("bhorti-desk.student-id", VALID_STUDENT_ID);
-    mockApi((url, init) => {
+    mockApi(asGuardian((url, init) => {
       if (url === "/classes") return { status: 200, body: [openClass] };
       if (url === "/me/holds") return { status: 200, body: [] };
       if (url === "/classes/c2/holds" && init.method === "POST") {
         return { status: 409, body: { code: "CLASS_FULL", message: "No seats are left in this class." } };
       }
-    });
+    }));
     const user = userEvent.setup();
     renderApp("/");
 
