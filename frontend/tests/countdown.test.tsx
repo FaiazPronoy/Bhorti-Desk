@@ -41,7 +41,7 @@ describe("countdown", () => {
       await vi.advanceTimersByTimeAsync(4000);
     });
 
-    expect(screen.getByText("Time over (EXPIRED)")).toBeInTheDocument();
+    expect(screen.getByText("Time over")).toBeInTheDocument();
     expect(screen.getByRole("button", { name: "Pay admission fee" })).toBeDisabled();
     expect(screen.queryByText("Seat on hold")).not.toBeInTheDocument();
     expect(screen.queryByRole("button", { name: "Cancel" })).not.toBeInTheDocument();
@@ -50,7 +50,7 @@ describe("countdown", () => {
     await act(async () => {
       await vi.advanceTimersByTimeAsync(6000);
     });
-    expect(screen.getByText("Time over (EXPIRED)")).toBeInTheDocument();
+    expect(screen.getByText("Time over")).toBeInTheDocument();
   });
 
   it("shows EXPIRED on first load for a hold that has already run out", async () => {
@@ -59,7 +59,7 @@ describe("countdown", () => {
 
     renderApp("/applications/h1");
 
-    expect(await screen.findByText("Time over (EXPIRED)")).toBeInTheDocument();
+    expect(await screen.findByText("Time over")).toBeInTheDocument();
     expect(screen.getByRole("button", { name: "Pay admission fee" })).toBeDisabled();
   });
 
