@@ -1,7 +1,7 @@
 import { act, screen } from "@testing-library/react";
 import { describe, expect, it, vi } from "vitest";
 import { formatCountdown, secondsLeft } from "../src/features/applications/holdStatus";
-import { asGuardian, mockApi, renderApp } from "./renderApp";
+import { asGuardian, mockApi, renderApp, VALID_STUDENT_ID } from "./renderApp";
 
 // Whole seconds, like the API sends them.
 const isoInSeconds = (ms: number) => new Date(ms).toISOString().replace(/\.\d+Z$/, "Z");
@@ -11,7 +11,10 @@ function holdApi(expiresAt: string, serverTime: string) {
     if (url === "/holds/h1") {
       // The server keeps saying HELD for a moment after the time passes, as it may
       // between polls. The page must not believe it.
-      return { status: 200, body: { holdId: "h1", classId: "c1", className: "Class 6", status: "HELD", expiresAt, serverTime } };
+      return {
+        status: 200,
+        body: { holdId: "h1", classId: "c1", className: "Class 6", status: "HELD", expiresAt, serverTime, serial: "BD-2026-0001234" },
+      };
     }
     if (url === "/classes") {
       return { status: 200, body: [{ id: "c1", name: "Class 6", totalSeats: 1, heldSeats: 1, confirmedSeats: 0, availableSeats: 0 }] };
@@ -36,6 +39,10 @@ describe("countdown", () => {
 
     expect(await screen.findByText("Seat on hold")).toBeInTheDocument();
     expect(screen.getByRole("button", { name: "Pay admission fee" })).toBeEnabled();
+    // The token shows the human serial and the masked number, never the hold id or the full number.
+    expect(screen.getByText("BD-2026-0001234")).toBeInTheDocument();
+    expect(screen.queryByText("h1")).not.toBeInTheDocument();
+    expect(document.body.textContent).not.toContain(VALID_STUDENT_ID);
 
     await act(async () => {
       await vi.advanceTimersByTimeAsync(4000);

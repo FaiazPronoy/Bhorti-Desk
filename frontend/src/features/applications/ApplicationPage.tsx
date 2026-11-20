@@ -146,7 +146,7 @@ function ApplicationView({ holdId }: { holdId: string }) {
     <section className="page page--narrow">
       <h1 className="page-title">{t("application.title")}</h1>
 
-      <SeatToken className={className} holdId={data.holdId} status={currentStatus} studentId={studentId} createdAt={data.createdAt}>
+      <SeatToken className={className} serial={data.serial} status={currentStatus} studentId={studentId} createdAt={data.createdAt}>
         {currentStatus === "HELD" && <HoldCountdown expiresAt={data.expiresAt} now={now} />}
         {currentStatus === "CONFIRMED" && (
           <>

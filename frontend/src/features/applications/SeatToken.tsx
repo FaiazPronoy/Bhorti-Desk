@@ -2,11 +2,12 @@ import type { ReactNode } from "react";
 import type { HoldStatus } from "../../api/apiTypes";
 import { useLanguage } from "../../i18n/LanguageProvider";
 import { formatDateTime } from "../../i18n/formatNumber";
+import { maskBirthRegistrationNumber } from "../student-identity/birthRegistrationNumber";
 import { StatusStamp } from "./StatusStamp";
 
 interface SeatTokenProps {
   className: string;
-  holdId: string;
+  serial?: string;
   status: HoldStatus;
   studentId: string | null;
   createdAt?: string;
@@ -14,8 +15,8 @@ interface SeatTokenProps {
 }
 
 // The application drawn as a paper token: the main part with the class, the number
-// and the countdown, and a stub with the serial, behind a perforated edge.
-export function SeatToken({ className, holdId, status, studentId, createdAt, children }: SeatTokenProps) {
+// (masked) and the countdown, and a stub with the serial, behind a perforated edge.
+export function SeatToken({ className, serial, status, studentId, createdAt, children }: SeatTokenProps) {
   const { t, language } = useLanguage();
   return (
     <article className={`token token--${status.toLowerCase()}`} aria-labelledby="token-class">
@@ -32,14 +33,22 @@ export function SeatToken({ className, holdId, status, studentId, createdAt, chi
         {studentId && (
           <p className="token__student">
             <span className="token__label">{t("application.student")}</span>
-            <span className="mono">{studentId}</span>
+            <span className="mono" translate="no">
+              {maskBirthRegistrationNumber(studentId)}
+            </span>
           </p>
         )}
         {children}
       </div>
       <div className="token__stub">
-        <span className="token__label">{t("application.serial")}</span>
-        <span className="token__serial mono">{holdId}</span>
+        {serial && (
+          <>
+            <span className="token__label">{t("application.serial")}</span>
+            <span className="token__serial mono" translate="no">
+              {serial}
+            </span>
+          </>
+        )}
         {createdAt && <span className="token__issued">{t("application.issued", { time: formatDateTime(createdAt, language) })}</span>}
         {status === "CONFIRMED" && (
           <div className="seal" aria-hidden="true">

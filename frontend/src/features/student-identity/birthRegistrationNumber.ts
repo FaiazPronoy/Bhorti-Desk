@@ -32,3 +32,11 @@ export function checkBirthRegistrationNumber(input: string): NumberCheck {
 export function countDigits(input: string): number {
   return cleanDigits(input).replace(/[^0-9]/g, "").length;
 }
+
+// The full number is personal data, so the screen shows only the last 4 digits:
+// "•••• •••• •••• •9012".
+export function maskBirthRegistrationNumber(digits: string): string {
+  const hidden = "•".repeat(Math.max(digits.length - 4, 0)) + digits.slice(-4);
+  // Groups of four, with the last five kept together: 4 4 4 5.
+  return [hidden.slice(0, 4), hidden.slice(4, 8), hidden.slice(8, 12), hidden.slice(12)].filter(Boolean).join(" ");
+}

@@ -32,6 +32,8 @@ export interface HoldDetails {
   className?: string;
   createdAt?: string;
   serverTime?: string;
+  // Human serial such as BD-2026-0001234. The hold id stays internal.
+  serial?: string;
 }
 
 export interface ConfirmedHold {
@@ -47,6 +49,7 @@ export interface StudentHold {
   expiresAt: string;
   createdAt?: string;
   serverTime?: string;
+  serial?: string;
 }
 
 export interface ApiErrorBody {
