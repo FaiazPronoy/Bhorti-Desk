@@ -160,30 +160,11 @@
   flex-direction: column;
 }
 
-/* School pictures behind everything: a building, a bench, books, a bell and Bangla
-   letters, drawn in one SVG and used as a mask so the colour follows the theme. */
-.app::before {
-  content: "";
-  position: fixed;
-  inset: 0;
-  z-index: -1;
-  pointer-events: none;
-  background-color: var(--pattern-ink);
-  -webkit-mask-image: url("/school-pattern.svg");
-  mask-image: url("/school-pattern.svg");
-  -webkit-mask-size: 320px 320px;
-  mask-size: 320px 320px;
-  -webkit-mask-repeat: repeat;
-  mask-repeat: repeat;
-}
-
 .main {
   position: relative;
   flex: 1;
   padding-top: var(--space-8);
   padding-bottom: var(--space-16);
-  /* The pictures stay in the margins: the reading column sits on plain paper. */
-  background: color-mix(in srgb, var(--paper) 94%, transparent);
 }
 
 .main:focus {

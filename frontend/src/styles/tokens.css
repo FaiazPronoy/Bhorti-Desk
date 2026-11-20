@@ -6,7 +6,6 @@
   /* 60%: clean warm white for pages and cards. */
   --paper: #faf7f2;
   --paper-line: #f1ebe2;
-  --pattern-ink: rgb(215 38 61 / 0.2);
   --sheet: #ffffff;
   --rule: #e7dfd4;
   --ink: #1f1a1b;
@@ -66,7 +65,6 @@
   color-scheme: dark;
   --paper: #141011;
   --paper-line: #1a1516;
-  --pattern-ink: rgb(255 84 104 / 0.18);
   --sheet: #1f191a;
   --rule: #352c2d;
   --ink: #f5eee8;
