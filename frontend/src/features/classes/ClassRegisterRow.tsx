@@ -4,7 +4,6 @@ import { Button } from "../../components/Button";
 import { useLanguage } from "../../i18n/LanguageProvider";
 import type { MessageKey } from "../../i18n/en";
 import { SeatBar } from "./SeatBar";
-import { SEAT_GRID_LIMIT, SeatGrid } from "./SeatGrid";
 
 interface ClassRegisterRowProps {
   seats: ClassSeatSummary;
@@ -35,22 +34,10 @@ export function ClassRegisterRow({ seats, showActions, myActiveHold, applying, a
     <li className={`register-row ${showActions ? "" : "register-row--office"}`}>
       <div className="register-row__name">
         <h3 className="register-row__title">{seats.name}</h3>
-        <p className="register-row__free-big">{t("classes.freeSeats", { count: number(seats.availableSeats) })}</p>
       </div>
 
       <div className="register-row__picture">
-        {seats.totalSeats <= SEAT_GRID_LIMIT ? (
-          <>
-            <div className="only-wide">
-              <SeatGrid seats={seats} />
-            </div>
-            <div className="only-narrow">
-              <SeatBar seats={seats} />
-            </div>
-          </>
-        ) : (
-          <SeatBar seats={seats} />
-        )}
+        <SeatBar seats={seats} />
       </div>
 
       <dl className="register-row__figures">
@@ -67,7 +54,9 @@ export function ClassRegisterRow({ seats, showActions, myActiveHold, applying, a
           {myActiveHold ? (
             <div className="register-row__applied">
               <span className="register-row__applied-label">{t("classes.applied")}</span>
-              <Link to={`/applications/${myActiveHold.holdId}`}>{t("classes.openApplication")}</Link>
+              <Link to={`/applications/${myActiveHold.holdId}`} aria-label={t("classes.openApplication")}>
+                {t("classes.viewApplication")}
+              </Link>
             </div>
           ) : (
             <Button wide pending={applying} disabled={isFull || applyDisabled} onClick={onApply}>

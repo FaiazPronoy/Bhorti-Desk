@@ -1,7 +1,7 @@
 import type { ClassSeatSummary } from "../../api/apiTypes";
 
-// Phones, and classes too big for the grid: one bar in three parts. It is a picture
-// only; the numbers are always printed next to it.
+// One bar in three parts for every class, whatever its size, so every row of the
+// register has the same height. It is a picture only; the numbers sit beside it.
 export function SeatBar({ seats }: { seats: ClassSeatSummary }) {
   const total = Math.max(seats.totalSeats, 1);
   const confirmed = (seats.confirmedSeats / total) * 100;

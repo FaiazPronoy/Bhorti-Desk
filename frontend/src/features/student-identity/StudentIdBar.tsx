@@ -84,7 +84,10 @@ export function StudentIdBar() {
           </button>
         </div>
       </div>
-      <p className="student-bar__help">{t("account.sharedComputer")}</p>
+      <details className="student-bar__more">
+        <summary>{t("account.sharedComputerQuestion")}</summary>
+        <p>{t("account.sharedComputer")}</p>
+      </details>
     </div>
   );
 }
