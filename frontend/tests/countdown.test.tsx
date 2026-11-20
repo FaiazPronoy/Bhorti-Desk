@@ -34,7 +34,7 @@ describe("countdown", () => {
 
     renderApp("/applications/h1");
 
-    expect(await screen.findByText("Seat on hold (HELD)")).toBeInTheDocument();
+    expect(await screen.findByText("Seat on hold")).toBeInTheDocument();
     expect(screen.getByRole("button", { name: "Pay admission fee" })).toBeEnabled();
 
     await act(async () => {
@@ -43,7 +43,7 @@ describe("countdown", () => {
 
     expect(screen.getByText("Time over (EXPIRED)")).toBeInTheDocument();
     expect(screen.getByRole("button", { name: "Pay admission fee" })).toBeDisabled();
-    expect(screen.queryByText("Seat on hold (HELD)")).not.toBeInTheDocument();
+    expect(screen.queryByText("Seat on hold")).not.toBeInTheDocument();
     expect(screen.queryByRole("button", { name: "Cancel" })).not.toBeInTheDocument();
 
     // Later polls that still say HELD must not bring the old status back.

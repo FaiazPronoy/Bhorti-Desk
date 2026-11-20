@@ -13,8 +13,8 @@ export const bn: Record<MessageKey, string> = {
 
   "language.switchTo": "English",
   "language.switchLabel": "সাইটটি ইংরেজিতে দেখুন",
-  "theme.toDark": "ডার্ক মোড চালু করুন",
-  "theme.toLight": "লাইট মোড চালু করুন",
+  "theme.toDark": "গাঢ় রঙে দেখুন",
+  "theme.toLight": "হালকা রঙে দেখুন",
 
   "student.label": "শিক্ষার্থীর জন্ম নিবন্ধন নম্বর",
   "student.placeholder": "17 অঙ্ক",
@@ -49,10 +49,10 @@ export const bn: Record<MessageKey, string> = {
   "classes.loadFailed": "ক্লাস তালিকা আনা যায়নি।",
   "classes.seatPicture": "সিটের ছবি",
 
-  "status.HELD": "সিট ধরে রাখা আছে (HELD)",
-  "status.CONFIRMED": "ভর্তি নিশ্চিত (CONFIRMED)",
-  "status.EXPIRED": "মেয়াদ শেষ (EXPIRED)",
-  "status.CANCELLED": "বাতিল (CANCELLED)",
+  "status.HELD": "সিট ধরে রাখা আছে",
+  "status.CONFIRMED": "ভর্তি নিশ্চিত",
+  "status.EXPIRED": "মেয়াদ শেষ",
+  "status.CANCELLED": "বাতিল",
 
   "application.title": "আবেদন",
   "application.class": "ক্লাস",

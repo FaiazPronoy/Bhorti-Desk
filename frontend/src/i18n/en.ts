@@ -12,8 +12,8 @@ export const en = {
 
   "language.switchTo": "বাংলা",
   "language.switchLabel": "Show the site in Bangla",
-  "theme.toDark": "Switch to dark mode",
-  "theme.toLight": "Switch to light mode",
+  "theme.toDark": "Switch to dark theme",
+  "theme.toLight": "Switch to light theme",
 
   "student.label": "Student's birth registration number",
   "student.placeholder": "17 digits",
@@ -48,10 +48,10 @@ export const en = {
   "classes.loadFailed": "We could not load the classes.",
   "classes.seatPicture": "Seat picture",
 
-  "status.HELD": "Seat on hold (HELD)",
-  "status.CONFIRMED": "Admission confirmed (CONFIRMED)",
-  "status.EXPIRED": "Time over (EXPIRED)",
-  "status.CANCELLED": "Cancelled (CANCELLED)",
+  "status.HELD": "Seat on hold",
+  "status.CONFIRMED": "Admission confirmed",
+  "status.EXPIRED": "Time over",
+  "status.CANCELLED": "Cancelled",
 
   "application.title": "Application",
   "application.class": "Class",
