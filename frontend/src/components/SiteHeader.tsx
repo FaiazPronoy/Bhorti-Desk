@@ -2,7 +2,6 @@ import { NavLink } from "react-router";
 import { StudentIdBar } from "../features/student-identity/StudentIdBar";
 import { useLanguage } from "../i18n/LanguageProvider";
 import { LanguageToggle } from "./LanguageToggle";
-import { ThemeToggle } from "./ThemeToggle";
 
 export function SiteHeader() {
   const { t } = useLanguage();
@@ -15,11 +14,11 @@ export function SiteHeader() {
       </a>
       <div className="page-width site-header__top">
         <NavLink to="/" className="site-name">
-          <svg viewBox="0 0 32 32" width="26" height="26" aria-hidden="true">
-            <rect width="32" height="32" rx="3" fill="var(--stamp)" />
-            <rect x="7" y="9" width="18" height="4" fill="var(--sheet)" />
-            <rect x="9" y="13" width="3" height="10" fill="var(--sheet)" />
-            <rect x="20" y="13" width="3" height="10" fill="var(--sheet)" />
+          {/* A register book with a pencil-yellow cover band. */}
+          <svg viewBox="0 0 32 32" width="28" height="28" aria-hidden="true">
+            <rect x="5" y="3" width="22" height="26" rx="2" fill="var(--sheet)" stroke="var(--ink)" strokeWidth="2" />
+            <rect x="5" y="3" width="6" height="26" rx="1" fill="var(--pencil)" stroke="var(--ink)" strokeWidth="2" />
+            <path d="M15 11h8M15 16h8M15 21h5" stroke="var(--ink)" strokeWidth="2" />
           </svg>
           <span translate="no">{t("site.name")}</span>
         </NavLink>
@@ -35,7 +34,6 @@ export function SiteHeader() {
           </NavLink>
         </nav>
         <div className="header-tools">
-          <ThemeToggle />
           <LanguageToggle />
         </div>
       </div>

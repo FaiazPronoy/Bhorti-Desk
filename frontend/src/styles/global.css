@@ -7,10 +7,9 @@
   --color-rule: var(--rule);
   --color-ink: var(--ink);
   --color-ink-soft: var(--ink-soft);
-  --color-stamp: var(--stamp);
+  --color-pencil: var(--pencil);
   --color-danger: var(--danger);
   --font-sans: var(--font-text);
-  --font-mono: var(--font-mono);
 }
 
 /* ---------------------------------------------------------------- base */
@@ -24,11 +23,11 @@
     -webkit-text-size-adjust: 100%;
   }
 
-  /* A ruled exercise-book page: faint lines every 32 px on kraft paper. */
+  /* Exercise-book paper: a faint blue rule every 32 px. */
   body {
     margin: 0;
     background-color: var(--paper);
-    background-image: repeating-linear-gradient(to bottom, transparent 0 31px, var(--paper-line) 31px 32px);
+    background-image: repeating-linear-gradient(to bottom, transparent 0 31px, var(--paper-rule) 31px 32px);
     background-attachment: fixed;
     font-size: var(--text-17);
     line-height: 1.5;
@@ -42,9 +41,10 @@
   h2,
   h3 {
     margin: 0;
-    font-family: var(--font-display);
+    font-family: var(--font-text);
     font-weight: 700;
-    line-height: 1.2;
+    line-height: 1.25;
+    letter-spacing: -0.01em;
     text-wrap: balance;
   }
 
@@ -53,32 +53,39 @@
     text-wrap: pretty;
   }
 
+  /* Links are graphite with a pencil underline: yellow text would be unreadable. */
   a {
-    color: var(--stamp);
-    text-underline-offset: 3px;
+    color: var(--ink);
+    text-decoration-line: underline;
+    text-decoration-color: var(--pencil-strong);
+    text-decoration-thickness: 2px;
+    text-underline-offset: 4px;
   }
 
   a:hover {
-    color: var(--stamp-strong);
+    color: var(--ink);
+    background: var(--pencil-tint);
   }
 
   ::selection {
-    background: var(--stamp-tint);
+    background: var(--pencil-tint);
     color: var(--ink);
   }
 
   input {
-    caret-color: var(--stamp);
+    caret-color: var(--ink);
   }
 
   html {
     scrollbar-color: var(--rule) var(--paper);
-    accent-color: var(--stamp);
+    accent-color: var(--pencil-strong);
   }
 
   :focus-visible {
-    outline: 3px solid var(--stamp);
+    /* Ink ring for contrast, pencil halo for the brand. */
+    outline: 2px solid var(--ink);
     outline-offset: 2px;
+    box-shadow: 0 0 0 5px var(--pencil);
   }
 
   button,
@@ -110,7 +117,6 @@
 }
 
 .mono {
-  font-family: var(--font-mono);
   font-variant-numeric: tabular-nums;
 }
 
@@ -173,21 +179,12 @@
 
 .site-header {
   z-index: 20;
-  background: var(--header-bg);
-  color: var(--header-ink);
-  border-bottom: 1px solid var(--rule);
+  background: var(--paper);
+  color: var(--ink);
+  border-bottom: 1px solid var(--rule-strong);
 }
 
-.site-header .button--quiet {
-  color: var(--header-ink);
-}
-
-.site-header .button--quiet:hover:not(:disabled) {
-  background: rgb(255 255 255 / 0.1);
-}
-
-/* Sticky only where there is room. On a phone the header with the number box would
-   cover half the screen, so there it scrolls away with the page. */
+/* Sticky from tablet width up. On a phone it scrolls away so the page gets the room. */
 @media (min-width: 768px) {
   .site-header {
     position: sticky;
@@ -198,7 +195,7 @@
 .site-header__top {
   display: flex;
   align-items: center;
-  gap: var(--space-4);
+  gap: var(--space-2) var(--space-4);
   min-height: var(--header-height);
   flex-wrap: wrap;
 }
@@ -207,27 +204,25 @@
   display: inline-flex;
   align-items: center;
   gap: var(--space-2);
-  font-family: var(--font-display);
+  min-height: 44px;
   font-weight: 700;
-  font-size: var(--text-24);
+  font-size: var(--text-20);
   color: var(--ink);
   text-decoration: none;
   margin-right: auto;
 }
 
-.site-name,
 .site-name:hover {
-  color: var(--header-ink);
+  background: none;
 }
 
 .nav {
   display: flex;
-  align-items: center;
-  gap: var(--space-1);
+  align-items: stretch;
   order: 3;
   width: 100%;
   overflow-x: auto;
-  padding-bottom: var(--space-2);
+  margin-inline: calc(var(--space-3) * -1);
 }
 
 .nav__link {
@@ -235,7 +230,7 @@
   align-items: center;
   min-height: 44px;
   padding-inline: var(--space-3);
-  color: var(--header-ink);
+  color: var(--ink-soft);
   font-weight: 600;
   font-size: var(--text-15);
   text-decoration: none;
@@ -244,35 +239,25 @@
 }
 
 .nav__link:hover {
-  color: var(--header-ink);
-  background: rgb(255 255 255 / 0.06);
-}
-
-.nav__link--quiet {
-  color: var(--header-ink-soft);
-  font-weight: 400;
+  color: var(--ink);
+  background: var(--sheet-soft);
 }
 
 .nav__link--active,
 .nav__link--active:hover {
-  color: var(--header-ink);
-  border-bottom-color: var(--header-accent);
+  color: var(--ink);
+  border-bottom-color: var(--pencil);
 }
 
 @media (min-width: 768px) {
   .nav {
     order: 0;
     width: auto;
-    padding-bottom: 0;
+    margin-inline: 0;
   }
   .nav__link {
     min-height: var(--header-height);
   }
-}
-
-.language-toggle,
-.theme-toggle {
-  min-height: 44px;
 }
 
 .header-tools {
@@ -281,19 +266,14 @@
   gap: var(--space-1);
 }
 
-/* The number box sits on the light page colour, so it uses the normal ink again. */
+.language-toggle {
+  min-height: 44px;
+}
+
+/* The student strip: one slim row under the main header. */
 .site-header__student {
   border-top: 1px solid var(--rule);
-  background: var(--paper);
-  color: var(--ink);
-}
-
-.site-header__student .button--quiet {
-  color: var(--stamp);
-}
-
-.site-header__student .button--quiet:hover:not(:disabled) {
-  background: var(--stamp-tint);
+  background: var(--sheet);
 }
 
 .site-footer {
@@ -301,24 +281,57 @@
   background: var(--sheet);
   color: var(--ink-soft);
   font-size: var(--text-13);
-  padding-block: var(--space-4);
-  padding-bottom: max(var(--space-4), env(safe-area-inset-bottom));
+  padding-block: var(--space-2);
+  padding-bottom: max(var(--space-2), env(safe-area-inset-bottom));
 }
 
-/* ---------------------------------------------------------------- number box */
+.site-footer__inner {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0 var(--space-6);
+}
+
+/* A button that looks like a plain text link. */
+.text-link {
+  min-height: 44px;
+  padding: 0;
+  border: 0;
+  background: none;
+  color: var(--ink);
+  font: inherit;
+  text-decoration-line: underline;
+  text-decoration-color: var(--pencil-strong);
+  text-decoration-thickness: 2px;
+  text-underline-offset: 4px;
+  cursor: pointer;
+}
+
+.text-link:hover {
+  background: var(--pencil-tint);
+}
+
+/* ---------------------------------------------------------------- student strip */
 
 .student-bar {
-  padding-block: var(--space-3);
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-2) var(--space-4);
+  min-height: 52px;
+  padding-block: var(--space-1);
 }
 
 .student-bar__row {
   display: flex;
-  flex-direction: column;
-  gap: var(--space-2);
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-2) var(--space-3);
 }
 
 .student-bar__label {
-  font-weight: 700;
+  font-weight: 600;
   font-size: var(--text-15);
 }
 
@@ -331,24 +344,17 @@
 
 .student-bar__input {
   box-sizing: border-box;
-  flex: 1 1 14rem;
+  flex: 1 1 13rem;
   min-width: 0;
-  max-width: 22rem;
+  max-width: 17rem;
   min-height: 44px;
-  padding: var(--space-2) var(--space-3);
-  border: 1px solid var(--ink-soft);
+  padding: var(--space-1) var(--space-3);
+  border: 1px solid var(--rule-strong);
   border-radius: var(--radius-control);
   background: var(--sheet);
-  font-family: var(--font-mono);
   font-size: var(--text-17);
   font-variant-numeric: tabular-nums;
-}
-
-@media (min-width: 480px) {
-  .student-bar__input {
-    font-size: var(--text-20);
-    letter-spacing: 0.04em;
-  }
+  letter-spacing: 0.03em;
 }
 
 .student-bar__input[aria-invalid="true"] {
@@ -356,27 +362,29 @@
 }
 
 .student-bar__count {
-  font-family: var(--font-mono);
   font-variant-numeric: tabular-nums;
-  font-size: var(--text-15);
+  font-size: var(--text-13);
   color: var(--ink-soft);
-  min-width: 4.5rem;
+  min-width: 3.5rem;
 }
 
 .student-bar__count--done {
   color: var(--confirmed);
-  font-weight: 700;
+  font-weight: 600;
 }
 
 .student-bar__message {
-  margin-top: var(--space-1);
-  min-height: 1.5em;
-  font-size: var(--text-15);
+  flex-basis: 100%;
+  font-size: var(--text-13);
   color: var(--danger);
 }
 
 .student-bar__message--ok {
   color: var(--confirmed);
+}
+
+.student-bar__message:empty {
+  display: none;
 }
 
 .student-bar__help {
@@ -385,20 +393,25 @@
   max-width: 70ch;
 }
 
-/* On a phone, once the number is in, the help line steps aside so the page starts
-   higher. It is still shown while the box is empty or wrong. */
-@media (max-width: 767px) {
-  .student-bar--saved .student-bar__help {
-    display: none;
-  }
+/* The longer explanation waits behind a small disclosure. */
+.student-bar__more {
+  font-size: var(--text-13);
+  color: var(--ink-soft);
 }
 
-@media (min-width: 768px) {
-  .student-bar__row {
-    flex-direction: row;
-    align-items: center;
-    gap: var(--space-4);
-  }
+.student-bar__more summary {
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+  cursor: pointer;
+  text-decoration: underline;
+  text-decoration-color: var(--rule-strong);
+  text-underline-offset: 4px;
+}
+
+.student-bar__more p {
+  max-width: 60ch;
+  padding-bottom: var(--space-2);
 }
 
 /* ---------------------------------------------------------------- banners */
@@ -415,7 +428,8 @@
   align-items: center;
   gap: var(--space-3);
   flex-wrap: wrap;
-  padding-block: var(--space-2);
+  padding-block: var(--space-1);
+  min-height: 48px;
 }
 
 .server-banner__inner p {
@@ -446,8 +460,7 @@
   display: inline-flex;
   align-items: center;
   min-height: 44px;
-  /* The darker red keeps 4.5:1 on the yellow bar. */
-  color: var(--stamp-strong);
+  color: var(--ink);
   font-weight: 700;
 }
 
@@ -534,8 +547,9 @@
 }
 
 .inline-alert--info {
-  color: var(--stamp-strong);
-  background: var(--stamp-tint);
+  color: var(--ink);
+  border-color: var(--pencil-strong);
+  background: var(--pencil-tint);
 }
 
 .inline-alert--success {
@@ -573,14 +587,14 @@
 }
 
 .button--primary {
-  background: var(--stamp);
-  color: var(--on-stamp);
-  box-shadow: inset 0 -2px 0 rgb(0 0 0 / 0.15);
+  background: var(--pencil);
+  color: var(--on-pencil);
+  border-color: var(--pencil-strong);
 }
 
 .button--primary:hover:not(:disabled) {
-  background: var(--stamp-strong);
-  color: var(--on-stamp);
+  background: var(--pencil-strong);
+  color: var(--on-pencil);
 }
 
 .button--primary:disabled {
@@ -591,12 +605,13 @@
 
 .button--secondary {
   background: var(--sheet);
-  color: var(--stamp);
-  border-color: var(--stamp);
+  color: var(--ink);
+  border-color: var(--rule-strong);
 }
 
 .button--secondary:hover:not(:disabled) {
-  background: var(--stamp-tint);
+  background: var(--sheet-soft);
+  border-color: var(--ink-soft);
 }
 
 .button--secondary:disabled {
@@ -606,12 +621,13 @@
 
 .button--quiet {
   background: transparent;
-  color: var(--stamp);
+  color: var(--ink);
   padding-inline: var(--space-2);
+  font-weight: 600;
 }
 
 .button--quiet:hover:not(:disabled) {
-  background: var(--stamp-tint);
+  background: var(--sheet-soft);
 }
 
 .button--danger {
@@ -667,7 +683,7 @@
   box-sizing: border-box;
   min-height: 44px;
   padding: var(--space-2) var(--space-3);
-  border: 1px solid var(--ink-soft);
+  border: 1px solid var(--rule-strong);
   border-radius: var(--radius-control);
   background: var(--sheet);
   width: 100%;
@@ -684,7 +700,6 @@
 
 .field--short .field__input {
   max-width: 10rem;
-  font-family: var(--font-mono);
   font-variant-numeric: tabular-nums;
 }
 
@@ -714,6 +729,8 @@
 .register-row {
   display: grid;
   gap: var(--space-3);
+  min-height: 72px;
+  box-sizing: border-box;
   padding: var(--space-4);
   border-bottom: 1px solid var(--rule);
 }
@@ -728,10 +745,6 @@
   overflow-wrap: anywhere;
 }
 
-.register-row__free-big {
-  font-size: var(--text-15);
-  color: var(--ink-soft);
-}
 
 .register-row__figures {
   display: grid;
@@ -774,8 +787,9 @@
 
 .register-row__applied {
   display: flex;
-  flex-direction: column;
-  gap: var(--space-1);
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 0 var(--space-2);
   font-size: var(--text-15);
 }
 
@@ -787,8 +801,8 @@
 /* Seat bar: confirmed solid, held hatched, the rest free. */
 .seat-bar {
   display: flex;
-  height: 10px;
-  border: 1px solid var(--rule);
+  height: 12px;
+  border: 1px solid var(--rule-strong);
   border-radius: var(--radius-control);
   overflow: hidden;
   background: var(--sheet);
@@ -796,53 +810,23 @@
 
 .seat-bar__confirmed {
   background: var(--confirmed);
-  transition: width var(--fade);
 }
 
 .seat-bar__held {
   background: repeating-linear-gradient(-45deg, var(--held) 0 2px, var(--held-tint) 2px 4px);
-  transition: width var(--fade);
-}
-
-.seat-grid {
-  display: grid;
-  grid-template-columns: repeat(10, 8px);
-  gap: 2px;
-}
-
-.seat {
-  width: 8px;
-  height: 8px;
-  box-sizing: border-box;
-  border-radius: 1px;
-  transition: background-color var(--fade), border-color var(--fade);
-}
-
-.seat--free {
-  border: 1px solid var(--ink-soft);
-  background: var(--sheet);
-}
-
-.seat--held {
-  border: 1px solid var(--held);
-  background: repeating-linear-gradient(-45deg, var(--held) 0 1.5px, var(--held-tint) 1.5px 3px);
-}
-
-.seat--confirmed {
-  background: var(--confirmed);
 }
 
 @media (min-width: 768px) {
   .register__head,
   .register-row {
-    grid-template-columns: minmax(7rem, 1.6fr) 100px repeat(4, minmax(3rem, 4rem)) 8.5rem;
+    grid-template-columns: minmax(7rem, 1.6fr) 120px repeat(4, minmax(3rem, 4rem)) 10rem;
     column-gap: var(--space-3);
     align-items: center;
   }
 
   .register__head--office,
   .register-row--office {
-    grid-template-columns: minmax(7rem, 1.6fr) 100px repeat(4, minmax(3rem, 4rem));
+    grid-template-columns: minmax(7rem, 1.6fr) 120px repeat(4, minmax(3rem, 4rem));
   }
 
   .register__head {
@@ -858,9 +842,6 @@
     text-align: right;
   }
 
-  .register-row__free-big {
-    display: none;
-  }
 
   .register__head span:nth-child(6) {
     color: var(--ink);
@@ -1013,7 +994,6 @@
   color: var(--confirmed);
   background: var(--confirmed-tint);
   text-align: center;
-  font-family: var(--font-display);
   font-weight: 700;
   font-size: var(--text-13);
   line-height: 1.2;
@@ -1066,10 +1046,9 @@
 }
 
 .countdown {
-  font-family: var(--font-mono);
   letter-spacing: -0.02em;
   font-variant-numeric: tabular-nums;
-  font-size: var(--text-56);
+  font-size: var(--text-48);
   font-weight: 700;
   line-height: 1.1;
   color: var(--held);
@@ -1156,8 +1135,7 @@
   display: inline-block;
   padding: var(--space-1) var(--space-3);
   border: 3px double currentColor;
-  border-radius: 4px;
-  font-family: var(--font-display);
+  border-radius: var(--radius-control);
   font-weight: 700;
   font-size: var(--text-15);
   letter-spacing: 0.02em;
@@ -1317,7 +1295,6 @@
     background: #ffffff;
   }
 
-  .app::before,
   .site-header,
   .server-banner,
   .running-hold,
@@ -1349,7 +1326,6 @@
 /* Student names in the picker are words, not digits, so they use the text font. */
 .student-bar__select,
 .field__select {
-  font-family: var(--font-text);
   font-size: var(--text-17);
   letter-spacing: normal;
   background: var(--sheet);

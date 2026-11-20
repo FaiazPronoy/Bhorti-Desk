@@ -2,6 +2,7 @@ import { Outlet, useLocation } from "react-router";
 import { ErrorBoundary } from "./components/ErrorBoundary";
 import { ServerStatusBanner } from "./components/ServerStatusBanner";
 import { SiteHeader } from "./components/SiteHeader";
+import { ThemeToggle } from "./components/ThemeToggle";
 import { StudentIdProvider } from "./features/student-identity/useStudentId";
 import { RunningHoldBar } from "./features/applications/RunningHoldBar";
 import { useLanguage } from "./i18n/LanguageProvider";
@@ -25,9 +26,12 @@ export function App() {
           </ErrorBoundary>
         </main>
         <footer className="site-footer">
-          <p className="page-width">
-            {t("site.footerBuiltBy")} {t("application.payNote")}
-          </p>
+          <div className="page-width site-footer__inner">
+            <p>
+              {t("site.footerBuiltBy")} {t("application.payNote")}
+            </p>
+            <ThemeToggle />
+          </div>
         </footer>
       </div>
     </StudentIdProvider>
