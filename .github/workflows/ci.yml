@@ -1,0 +1,73 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  backend:
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:17-alpine
+        env:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres
+        options: >-
+          --health-cmd "pg_isready -U postgres"
+          --health-interval 2s --health-timeout 3s --health-retries 30
+        ports:
+          - 5432:5432
+    env:
+      TEST_DATABASE_ADMIN_CONNECTION_STRING: "Host=localhost;Port=5432;Username=postgres;Password=postgres;Database=postgres"
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: "10.0.x"
+      - name: Raise the connection limit for the two-backend and concurrency tests
+        run: |
+          docker exec ${{ job.services.postgres.id }} psql -U postgres -c "alter system set max_connections = 200"
+          docker restart ${{ job.services.postgres.id }}
+          until docker exec ${{ job.services.postgres.id }} pg_isready -U postgres; do sleep 1; done
+      - name: Restore
+        run: dotnet restore backend/SchoolAdmission.sln
+      - name: Vulnerable packages
+        run: |
+          dotnet list backend/SchoolAdmission.sln package --vulnerable --include-transitive | tee audit.txt
+          ! grep -q "has the following vulnerable packages" audit.txt
+      - name: All backend tests, including the contract and concurrency tests
+        run: dotnet test backend/tests/SchoolAdmission.Api.Tests/SchoolAdmission.Api.Tests.csproj --no-restore
+      - name: Concurrency tests five more times
+        run: |
+          for run in 1 2 3 4 5; do
+            dotnet test backend/tests/SchoolAdmission.Api.Tests/SchoolAdmission.Api.Tests.csproj --no-restore \
+              --filter "FullyQualifiedName~Concurrency|FullyQualifiedName~Stress|FullyQualifiedName~TwoBackend|FullyQualifiedName~Waitlist"
+          done
+
+  frontend:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: frontend
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+          cache: npm
+          cache-dependency-path: frontend/package-lock.json
+      - run: npm ci
+      - run: npm audit --omit=dev
+      - run: npm run typecheck
+      - run: npm test
+      - run: npm run build
+
+  images:
+    runs-on: ubuntu-latest
+    needs: [backend, frontend]
+    steps:
+      - uses: actions/checkout@v4
+      - name: Build the images the compose file uses
+        run: docker compose build backend frontend

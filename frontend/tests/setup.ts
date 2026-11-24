@@ -4,7 +4,7 @@ import { afterEach, vi } from "vitest";
 
 // The default one second wait for findBy is too short on a busy laptop running Docker.
 // Same checks, more patience.
-configure({ asyncUtilTimeout: 3000 });
+configure({ asyncUtilTimeout: 10_000 });
 
 afterEach(() => {
   cleanup();

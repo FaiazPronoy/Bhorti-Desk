@@ -9,5 +9,8 @@ export default defineConfig({
     environment: "jsdom",
     setupFiles: ["./tests/setup.ts"],
     include: ["tests/**/*.test.{ts,tsx}"],
+    // Lazy pages compile on first use inside the test run, which can take seconds on a
+    // busy machine. The checks are the same; they are given more time.
+    testTimeout: 20_000,
   },
 });
