@@ -15,7 +15,7 @@ public class DemoModeTests
         await using var normal = new AdmissionApiFactory();
         var plain = await normal.CreateAnonymousClient().PostAsJsonAsync("/auth/otp/request", new { phone = "01712345678" });
         Assert.Equal(HttpStatusCode.Accepted, plain.StatusCode);
-        Assert.Equal(0, (await plain.Content.ReadAsByteArrayAsync()).Length);
+        Assert.Empty(await plain.Content.ReadAsByteArrayAsync());
 
         await using var demo = new AdmissionApiFactory(demoMode: true);
         var shown = await demo.CreateAnonymousClient().PostAsJsonAsync("/auth/otp/request", new { phone = "01712345678" });

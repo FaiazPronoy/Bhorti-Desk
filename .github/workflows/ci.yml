@@ -22,8 +22,8 @@ jobs:
     env:
       TEST_DATABASE_ADMIN_CONNECTION_STRING: "Host=localhost;Port=5432;Username=postgres;Password=postgres;Database=postgres"
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-dotnet@v4
+      - uses: actions/checkout@v5
+      - uses: actions/setup-dotnet@v5
         with:
           dotnet-version: "10.0.x"
       - name: Raise the connection limit for the two-backend and concurrency tests
@@ -52,8 +52,8 @@ jobs:
       run:
         working-directory: frontend
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v5
         with:
           node-version: "22"
           cache: npm
@@ -68,6 +68,6 @@ jobs:
     runs-on: ubuntu-latest
     needs: [backend, frontend]
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
       - name: Build the images the compose file uses
         run: docker compose build backend frontend
