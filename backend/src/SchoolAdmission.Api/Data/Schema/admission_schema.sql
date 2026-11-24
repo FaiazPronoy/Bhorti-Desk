@@ -233,3 +233,8 @@ create unique index if not exists ux_waitlist_one_place_per_student
 create index if not exists ix_waitlist_waiting_in_order
     on waitlist_entries (admission_class_id, id)
     where status = 'WAITING';
+-- ---------------------------------------------------------------- office class management
+
+-- Set when the office closes a class to new applications. Null on every class the
+-- original endpoints create, so they behave exactly as before.
+alter table admission_classes add column if not exists closed_at timestamptz null;

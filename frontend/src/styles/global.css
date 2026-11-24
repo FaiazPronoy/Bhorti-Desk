@@ -1588,6 +1588,208 @@
   max-width: 32rem;
 }
 
+/* ---------------------------------------------------------------- office frame */
+
+.office-tabs {
+  display: flex;
+  gap: var(--space-1);
+  margin: var(--space-4) 0 var(--space-6);
+  border-bottom: 1px solid var(--rule-strong);
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+
+.office-tabs__tab {
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+  padding-inline: var(--space-3);
+  border-bottom: 3px solid transparent;
+  color: var(--ink-soft);
+  font-weight: 600;
+  text-decoration: none;
+  white-space: nowrap;
+}
+
+.office-tabs__tab:hover {
+  background: var(--sheet-soft);
+  color: var(--ink);
+}
+
+.office-tabs__tab--active {
+  color: var(--ink);
+  border-bottom-color: var(--pencil);
+}
+
+.dashboard {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: var(--space-8);
+}
+
+@media (min-width: 1024px) {
+  .dashboard {
+    grid-template-columns: minmax(0, 2fr) minmax(0, 1fr);
+  }
+  .dashboard__wide {
+    grid-column: 1 / -1;
+  }
+}
+
+.dashboard__head {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: var(--space-3);
+}
+
+.dashboard__note {
+  margin-top: var(--space-2);
+  font-size: var(--text-15);
+  color: var(--ink-soft);
+}
+
+.chart {
+  margin: 0;
+}
+
+.chart svg {
+  width: 100%;
+  height: auto;
+  display: block;
+}
+
+.chart__axis {
+  stroke: var(--rule-strong);
+  stroke-width: 1;
+}
+
+.chart__bar {
+  fill: var(--ink-soft);
+}
+
+.chart__bar--accent {
+  fill: var(--pencil);
+}
+
+.chart__tick,
+.chart__value {
+  font-size: 12px;
+  fill: var(--ink-soft);
+  font-variant-numeric: tabular-nums;
+}
+
+.chart__value {
+  fill: var(--ink);
+  font-weight: 700;
+}
+
+.chart__empty {
+  color: var(--ink-soft);
+}
+
+.chart__table summary {
+  min-height: 44px;
+  display: inline-flex;
+  align-items: center;
+  cursor: pointer;
+  font-size: var(--text-15);
+}
+
+.chart__table table,
+.fill-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: var(--text-15);
+  font-variant-numeric: tabular-nums;
+}
+
+.chart__table th,
+.chart__table td,
+.fill-table th,
+.fill-table td {
+  padding: var(--space-2) var(--space-3);
+  border-bottom: 1px solid var(--rule);
+  text-align: left;
+}
+
+.fill-table thead th {
+  font-size: var(--text-13);
+  color: var(--ink-soft);
+  border-bottom-color: var(--ink);
+}
+
+.fill-table td .seat-bar {
+  min-width: 120px;
+}
+
+.fill-table__closed {
+  font-weight: 400;
+  color: var(--ink-soft);
+}
+
+.funnel {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: var(--space-3);
+}
+
+.funnel__row {
+  display: grid;
+  grid-template-columns: 6rem minmax(0, 1fr) 3rem;
+  align-items: center;
+  gap: var(--space-3);
+}
+
+.funnel__label {
+  font-size: var(--text-15);
+}
+
+.funnel__track {
+  height: 12px;
+  background: var(--sheet-soft);
+  border-radius: var(--radius-control);
+  overflow: hidden;
+}
+
+.funnel__fill {
+  display: block;
+  height: 100%;
+  background: var(--ink-soft);
+}
+
+.funnel__fill--accent {
+  background: var(--pencil);
+}
+
+.funnel__value {
+  text-align: right;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+}
+
+.audit__filters {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-3);
+  margin-bottom: var(--space-4);
+}
+
+.audit__filters .field__input {
+  width: auto;
+}
+
+@media (max-width: 767px) {
+  .fill-table,
+  .audit table {
+    display: block;
+    overflow-x: auto;
+  }
+}
+
 /* The slip is ruled paper, like the register. */
 .slip {
   padding: var(--space-6);

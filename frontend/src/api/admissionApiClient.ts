@@ -15,9 +15,12 @@ import type {
   DocumentKind,
   HoldDetails,
   Me,
+  AuditEntry,
   NewStudent,
   Notice,
   OfficeApplication,
+  OfficeClass,
+  OfficeReport,
   WaitlistPlace,
   PaymentInfo,
   PaymentStart,
@@ -238,6 +241,22 @@ export const admissionApi = {
 
   leaveWaitlist: (classId: string, studentId: string) =>
     request<void>(`/classes/${encodeURIComponent(classId)}/waitlist`, { method: "DELETE", studentId }),
+
+  officeClasses: () => request<OfficeClass[]>("/office/classes"),
+
+  editClass: (classId: string, name: string, totalSeats: number) =>
+    request<OfficeClass>(`/office/classes/${encodeURIComponent(classId)}`, { method: "PUT", body: { name, totalSeats } }),
+
+  setClassClosed: (classId: string, closed: boolean) =>
+    request<OfficeClass>(`/office/classes/${encodeURIComponent(classId)}/${closed ? "close" : "reopen"}`, { method: "POST" }),
+
+  officeReport: () => request<OfficeReport>("/office/reports"),
+
+  officeAudit: (action: string) => request<AuditEntry[]>(`/office/audit${action ? `?action=${encodeURIComponent(action)}` : ""}`),
+
+  // CSV files are links to the API, opened by the browser with the session cookie.
+  csvUrl: (path: "/office/reports/classes.csv" | "/office/audit.csv", action = "") =>
+    `${apiBaseUrl()}${path}${action ? `?action=${encodeURIComponent(action)}` : ""}`,
 
   slip: (holdId: string, studentId: string) => request<Slip>(`/applications/${encodeURIComponent(holdId)}/slip`, { studentId }),
 

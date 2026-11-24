@@ -102,7 +102,8 @@ public class SeatHoldService(AdmissionDatabase database, AdmissionSettings setti
         //    from the original POST /classes) is always open. Database clock only.
         var locked = await connection.QuerySingleOrDefaultAsync<(int TotalSeats, bool WindowOpen)?>("""
             select c.total_seats,
-                   (s.id is null or (s.status = 'PUBLISHED' and s.opens_at <= clock_timestamp() and s.closes_at > clock_timestamp())) as window_open
+                   c.closed_at is null
+                   and (s.id is null or (s.status = 'PUBLISHED' and s.opens_at <= clock_timestamp() and s.closes_at > clock_timestamp())) as window_open
               from admission_classes c
               left join admission_sessions s on s.id = c.session_id
              where c.id = @classId

@@ -198,6 +198,32 @@ export interface SlipCheck {
   admissionStatus: AdmissionStatus;
 }
 
+export interface OfficeClass {
+  id: string;
+  name: string;
+  totalSeats: number;
+  inUse: number;
+  closed: boolean;
+  waiting: number;
+}
+
+export interface OfficeReport {
+  applicationsPerHour: { hour: string; applications: number }[];
+  funnel: { applied: number; onHoldNow: number; paid: number; verified: number; rejected: number };
+  classes: OfficeClass[];
+  sandboxRevenueTaka: number;
+}
+
+export interface AuditEntry {
+  id: number;
+  createdAt: string;
+  actorRole: string;
+  action: string;
+  targetType: string;
+  targetId: string;
+  detail: string | null;
+}
+
 export interface OfficeApplication {
   holdId: string;
   serial: string;
