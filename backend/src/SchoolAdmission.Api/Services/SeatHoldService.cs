@@ -127,8 +127,18 @@ public class SeatHoldService(AdmissionDatabase database, AdmissionSettings setti
             """, new { classId }, transaction);
 
         // 2a. People on the waiting list get a freed seat before anyone new. This is also
-        //     how an offer still happens when the background worker is not running.
-        await waitlistOffers.OfferUnderLockAsync(connection, transaction, classId, totalSeats);
+        //     how an offer still happens when the background worker is not running. One
+        //     cheap question first, so a class with nobody waiting pays for one query only.
+        const string lineIsWaitingSql = """
+            select exists (select 1 from waitlist_entries where admission_class_id = @classId and status = 'WAITING')
+            """;
+        var lineIsWaiting = await connection.ExecuteScalarAsync<bool>(lineIsWaitingSql, new { classId }, transaction);
+        var offered = 0;
+        if (lineIsWaiting)
+        {
+            offered = await waitlistOffers.OfferUnderLockAsync(connection, transaction, classId, totalSeats);
+            lineIsWaiting = await connection.ExecuteScalarAsync<bool>(lineIsWaitingSql, new { classId }, transaction);
+        }
 
         // 3. One active application or admission per student per class.
         var existingHoldId = await connection.QueryFirstOrDefaultAsync<Guid?>("""
@@ -138,6 +148,8 @@ public class SeatHoldService(AdmissionDatabase database, AdmissionSettings setti
             """, new { classId, studentId }, transaction);
         if (existingHoldId is not null)
         {
+            // Offers made above are kept even though this request is refused.
+            if (offered > 0) await transaction.CommitAsync();
             throw AdmissionRuleException.AlreadyApplied(existingHoldId);
         }
 
@@ -145,11 +157,9 @@ public class SeatHoldService(AdmissionDatabase database, AdmissionSettings setti
         //    cannot take a seat. Without this, a seat freed by a cancel that commits in the
         //    middle of this transaction (cancel does not take the class lock) would go to the
         //    newcomer instead of the next person in line.
-        var lineIsWaiting = await connection.ExecuteScalarAsync<bool>("""
-            select exists (select 1 from waitlist_entries where admission_class_id = @classId and status = 'WAITING')
-            """, new { classId }, transaction);
         if (lineIsWaiting)
         {
+            if (offered > 0) await transaction.CommitAsync();
             SeasonMetrics.SeatConflict();
             throw AdmissionRuleException.ClassFull();
         }
