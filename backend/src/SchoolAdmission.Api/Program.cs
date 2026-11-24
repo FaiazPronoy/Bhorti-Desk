@@ -10,6 +10,7 @@ using SchoolAdmission.Api.Data;
 using SchoolAdmission.Api.Domain;
 using SchoolAdmission.Api.Security;
 using SchoolAdmission.Api.Errors;
+using SchoolAdmission.Api.Observability;
 using SchoolAdmission.Api.Services;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -19,6 +20,21 @@ DefaultTypeMap.MatchNamesWithUnderscores = true;
 
 var settings = AdmissionSettings.Load(builder.Configuration);
 builder.Services.AddSingleton(settings);
+
+// One JSON object per log line, with the request id from RequestIds on each.
+builder.Logging.ClearProviders();
+builder.Logging.AddJsonConsole(options => options.IncludeScopes = true);
+
+// The API description at /openapi/v1.json. The eight original endpoints are marked as
+// the frozen contract, so nobody changes them by accident.
+builder.Services.AddOpenApi(options => options.AddOperationTransformer((operation, context, _) =>
+{
+    if (FrozenContract.Has(context.Description.HttpMethod, context.Description.RelativePath))
+    {
+        operation.Description = "Frozen contract: path, method, status codes and fields never change. " + operation.Description;
+    }
+    return Task.CompletedTask;
+}));
 
 // Registered with a factory so the container owns it and closes its connections when
 // the host stops. Each test host would otherwise leave a full pool open.
@@ -111,6 +127,7 @@ using (var scope = app.Services.CreateScope())
 // browser reports a plain "class full" answer as a network error.
 // The real client address from nginx, before anything uses it.
 app.UseForwardedHeaders();
+app.UseMiddleware<RequestIds>();
 
 app.UseCors();
 
@@ -149,6 +166,7 @@ app.UseMiddleware<SessionCookie>();
 app.UseRateLimiter();
 
 app.MapControllers();
+app.MapOpenApi();
 
 app.Run();
 

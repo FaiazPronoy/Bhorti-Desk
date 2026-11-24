@@ -12,6 +12,8 @@
     <PackageReference Include="Npgsql" Version="10.0.3" />
     <!-- MIT licence. Turns the slip's verify address into QR modules; nothing else. -->
     <PackageReference Include="QRCoder" Version="1.6.0" />
+    <!-- MIT licence. Writes the API description at /openapi/v1.json. -->
+    <PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="10.0.15" />
   </ItemGroup>
 
   <ItemGroup>
