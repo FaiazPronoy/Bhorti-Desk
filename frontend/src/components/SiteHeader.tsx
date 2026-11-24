@@ -1,6 +1,7 @@
 import { NavLink } from "react-router";
 import { StudentIdBar } from "../features/student-identity/StudentIdBar";
 import { useLanguage } from "../i18n/LanguageProvider";
+import { BenchMark } from "./BenchMark";
 import { LanguageToggle } from "./LanguageToggle";
 
 export function SiteHeader() {
@@ -14,12 +15,7 @@ export function SiteHeader() {
       </a>
       <div className="page-width site-header__top">
         <NavLink to="/" className="site-name">
-          {/* A register book with a pencil-yellow cover band. */}
-          <svg viewBox="0 0 32 32" width="28" height="28" aria-hidden="true">
-            <rect x="5" y="3" width="22" height="26" rx="2" fill="var(--sheet)" stroke="var(--ink)" strokeWidth="2" />
-            <rect x="5" y="3" width="6" height="26" rx="1" fill="var(--pencil)" stroke="var(--ink)" strokeWidth="2" />
-            <path d="M15 11h8M15 16h8M15 21h5" stroke="var(--ink)" strokeWidth="2" />
-          </svg>
+          <BenchMark />
           <span translate="no">{t("site.name")}</span>
         </NavLink>
         <nav className="nav" aria-label={t("nav.main")}>

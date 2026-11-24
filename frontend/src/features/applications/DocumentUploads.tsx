@@ -79,7 +79,7 @@ function DocumentSlot({ kind, application, studentId }: { kind: DocumentKind; ap
       </div>
       <label htmlFor={inputId} className="button button--secondary document-slot__pick">
         {upload.isPending && <Spinner />}
-        <span>{saved ? t("document.replace", { name: label }) : t("document.add", { name: label })}</span>
+        <span>{kind === "PHOTO" ? t(saved ? "document.replacePhoto" : "document.addPhoto") : t(saved ? "document.replaceCertificate" : "document.addCertificate")}</span>
       </label>
       <input
         id={inputId}

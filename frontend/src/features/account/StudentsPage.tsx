@@ -1,3 +1,4 @@
+import { HowItWorks } from "../../components/HowItWorks";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useId, useState, type FormEvent } from "react";
 import { Navigate, useLocation, useNavigate } from "react-router";
@@ -62,7 +63,7 @@ export function StudentsPage() {
   return (
     <section className="page page--narrow">
       <h1 className="page-title">{t("students.title")}</h1>
-      <p className="page-intro">{t("students.intro")}</p>
+      <HowItWorks text={t("students.intro")} />
 
       {students.length === 0 ? (
         <p className="sheet empty-state">{t("students.empty")}</p>

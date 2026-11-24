@@ -1,3 +1,4 @@
+import { ClosedGate } from "../../components/Illustrations";
 import { useLanguage } from "../../i18n/LanguageProvider";
 import { formatDateTime } from "../../i18n/formatNumber";
 import { useServerNow } from "../../lib/serverClock";
@@ -24,7 +25,8 @@ export function SessionStatus() {
 
   return (
     <section className={`season season--${state.toLowerCase()}`} aria-labelledby="season-title">
-      <div>
+      {state === "UPCOMING" && <ClosedGate />}
+      <div className="season__text">
         <h2 id="season-title" className="season__title">
           {session.name}
         </h2>

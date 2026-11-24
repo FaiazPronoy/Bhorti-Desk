@@ -1,6 +1,6 @@
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { useEffect, useState } from "react";
-import { Link, useNavigate, useParams } from "react-router";
+import { Link, useLocation, useNavigate, useParams } from "react-router";
 import { admissionApi } from "../../api/admissionApiClient";
 import { errorMessageKey, isApiError } from "../../api/apiErrors";
 import type { HoldStatus } from "../../api/apiTypes";
@@ -23,11 +23,14 @@ import { useApplyForSeat, useCancelHold, usePayFee, useRefreshSeats, useSeatHold
 
 export function ApplicationPage() {
   const { holdId = "" } = useParams();
+  const location = useLocation();
+  // Arriving straight from a successful payment plays the stamp once.
+  const justPaid = (location.state as { justPaid?: boolean } | null)?.justPaid === true;
   // A new hold id means a new page: start its state from scratch.
-  return <ApplicationView key={holdId} holdId={holdId} />;
+  return <ApplicationView key={holdId} holdId={holdId} justPaid={justPaid} />;
 }
 
-function ApplicationView({ holdId }: { holdId: string }) {
+function ApplicationView({ holdId, justPaid }: { holdId: string; justPaid: boolean }) {
   const { t } = useLanguage();
   const navigate = useNavigate();
   const { studentId, askForNumber } = useStudentId();
@@ -170,8 +173,12 @@ function ApplicationView({ holdId }: { holdId: string }) {
     <section className="page page--narrow">
       <h1 className="page-title">{t("application.title")}</h1>
 
-      <SeatToken className={className} serial={application.data?.serial ?? data.serial} status={currentStatus} studentId={studentId} createdAt={data.createdAt}>
-        {currentStatus === "HELD" && <HoldCountdown expiresAt={data.expiresAt} now={now} />}
+      <SeatToken
+        stampLanding={justPaid}
+        className={className}
+        serial={application.data?.serial ?? data.serial}
+        status={currentStatus} studentId={studentId} createdAt={data.createdAt}>
+        {currentStatus === "HELD" && <HoldCountdown expiresAt={data.expiresAt} startedAt={data.createdAt} now={now} />}
         {currentStatus === "CONFIRMED" && (
           <>
             <p className="token__note token__note--confirmed">{t("application.confirmedNote")}</p>

@@ -1,18 +1,18 @@
 /* Design tokens. Components use these names only, never raw hex values.
-   An admission register on exercise-book paper: graphite ink, faint blue rules, and
-   pencil yellow as the one accent. Pencil yellow is a fill, never text on white.
-   Status colours always come with a word. */
+   An admission register on a school-office desk: a cool grey floor, white sheets,
+   graphite ink, faint blue rules only on ruled sheets, and pencil yellow as the one
+   accent. Pencil yellow is a fill, never text. Status colours always come with a word.
+   Every text pair was checked against WCAG AA; the lowest is 5.39:1. */
 :root {
   color-scheme: light;
-  --paper: #fbfaf4;
-  --paper-rule: #dce5ec;
-  --margin-line: #e2a49c;
+  --paper: #e8ecf1;
+  --paper-rule: #dce6f0;
   --sheet: #ffffff;
-  --sheet-soft: #f6f5ef;
-  --rule: #d8d5cb;
-  --rule-strong: #b9b6ab;
-  --ink: #22252a;
-  --ink-soft: #555a63;
+  --sheet-soft: #f3f5f8;
+  --rule: #cdd5de;
+  --rule-strong: #7d8996;
+  --ink: #1f252c;
+  --ink-soft: #4a5562;
 
   --pencil: #f2b705;
   --pencil-strong: #d9a400;
@@ -23,24 +23,26 @@
   --held-tint: #e7eff8;
   --confirmed: #1b6b43;
   --confirmed-tint: #e3f1e8;
-  --expired: #5a606b;
-  --expired-tint: #ecedef;
+  --expired: #56606c;
+  --expired-tint: #eceef1;
   --cancelled: #93302a;
   --cancelled-tint: #fae8e5;
   --danger: #b3261e;
   --danger-tint: #fbeae8;
-  --backdrop: rgb(34 37 42 / 0.5);
-  --token-lift: 0 10px 24px rgb(34 37 42 / 0.09), 0 1px 2px rgb(34 37 42 / 0.08);
+  --backdrop: rgb(31 37 44 / 0.5);
+  --token-lift: 0 10px 24px rgb(31 37 44 / 0.1), 0 1px 2px rgb(31 37 44 / 0.08);
 
   /* Onest has no Bangla letters, so Bangla falls through to Baloo Da 2. */
   --font-text: "Onest", "Baloo Da 2", system-ui, sans-serif;
 
+  /* A 1.2 scale from 16: 13, 16, 19, 23, 28, 33, and 48 for the countdown only. */
   --text-13: 0.8125rem;
-  --text-15: 0.9375rem;
-  --text-17: 1.0625rem;
-  --text-20: 1.25rem;
-  --text-24: 1.5rem;
-  --text-32: 2rem;
+  --text-15: 1rem;
+  --text-17: 1rem;
+  --text-20: 1.1875rem;
+  --text-24: 1.4375rem;
+  --text-28: 1.75rem;
+  --text-32: 2.0625rem;
   --text-48: 3rem;
 
   --space-1: 4px;
@@ -56,21 +58,21 @@
   --radius-sheet: 4px;
   --line-gap: 32px;
   --fade: 150ms ease-out;
+  --ease: cubic-bezier(0.2, 0.7, 0.2, 1);
   --header-height: 56px;
   --content-width: 1120px;
 }
 
 :root[data-theme="dark"] {
   color-scheme: dark;
-  --paper: #17181b;
-  --paper-rule: #212328;
-  --margin-line: #6b3a36;
-  --sheet: #1f2125;
-  --sheet-soft: #25272c;
-  --rule: #34373d;
-  --rule-strong: #4a4e56;
-  --ink: #ecebe6;
-  --ink-soft: #a9adb5;
+  --paper: #171b20;
+  --paper-rule: #2c343d;
+  --sheet: #20262d;
+  --sheet-soft: #2a3139;
+  --rule: #39424c;
+  --rule-strong: #6f7b88;
+  --ink: #e9edf2;
+  --ink-soft: #aeb8c3;
 
   --pencil: #f2b705;
   --pencil-strong: #ffc933;
@@ -81,8 +83,8 @@
   --held-tint: #1c2b3d;
   --confirmed: #7fd1a3;
   --confirmed-tint: #18301f;
-  --expired: #aab0ba;
-  --expired-tint: #2a2c31;
+  --expired: #aab3be;
+  --expired-tint: #2a2f36;
   --cancelled: #f0958c;
   --cancelled-tint: #3a211f;
   --danger: #ff8f86;

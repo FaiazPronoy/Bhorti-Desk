@@ -22,7 +22,9 @@ export function App() {
         <main id="main" className="page-width main" tabIndex={-1}>
           {/* A new address gets a fresh boundary, so one broken page does not stick. */}
           <ErrorBoundary key={location.pathname} message={t("error.pageCrashed")} reloadLabel={t("error.reload")}>
-            <Outlet />
+            <div className="page-fade">
+              <Outlet />
+            </div>
           </ErrorBoundary>
         </main>
         <footer className="site-footer">

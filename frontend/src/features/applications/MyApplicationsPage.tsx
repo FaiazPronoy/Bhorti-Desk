@@ -1,7 +1,9 @@
+import { HowItWorks } from "../../components/HowItWorks";
 import { Link } from "react-router";
 import { errorMessageKey } from "../../api/apiErrors";
 import { Button } from "../../components/Button";
 import { InlineAlert } from "../../components/InlineAlert";
+import { EmptyRegister } from "../../components/Illustrations";
 import { useLanguage } from "../../i18n/LanguageProvider";
 import { formatDateTime } from "../../i18n/formatNumber";
 import { useServerNow } from "../../lib/serverClock";
@@ -48,6 +50,7 @@ export function MyApplicationsPage() {
   } else if (holds.data.length === 0) {
     content = (
       <div className="sheet empty-state">
+        <EmptyRegister />
         <p>{t("myApplications.empty")}</p>
         <Link to="/" className="button button--primary">
           <span>{t("nav.classes")}</span>
@@ -84,7 +87,7 @@ export function MyApplicationsPage() {
   return (
     <section className="page page--narrow">
       <h1 className="page-title">{t("myApplications.title")}</h1>
-      <p className="page-intro">{t("myApplications.intro")}</p>
+      <HowItWorks text={t("myApplications.intro")} />
       {studentId && <WaitlistPlaces />}
       {content}
       {studentId && <NoticeList />}

@@ -1,3 +1,4 @@
+import { HowItWorks } from "../../components/HowItWorks";
 import { useState, type FormEvent } from "react";
 import { Link, useLocation, useNavigate } from "react-router";
 import { admissionApi } from "../../api/admissionApiClient";
@@ -57,7 +58,7 @@ export function LoginPage() {
   return (
     <section className="page page--narrow">
       <h1 className="page-title">{t("account.signInTitle")}</h1>
-      <p className="page-intro">{t("account.signInIntro")}</p>
+      <HowItWorks text={t("account.signInIntro")} />
 
       {step === "phone" ? (
         <form className="sheet office-form" onSubmit={sendCode} noValidate>

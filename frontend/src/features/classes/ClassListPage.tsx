@@ -1,9 +1,11 @@
+import { HowItWorks } from "../../components/HowItWorks";
 import { useState } from "react";
 import { Link, useNavigate } from "react-router";
 import { errorMessageKey, isApiError } from "../../api/apiErrors";
 import type { ClassSeatSummary } from "../../api/apiTypes";
 import { Button } from "../../components/Button";
 import { InlineAlert } from "../../components/InlineAlert";
+import { EmptyRegister, LooseCord } from "../../components/Illustrations";
 import { useLanguage } from "../../i18n/LanguageProvider";
 import type { MessageKey } from "../../i18n/en";
 import { effectiveStatus } from "../applications/holdStatus";
@@ -31,7 +33,7 @@ export function ClassListPage() {
     <section className="page">
       <SessionStatus />
       <h1 className="page-title">{t("classes.title")}</h1>
-      <p className="page-intro">{t("classes.intro")}</p>
+      <HowItWorks text={t("classes.intro")} />
       {/* Keeps the heading order h1, h2, h3 for screen readers; the table speaks for itself on screen. */}
       <h2 className="sr-only">{t("office.liveTable")}</h2>
       <ClassRegister showActions />
@@ -103,6 +105,7 @@ export function ClassRegister({ showActions }: { showActions: boolean }) {
   if (classes.isError && !classes.data) {
     return (
       <div className="sheet empty-state">
+        {isApiError(classes.error) && classes.error.kind === "network" && <LooseCord />}
         {/* A network failure is already explained by the banner at the top, so this
             box only says what is missing here instead of repeating it. */}
         <InlineAlert>
@@ -120,6 +123,7 @@ export function ClassRegister({ showActions }: { showActions: boolean }) {
   if (list.length === 0) {
     return (
       <div className="sheet empty-state">
+        <EmptyRegister />
         <h2 className="section-title">{t("classes.emptyTitle")}</h2>
         <p>{t("classes.emptyBody")}</p>
         {showActions && (

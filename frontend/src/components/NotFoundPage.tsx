@@ -1,10 +1,12 @@
 import { Link } from "react-router";
 import { useLanguage } from "../i18n/LanguageProvider";
+import { TornPage } from "./Illustrations";
 
 export function NotFoundPage() {
   const { t } = useLanguage();
   return (
     <section className="sheet empty-state">
+      <TornPage />
       <h1 className="page-title">{t("notFound.title")}</h1>
       <p>{t("notFound.body")}</p>
       <p className="empty-state__links">

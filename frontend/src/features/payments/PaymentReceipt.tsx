@@ -1,4 +1,5 @@
 import type { ApplicationDetails } from "../../api/apiTypes";
+import { StampedSlip } from "../../components/Illustrations";
 import { useLanguage } from "../../i18n/LanguageProvider";
 import { formatDateTime } from "../../i18n/formatNumber";
 
@@ -15,6 +16,7 @@ export function PaymentReceipt({ application }: { application: ApplicationDetail
       <h2 id="receipt-title" className="section-title">
         {t("payment.receiptTitle")}
       </h2>
+      {payment?.status === "PAID" && <StampedSlip />}
       {payment && (
         <dl className="receipt__lines">
           <div>

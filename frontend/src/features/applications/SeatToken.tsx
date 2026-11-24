@@ -11,12 +11,13 @@ interface SeatTokenProps {
   status: HoldStatus;
   studentId: string | null;
   createdAt?: string;
+  stampLanding?: boolean;
   children?: ReactNode;
 }
 
 // The application drawn as a paper token: the main part with the class, the number
 // (masked) and the countdown, and a stub with the serial, behind a perforated edge.
-export function SeatToken({ className, serial, status, studentId, createdAt, children }: SeatTokenProps) {
+export function SeatToken({ className, serial, status, studentId, createdAt, stampLanding = false, children }: SeatTokenProps) {
   const { t, language } = useLanguage();
   return (
     <article className={`token token--${status.toLowerCase()}`} aria-labelledby="token-class">
@@ -28,7 +29,7 @@ export function SeatToken({ className, serial, status, studentId, createdAt, chi
               {className}
             </h2>
           </div>
-          <StatusStamp status={status} />
+          <StatusStamp status={status} landing={stampLanding && status === "CONFIRMED"} />
         </div>
         {studentId && (
           <p className="token__student">

@@ -73,7 +73,7 @@ describe("applicant details", () => {
     renderApp("/applications/h1");
 
     const big = new File([new Uint8Array(400 * 1024)], "big.png", { type: "image/png" });
-    await user.upload(await screen.findByLabelText("Add Student's photo"), big);
+    await user.upload(await screen.findByLabelText("Add the student's photo"), big);
 
     expect(await screen.findByText("The photo is too large. Use one under 300 KB.")).toBeInTheDocument();
     expect(calls.some((call) => call.url.includes("/documents/"))).toBe(false);

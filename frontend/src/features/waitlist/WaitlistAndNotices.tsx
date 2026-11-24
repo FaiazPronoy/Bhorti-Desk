@@ -1,4 +1,5 @@
 import { Link } from "react-router";
+import { FullBenches, OfferRising } from "../../components/Illustrations";
 import type { NoticeKind } from "../../api/apiTypes";
 import { useLanguage } from "../../i18n/LanguageProvider";
 import { formatDateTime } from "../../i18n/formatNumber";
@@ -19,6 +20,7 @@ export function WaitlistPlaces() {
         {places.map((place) =>
           place.status === "OFFERED" && place.offeredHoldId ? (
             <li key={place.entryId} className="application-row waitlist-offer">
+              <OfferRising />
               <div className="application-row__main">
                 <h3 className="application-row__class">{place.className}</h3>
                 <p className="application-row__date">{t("waitlist.offered")}</p>
@@ -29,6 +31,7 @@ export function WaitlistPlaces() {
             </li>
           ) : (
             <li key={place.entryId} className="application-row">
+              <FullBenches />
               <div className="application-row__main">
                 <h3 className="application-row__class">{place.className}</h3>
                 <p className="application-row__date">{t("waitlist.position", { position: number(place.position) })}</p>
