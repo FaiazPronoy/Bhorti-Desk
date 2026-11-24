@@ -52,9 +52,9 @@ First come, first served, with a fair waiting list. However many people apply at
 
 ## Numbers
 
-All measured on 24 November 2026 on one Windows laptop with Docker Desktop 29.9.2 (8 CPUs, about 3.8 GB for Docker). .NET SDK 10.0.404, Node 22.23.5, PostgreSQL 17.11, nginx 1.29.8, k6 2.4.0.
+All measured on 24 and 25 November 2026 on one Windows laptop with Docker Desktop 29.9.2 (8 CPUs, about 3.8 GB for Docker). .NET SDK 10.0.404, Node 22.23.5, PostgreSQL 17.11, nginx 1.29.8, k6 2.4.0.
 
-**Tests.** 99 backend tests against a real PostgreSQL, 47 frontend tests. The eight original contract test files are byte for byte the ones submitted for the assignment.
+**Tests.** 99 backend tests against a real PostgreSQL, 47 frontend tests, all passing. The concurrency, stress, two-backend and waiting-list tests passed 20 runs in a row, each on a fresh database. The eight original contract test files are byte for byte the ones submitted for the assignment.
 
 **Load test** (`loadtest/`). 600 guardians at once, each pressing Apply twice, for the last 10 seats of a class of 50, through nginx in front of two backends:
 
@@ -63,8 +63,9 @@ All measured on 24 November 2026 on one Windows laptop with Docker Desktop 29.9.
 | Requests | 1242 |
 | Seats taken in the rush | 10 of 10 |
 | Server errors | 0 |
-| Median wait | 5.81 s |
-| 95th percentile wait | 12.87 s |
+| Throughput | 137.7 requests per second |
+| Median wait | 2.74 s |
+| 95th percentile wait | 5.44 s |
 | SQL check afterwards | 0 classes over their total, 0 students with two live seats |
 
 Every request for one class waits its turn at the class's row lock, so a crowd for one class is served one at a time; that is the price of never overbooking. These numbers come from the laptop above, not from any free hosting plan.
