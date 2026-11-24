@@ -15,6 +15,7 @@ import { SessionStatus } from "../season/SessionStatus";
 import { useSeason, windowAt } from "../season/useSeason";
 import { ClassRegisterRow } from "./ClassRegisterRow";
 import { useClassList } from "./useClassList";
+import { useClassRules } from "./useClassRules";
 
 interface RowError {
   classId: string;
@@ -47,6 +48,7 @@ export function ClassRegister({ showActions }: { showActions: boolean }) {
   const { studentId, askForNumber } = useStudentId();
   const apply = useApplyForSeat();
   const [rowError, setRowError] = useState<RowError | null>(null);
+  const rules = useClassRules();
   const session = useSeason().data?.session;
   const now = useServerNow();
   // Only classes inside a session that is not open wait. The API checks this again.
@@ -147,6 +149,7 @@ export function ClassRegister({ showActions }: { showActions: boolean }) {
             applying={apply.isPending && apply.variables?.classId === seats.id}
             applyDisabled={apply.isPending}
             notOpen={isWaiting(seats.id)}
+            feeTaka={rules.data?.find((rule) => rule.classId === seats.id)?.feeTaka}
             errorKey={rowError?.classId === seats.id ? rowError.key : undefined}
             errorHoldId={rowError?.classId === seats.id ? rowError.holdId : undefined}
             onApply={() => onApply(seats)}

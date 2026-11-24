@@ -1392,6 +1392,39 @@
   max-width: 100%;
 }
 
+/* ---------------------------------------------------------------- applicant details */
+
+.applicant-form {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+  margin-top: var(--space-8);
+  padding-top: var(--space-6);
+  border-top: 1px solid var(--rule-strong);
+}
+
+.applicant-form > .button {
+  align-self: flex-start;
+}
+
+.applicant-form__grid {
+  display: grid;
+  gap: var(--space-4);
+}
+
+@media (min-width: 640px) {
+  .applicant-form__grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    align-items: start;
+  }
+}
+
+.register-row__fee {
+  font-size: var(--text-15);
+  color: var(--ink-soft);
+  font-variant-numeric: tabular-nums;
+}
+
 /* ---------------------------------------------------------------- account */
 
 /* Student names in the picker are words, not digits, so they use the text font. */

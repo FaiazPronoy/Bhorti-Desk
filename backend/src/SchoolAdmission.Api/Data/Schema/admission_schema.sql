@@ -128,3 +128,31 @@ create table if not exists audit_log (
 );
 
 create index if not exists ix_audit_log_newest on audit_log (created_at desc);
+-- ---------------------------------------------------------------- applicant details
+
+-- A human serial for the token and slip. The hold id stays internal.
+create sequence if not exists seat_hold_serials;
+alter table seat_holds add column if not exists serial_number bigint not null default nextval('seat_hold_serials');
+create unique index if not exists ux_seat_holds_serial on seat_holds (serial_number);
+
+-- Rules the office sets for a class. A separate table, so the original class responses
+-- and the original POST /classes never change.
+create table if not exists class_rules (
+    admission_class_id uuid    primary key references admission_classes (id),
+    min_age            integer null check (min_age between 2 and 25),
+    max_age            integer null check (max_age between 2 and 25),
+    age_cutoff_date    date    null,
+    fee_taka           integer not null default 0 check (fee_taka between 0 and 1000000),
+    check (min_age is null or max_age is null or min_age <= max_age)
+);
+
+create table if not exists applicant_details (
+    seat_hold_id    uuid         primary key references seat_holds (id),
+    student_name_bn varchar(100) not null,
+    student_name_en varchar(100) not null,
+    date_of_birth   date         not null,
+    guardian_name   varchar(100) not null,
+    guardian_phone  varchar(11)  not null check (guardian_phone ~ '^01[3-9][0-9]{8}$'),
+    previous_school varchar(150) null,
+    updated_at      timestamptz  not null default clock_timestamp()
+);

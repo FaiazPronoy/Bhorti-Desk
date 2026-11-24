@@ -14,6 +14,7 @@ interface ClassRegisterRowProps {
   applyDisabled: boolean;
   // Inside an admission session that is not open right now.
   notOpen?: boolean;
+  feeTaka?: number;
   errorKey?: MessageKey;
   errorHoldId?: string;
   onApply: () => void;
@@ -21,7 +22,7 @@ interface ClassRegisterRowProps {
 
 // One line of the register. From 768 px up the cells line up under the column heads;
 // below that the same cells stack into a small sheet with their own labels.
-export function ClassRegisterRow({ seats, showActions, myActiveHold, applying, applyDisabled, notOpen = false, errorKey, errorHoldId, onApply }: ClassRegisterRowProps) {
+export function ClassRegisterRow({ seats, showActions, myActiveHold, applying, applyDisabled, notOpen = false, feeTaka, errorKey, errorHoldId, onApply }: ClassRegisterRowProps) {
   const { t, number } = useLanguage();
   const isFull = seats.availableSeats <= 0;
 
@@ -36,6 +37,7 @@ export function ClassRegisterRow({ seats, showActions, myActiveHold, applying, a
     <li className={`register-row ${showActions ? "" : "register-row--office"}`}>
       <div className="register-row__name">
         <h3 className="register-row__title">{seats.name}</h3>
+        {feeTaka !== undefined && feeTaka > 0 && <p className="register-row__fee">{t("classes.fee", { amount: number(feeTaka) })}</p>}
       </div>
 
       <div className="register-row__picture">

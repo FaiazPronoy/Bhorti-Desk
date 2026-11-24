@@ -12,6 +12,7 @@ import type { MessageKey } from "../../i18n/en";
 import { formatDateTime } from "../../i18n/formatNumber";
 import { useClassList } from "../classes/useClassList";
 import { seasonKey } from "../season/useSeason";
+import { OfficeClassRules } from "./OfficeClassRules";
 
 const officeSessionsKey = ["office", "sessions"] as const;
 
@@ -44,6 +45,7 @@ export function OfficeSessions() {
         </ul>
       )}
       <NewSessionForm />
+      <OfficeClassRules />
     </div>
   );
 }
@@ -149,7 +151,7 @@ function NewSessionForm() {
     event.preventDefault();
     setFormError(null);
     // The picker gives local time with no zone. Turned into an exact moment here.
-    const exact = (value: string) => (value ? new Date(value).toISOString() : "");
+    const exact = (value: string) => (value ? new Date(value).toISOString() : null);
     create.mutate({ academicYear: year ? Number(year) : null, name: name.trim(), opensAt: exact(opensAt), closesAt: exact(closesAt) });
   }
 

@@ -4,6 +4,10 @@ import type {
   AdmissionClass,
   AdmissionSession,
   ApiErrorBody,
+  ApplicantInput,
+  ApplicationDetails,
+  ClassRules,
+  ClassRulesForm,
   ClassSeatSummary,
   ConfirmedHold,
   CreatedHold,
@@ -147,6 +151,17 @@ export const admissionApi = {
 
   addClassToSession: (id: string, classId: string) =>
     request<AdmissionSession>(`/office/sessions/${encodeURIComponent(id)}/classes`, { method: "POST", body: { classId } }),
+
+  application: (holdId: string, studentId: string) =>
+    request<ApplicationDetails>(`/applications/${encodeURIComponent(holdId)}`, { studentId }),
+
+  saveApplicant: (holdId: string, studentId: string, applicant: ApplicantInput) =>
+    request<ApplicationDetails>(`/applications/${encodeURIComponent(holdId)}/applicant`, { method: "PUT", studentId, body: applicant }),
+
+  classRules: () => request<ClassRules[]>("/season/class-rules"),
+
+  saveClassRules: (classId: string, rules: ClassRulesForm) =>
+    request<ClassRules>(`/office/classes/${encodeURIComponent(classId)}/rules`, { method: "PUT", body: rules }),
 
   me: () => request<Me>("/auth/me"),
 

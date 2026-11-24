@@ -1,5 +1,7 @@
+import { useQuery } from "@tanstack/react-query";
 import { useEffect, useState } from "react";
 import { Link, useNavigate, useParams } from "react-router";
+import { admissionApi } from "../../api/admissionApiClient";
 import { errorMessageKey, isApiError } from "../../api/apiErrors";
 import type { HoldStatus } from "../../api/apiTypes";
 import { Button } from "../../components/Button";
@@ -11,6 +13,7 @@ import type { MessageKey } from "../../i18n/en";
 import { useServerNow } from "../../lib/serverClock";
 import { useClassList } from "../classes/useClassList";
 import { useStudentId } from "../student-identity/useStudentId";
+import { ApplicantForm, applicationKey } from "./ApplicantForm";
 import { HoldCountdown } from "./HoldCountdown";
 import { effectiveStatus } from "./holdStatus";
 import { SeatToken } from "./SeatToken";
@@ -27,6 +30,13 @@ function ApplicationView({ holdId }: { holdId: string }) {
   const navigate = useNavigate();
   const { studentId, askForNumber } = useStudentId();
   const hold = useSeatHold(holdId);
+  // Serial, fee and applicant details. Only the owner can read them.
+  const application = useQuery({
+    queryKey: applicationKey(holdId, studentId),
+    queryFn: () => admissionApi.application(holdId, studentId!),
+    enabled: studentId !== null,
+    retry: false,
+  });
   const classes = useClassList();
   const pay = usePayFee(holdId);
   const cancel = useCancelHold(holdId);
@@ -146,7 +156,7 @@ function ApplicationView({ holdId }: { holdId: string }) {
     <section className="page page--narrow">
       <h1 className="page-title">{t("application.title")}</h1>
 
-      <SeatToken className={className} serial={data.serial} status={currentStatus} studentId={studentId} createdAt={data.createdAt}>
+      <SeatToken className={className} serial={application.data?.serial ?? data.serial} status={currentStatus} studentId={studentId} createdAt={data.createdAt}>
         {currentStatus === "HELD" && <HoldCountdown expiresAt={data.expiresAt} now={now} />}
         {currentStatus === "CONFIRMED" && (
           <>
@@ -159,6 +169,10 @@ function ApplicationView({ holdId }: { holdId: string }) {
         {currentStatus === "EXPIRED" && <p className="token__note">{t("application.expiredNote")}</p>}
         {currentStatus === "CANCELLED" && <p className="token__note">{t("application.cancelledNote")}</p>}
       </SeatToken>
+
+      {currentStatus === "HELD" && application.data && studentId && (
+        <ApplicantForm key={application.data.holdId} application={application.data} studentId={studentId} />
+      )}
 
       <div className="token-actions" aria-live="polite">
         {(currentStatus === "HELD" || currentStatus === "EXPIRED") && (

@@ -86,8 +86,42 @@ export interface CurrentSeason {
 export interface SessionForm {
   academicYear: number | null;
   name: string;
-  opensAt: string;
-  closesAt: string;
+  opensAt: string | null;
+  closesAt: string | null;
+}
+
+export interface ClassRules {
+  classId: string;
+  minAge: number | null;
+  maxAge: number | null;
+  ageCutoffDate: string | null;
+  feeTaka: number;
+}
+
+export type ClassRulesForm = Omit<ClassRules, "classId">;
+
+export interface Applicant {
+  studentNameBn: string;
+  studentNameEn: string;
+  dateOfBirth: string;
+  guardianName: string;
+  guardianPhone: string;
+  previousSchool: string | null;
+}
+
+// An empty date goes to the API as null, so it gets its own clear field error.
+export type ApplicantInput = Omit<Applicant, "dateOfBirth"> & { dateOfBirth: string | null };
+
+export interface ApplicationDetails {
+  holdId: string;
+  serial: string;
+  classId: string;
+  className: string;
+  status: HoldStatus;
+  expiresAt: string;
+  serverTime: string;
+  rules: ClassRules | null;
+  applicant: Applicant | null;
 }
 
 export type Gender = "MALE" | "FEMALE" | "OTHER";
