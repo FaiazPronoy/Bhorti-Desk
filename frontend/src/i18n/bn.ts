@@ -27,6 +27,10 @@ export const bn: Record<MessageKey, string> = {
   "student.help": "আবেদন করুন, তারপর সময় শেষ হওয়ার আগে ভর্তি ফি দিন। না দিলে সিটটি অন্য কেউ পাবে।",
   "student.sharedComputer": "অন্যের কম্পিউটার হলে কাজ শেষে \"নম্বর বদলান\" চাপুন।",
   "student.needed": "আগে শিক্ষার্থীর জন্ম নিবন্ধন নম্বর লিখুন।",
+  "student.lastFour": "শেষে {digits}",
+  "student.show": "দেখুন",
+  "student.hide": "লুকান",
+  "student.howItWorks": "কীভাবে কাজ করে",
 
   "classes.title": "ক্লাস তালিকা",
   "classes.intro": "যে আগে আবেদন করবে, সে আগে সিট পাবে। সংখ্যাগুলো নিজে থেকেই হালনাগাদ হয়।",

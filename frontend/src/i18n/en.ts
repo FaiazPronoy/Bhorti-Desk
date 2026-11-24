@@ -26,6 +26,10 @@ export const en = {
   "student.help": "Apply, then pay the fee before the time ends. If you do not, the seat goes to someone else.",
   "student.sharedComputer": "On a shared computer, press \"Change number\" when you finish.",
   "student.needed": "Enter the student's birth registration number first.",
+  "student.lastFour": "ends {digits}",
+  "student.show": "Show",
+  "student.hide": "Hide",
+  "student.howItWorks": "How it works",
 
   "classes.title": "Classes",
   "classes.intro": "Seats are given in the order people apply. Numbers update by themselves.",

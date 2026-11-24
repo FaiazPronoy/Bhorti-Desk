@@ -3,6 +3,7 @@ import { useCallback } from "react";
 import { admissionApi } from "../../api/admissionApiClient";
 import { isApiError } from "../../api/apiErrors";
 import type { Me } from "../../api/apiTypes";
+import { signInRequired } from "../../lib/runtimeConfig";
 
 export const meKey = ["account", "me"] as const;
 export const myStudentsKey = ["account", "students"] as const;
@@ -20,6 +21,8 @@ export function useMe() {
       }
     },
     staleTime: 60_000,
+    // With sign-in off nobody has an account, so there is nothing to ask.
+    enabled: signInRequired(),
   });
 }
 

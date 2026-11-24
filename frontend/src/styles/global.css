@@ -357,6 +357,11 @@
   letter-spacing: 0.03em;
 }
 
+/* A saved number stays in the box but shows as dots until the guardian presses Show. */
+.student-bar__input--hidden {
+  -webkit-text-security: disc;
+}
+
 .student-bar__input[aria-invalid="true"] {
   border-color: var(--danger);
 }

@@ -8,6 +8,7 @@ afterEach(() => {
   vi.unstubAllGlobals();
   vi.restoreAllMocks();
   localStorage.clear();
+  delete window.__RUNTIME_CONFIG__;
 });
 
 // jsdom has no layout, so scrolling is a no-op.

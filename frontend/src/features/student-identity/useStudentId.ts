@@ -1,40 +1,102 @@
-import { createContext, createElement, useCallback, useContext, useEffect, useMemo, useState, type ReactNode } from "react";
+import { createContext, createElement, useCallback, useContext, useEffect, useMemo, useRef, useState, type ReactNode, type RefObject } from "react";
 import { useQueryClient } from "@tanstack/react-query";
 import { useLocation, useNavigate } from "react-router";
 import type { Student } from "../../api/apiTypes";
+import { signInRequired } from "../../lib/runtimeConfig";
 import { useMe, useMyStudents } from "../account/useAccount";
 
-const STORAGE_KEY = "bhorti-desk.selected-student";
+const SELECTED_STUDENT_KEY = "bhorti-desk.selected-student";
+const TYPED_NUMBER_KEY = "bhorti-desk.student-id";
 
 interface StudentIdContextValue {
-  // The birth registration number of the student this guardian is acting for.
+  // The birth registration number of the student this person is acting for.
   studentId: string | null;
   students: Student[];
   selectStudent: (birthRegistrationNumber: string) => void;
-  // Apply, Pay and Cancel call this when nobody is selected: it sends the person to
-  // sign in, or to add a student, and comes back here afterwards.
+  // Apply, Pay and Cancel call this when nobody is chosen. Without sign-in it moves focus
+  // to the number box. With sign-in it goes to the sign-in or students page.
   askForNumber: () => void;
+  // Used by the number box when sign-in is off.
+  saveStudentId: (digits: string) => void;
+  clearStudentId: () => void;
+  numberWasAskedFor: boolean;
+  inputRef: RefObject<HTMLInputElement | null>;
 }
 
 const StudentIdContext = createContext<StudentIdContextValue | null>(null);
 
-function readStored(): string | null {
+function readStored(key: string): string | null {
   try {
-    return localStorage.getItem(STORAGE_KEY);
+    const stored = localStorage.getItem(key);
+    return stored && /^[0-9]{17}$/.test(stored) ? stored : null;
   } catch {
     return null;
   }
 }
 
-function writeStored(value: string) {
+function writeStored(key: string, value: string | null) {
   try {
-    localStorage.setItem(STORAGE_KEY, value);
+    if (value) localStorage.setItem(key, value);
+    else localStorage.removeItem(key);
   } catch {
     // Storage is blocked: the choice lasts for this visit only.
   }
 }
 
 export function StudentIdProvider({ children }: { children: ReactNode }) {
+  return signInRequired()
+    ? createElement(AccountStudentProvider, null, children)
+    : createElement(TypedNumberProvider, null, children);
+}
+
+// Default mode: the number typed in the box is the identity.
+function TypedNumberProvider({ children }: { children: ReactNode }) {
+  const queryClient = useQueryClient();
+  const [studentId, setStudentId] = useState<string | null>(() => readStored(TYPED_NUMBER_KEY));
+  const [numberWasAskedFor, setNumberWasAskedFor] = useState(false);
+  const inputRef = useRef<HTMLInputElement | null>(null);
+
+  const switchStudent = useCallback(
+    (next: string | null) => {
+      if (next !== studentId) {
+        // Nothing cached for the previous student may show for the next one.
+        queryClient.removeQueries({ queryKey: ["student"] });
+      }
+      setStudentId(next);
+      writeStored(TYPED_NUMBER_KEY, next);
+    },
+    [queryClient, studentId],
+  );
+
+  const value = useMemo<StudentIdContextValue>(
+    () => ({
+      studentId,
+      students: [],
+      selectStudent: () => {},
+      saveStudentId: (digits) => {
+        setNumberWasAskedFor(false);
+        switchStudent(digits);
+      },
+      clearStudentId: () => {
+        switchStudent(null);
+        inputRef.current?.focus();
+      },
+      askForNumber: () => {
+        setNumberWasAskedFor(true);
+        inputRef.current?.focus();
+        inputRef.current?.scrollIntoView({ block: "center" });
+      },
+      numberWasAskedFor,
+      inputRef,
+    }),
+    [studentId, numberWasAskedFor, switchStudent],
+  );
+
+  return createElement(StudentIdContext.Provider, { value }, children);
+}
+
+// Sign-in mode: the guardian picks one of the students on the account.
+function AccountStudentProvider({ children }: { children: ReactNode }) {
   const queryClient = useQueryClient();
   const navigate = useNavigate();
   const location = useLocation();
@@ -42,7 +104,8 @@ export function StudentIdProvider({ children }: { children: ReactNode }) {
   const isGuardian = me.data?.kind === "GUARDIAN";
   const studentsQuery = useMyStudents(isGuardian);
   const students = useMemo(() => (isGuardian ? studentsQuery.data ?? [] : []), [isGuardian, studentsQuery.data]);
-  const [chosen, setChosen] = useState<string | null>(readStored);
+  const [chosen, setChosen] = useState<string | null>(() => readStored(SELECTED_STUDENT_KEY));
+  const inputRef = useRef<HTMLInputElement | null>(null);
 
   // Only a student that is really on this account can be the selected one.
   const studentId = students.find((s) => s.birthRegistrationNumber === chosen)?.birthRegistrationNumber
@@ -50,7 +113,7 @@ export function StudentIdProvider({ children }: { children: ReactNode }) {
     ?? null;
 
   useEffect(() => {
-    if (studentId && studentId !== chosen) writeStored(studentId);
+    if (studentId && studentId !== chosen) writeStored(SELECTED_STUDENT_KEY, studentId);
   }, [studentId, chosen]);
 
   const selectStudent = useCallback(
@@ -60,7 +123,7 @@ export function StudentIdProvider({ children }: { children: ReactNode }) {
         queryClient.removeQueries({ queryKey: ["student"] });
       }
       setChosen(birthRegistrationNumber);
-      writeStored(birthRegistrationNumber);
+      writeStored(SELECTED_STUDENT_KEY, birthRegistrationNumber);
     },
     [queryClient, studentId],
   );
@@ -72,7 +135,16 @@ export function StudentIdProvider({ children }: { children: ReactNode }) {
   }, [isGuardian, navigate, location.pathname]);
 
   const value = useMemo<StudentIdContextValue>(
-    () => ({ studentId, students, selectStudent, askForNumber }),
+    () => ({
+      studentId,
+      students,
+      selectStudent,
+      askForNumber,
+      saveStudentId: selectStudent,
+      clearStudentId: () => {},
+      numberWasAskedFor: false,
+      inputRef,
+    }),
     [studentId, students, selectStudent, askForNumber],
   );
 

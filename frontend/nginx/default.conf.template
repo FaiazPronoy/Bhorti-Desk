@@ -14,7 +14,7 @@ server {
         default_type application/javascript;
         add_header Cache-Control "no-store" always;
         add_header X-Content-Type-Options "nosniff" always;
-        return 200 'window.__RUNTIME_CONFIG__ = { apiBaseUrl: "${API_BASE_URL}" };';
+        return 200 'window.__RUNTIME_CONFIG__ = { apiBaseUrl: "${API_BASE_URL}", signInRequired: "${SIGN_IN_REQUIRED}" === "true" };';
     }
 
     # The API, at the same origin as the page. The backend sees the real client address

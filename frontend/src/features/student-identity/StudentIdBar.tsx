@@ -2,11 +2,18 @@ import { useId } from "react";
 import { Link, useNavigate } from "react-router";
 import { admissionApi } from "../../api/admissionApiClient";
 import { useLanguage } from "../../i18n/LanguageProvider";
+import { signInRequired } from "../../lib/runtimeConfig";
 import { useMe, useResetAccount } from "../account/useAccount";
+import { StudentNumberBox } from "./StudentNumberBox";
 import { useStudentId } from "./useStudentId";
 
-// The strip under the header: who is signed in, and which child they are applying for.
+// The strip under the header. Without sign-in it is the number box. With sign-in it
+// shows who is signed in and which child they are applying for.
 export function StudentIdBar() {
+  return signInRequired() ? <AccountBar /> : <StudentNumberBox />;
+}
+
+function AccountBar() {
   const { t } = useLanguage();
   const me = useMe();
   const { studentId, students, selectStudent } = useStudentId();

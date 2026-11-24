@@ -13,7 +13,7 @@ type Handler = (url: string, init: RequestInit) => { status: number; body?: unkn
 // Replaces fetch with a small table of answers. Every call is recorded so a test can
 // look at the headers that were sent.
 export function mockApi(handler: Handler) {
-  window.__RUNTIME_CONFIG__ = { apiBaseUrl: API };
+  window.__RUNTIME_CONFIG__ = { ...window.__RUNTIME_CONFIG__, apiBaseUrl: API };
   const calls: { url: string; init: RequestInit }[] = [];
   const fetchMock = vi.fn(async (input: RequestInfo | URL, init: RequestInit = {}) => {
     const url = String(input);
@@ -47,9 +47,15 @@ export function renderApp(path: string, language: Language | "stored" = "en") {
 
 export const VALID_STUDENT_ID = "20150123456789012";
 
+// Runs the app as a deployment with SIGN_IN_REQUIRED on. Default is off.
+export function turnSignInOn() {
+  window.__RUNTIME_CONFIG__ = { ...window.__RUNTIME_CONFIG__, signInRequired: true };
+}
+
 // Answers as a signed-in guardian with one student on the account, then asks the test's
 // own handler for everything else.
 export function asGuardian(handler: Handler): Handler {
+  turnSignInOn();
   return (url, init) => {
     if (url === "/auth/me") return { status: 200, body: { kind: "GUARDIAN", id: "g1", role: null } };
     if (url === "/me/students") {

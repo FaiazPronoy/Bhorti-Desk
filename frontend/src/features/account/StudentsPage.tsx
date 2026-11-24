@@ -9,7 +9,7 @@ import { InlineAlert } from "../../components/InlineAlert";
 import { TextField } from "../../components/TextField";
 import { useLanguage } from "../../i18n/LanguageProvider";
 import type { MessageKey } from "../../i18n/en";
-import { cleanDigits } from "../student-identity/birthRegistrationNumber";
+import { cleanDigits, maskBirthRegistrationNumber } from "../student-identity/birthRegistrationNumber";
 import { useStudentId } from "../student-identity/useStudentId";
 import { myStudentsKey, useMe } from "./useAccount";
 
@@ -72,7 +72,7 @@ export function StudentsPage() {
             <li key={student.id} className="application-row">
               <div className="application-row__main">
                 <h2 className="application-row__class">{student.fullName}</h2>
-                <p className="application-row__date mono">{student.birthRegistrationNumber}</p>
+                <p className="application-row__date mono" translate="no">{maskBirthRegistrationNumber(student.birthRegistrationNumber)}</p>
               </div>
             </li>
           ))}

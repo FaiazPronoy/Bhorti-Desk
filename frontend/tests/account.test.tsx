@@ -1,8 +1,8 @@
 import { screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-import { describe, expect, it } from "vitest";
+import { beforeEach, describe, expect, it } from "vitest";
 import { checkBirthRegistrationNumber, cleanDigits } from "../src/features/student-identity/birthRegistrationNumber";
-import { asGuardian, mockApi, renderApp, VALID_STUDENT_ID } from "./renderApp";
+import { asGuardian, mockApi, renderApp, turnSignInOn, VALID_STUDENT_ID } from "./renderApp";
 
 const oneClass = [{ id: "c1", name: "Class 6", totalSeats: 10, heldSeats: 0, confirmedSeats: 0, availableSeats: 10 }];
 
@@ -20,6 +20,8 @@ describe("birth registration number", () => {
 });
 
 describe("account", () => {
+  beforeEach(() => turnSignInOn());
+
   it("sends someone who is not signed in to the sign-in page when they press Apply", async () => {
     mockApi((url) => (url === "/classes" ? { status: 200, body: oneClass } : undefined));
     const user = userEvent.setup();

@@ -1,6 +1,6 @@
 declare global {
   interface Window {
-    __RUNTIME_CONFIG__?: { apiBaseUrl?: string };
+    __RUNTIME_CONFIG__?: { apiBaseUrl?: string; signInRequired?: boolean };
   }
 }
 
@@ -12,4 +12,10 @@ export function apiBaseUrl(): string {
   const fromBuild = (import.meta.env.VITE_API_BASE_URL as string | undefined)?.trim();
   const chosen = fromRuntime || fromBuild || `${window.location.protocol}//${window.location.hostname}:8080`;
   return chosen.replace(/\/+$/, "");
+}
+
+// Off by default: the guardian types the birth registration number, as in the original
+// contract. On: guardians and staff sign in. Set from SIGN_IN_REQUIRED, like the API.
+export function signInRequired(): boolean {
+  return window.__RUNTIME_CONFIG__?.signInRequired === true;
 }
