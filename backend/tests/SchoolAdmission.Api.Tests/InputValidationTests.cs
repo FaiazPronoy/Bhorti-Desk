@@ -12,7 +12,7 @@ public class InputValidationTests
     public async Task Bad_input_never_returns_500()
     {
         await using var api = new AdmissionApiFactory();
-        var client = api.CreateSignedInClient();
+        var client = api.CreateClient();
         var classId = await ApiCalls.CreateClassAsync(client, 2);
         var student = ApiCalls.NewStudentId();
         var holdId = await ApiCalls.ApplyAndGetHoldIdAsync(client, classId, student);
@@ -92,7 +92,7 @@ public class InputValidationTests
     public async Task Each_bad_field_is_named_in_fieldErrors()
     {
         await using var api = new AdmissionApiFactory();
-        var client = api.CreateSignedInClient();
+        var client = api.CreateClient();
 
         var response = await client.PostAsJsonAsync("/classes", new { name = "", totalSeats = 0 });
         Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
@@ -110,7 +110,7 @@ public class InputValidationTests
     public async Task Student_id_errors_use_their_own_codes(string header, string expectedCode)
     {
         await using var api = new AdmissionApiFactory();
-        var client = api.CreateSignedInClient();
+        var client = api.CreateClient();
         var classId = await ApiCalls.CreateClassAsync(client, 2);
 
         var request = new HttpRequestMessage(HttpMethod.Post, $"/classes/{classId}/holds");
@@ -125,7 +125,7 @@ public class InputValidationTests
     public async Task Spaces_around_the_student_id_are_ignored()
     {
         await using var api = new AdmissionApiFactory();
-        var client = api.CreateSignedInClient();
+        var client = api.CreateClient();
         var classId = await ApiCalls.CreateClassAsync(client, 2);
 
         var response = await ApiCalls.ApplyAsync(client, classId, "  " + ApiCalls.NewStudentId() + " ");

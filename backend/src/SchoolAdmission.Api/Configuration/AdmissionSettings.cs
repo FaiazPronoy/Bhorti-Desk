@@ -8,10 +8,14 @@ public class AdmissionSettings
     public required int HoldDurationSeconds { get; init; }
     public required string[] CorsAllowedOrigins { get; init; }
 
-    // Anti-abuse limits. Tests turn some of them off to measure seats alone.
+    // Off by default, so the eight original endpoints answer exactly as the contract says:
+    // no login, identity from X-Student-Id. Turn it on for a real deployment.
+    public bool SignInRequired { get; init; }
+
+    // Anti-abuse limits. All off by default for the same reason.
     public int MaxActiveHoldsPerGuardian { get; init; } = 3;
-    public int HoldCooldownSeconds { get; init; } = 600;
-    public bool RateLimitsEnabled { get; init; } = true;
+    public int HoldCooldownSeconds { get; init; }
+    public bool RateLimitsEnabled { get; init; }
 
     // First admin account, created at start when there is no staff yet.
     public string? AdminEmail { get; init; }
@@ -64,9 +68,10 @@ public class AdmissionSettings
             ConnectionString = connectionString,
             HoldDurationSeconds = holdSeconds,
             CorsAllowedOrigins = origins,
+            SignInRequired = IsTrue(configuration["SIGN_IN_REQUIRED"]),
             MaxActiveHoldsPerGuardian = PositiveOr(configuration["MAX_ACTIVE_HOLDS_PER_GUARDIAN"], 3, allowZero: false),
-            HoldCooldownSeconds = PositiveOr(configuration["HOLD_COOLDOWN_SECONDS"], 600, allowZero: true),
-            RateLimitsEnabled = !IsFalse(configuration["RATE_LIMITS_ENABLED"]),
+            HoldCooldownSeconds = PositiveOr(configuration["HOLD_COOLDOWN_SECONDS"], 0, allowZero: true),
+            RateLimitsEnabled = IsTrue(configuration["RATE_LIMITS_ENABLED"]),
             AdminEmail = configuration["ADMIN_EMAIL"]?.Trim(),
             AdminPassword = configuration["ADMIN_PASSWORD"],
             LogOtpCodes = IsTrue(configuration["OTP_LOG_CODES"]),

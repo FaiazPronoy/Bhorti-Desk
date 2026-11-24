@@ -23,6 +23,10 @@ services:
       HOLD_DURATION_SECONDS: ${HOLD_DURATION_SECONDS:-600}
       CORS_ALLOWED_ORIGINS: ${CORS_ALLOWED_ORIGINS:-*}
       ASPNETCORE_HTTP_PORTS: "8080"
+      # Off keeps the original no-login contract. On needs guardian and staff sign-in.
+      SIGN_IN_REQUIRED: ${SIGN_IN_REQUIRED:-false}
+      RATE_LIMITS_ENABLED: ${RATE_LIMITS_ENABLED:-false}
+      HOLD_COOLDOWN_SECONDS: ${HOLD_COOLDOWN_SECONDS:-0}
       # First school office account. Change both before anyone else can reach the app.
       ADMIN_EMAIL: ${ADMIN_EMAIL:-admin@bhortidesk.local}
       ADMIN_PASSWORD: ${ADMIN_PASSWORD:-change-this-local-password}
@@ -47,6 +51,9 @@ services:
       HOLD_DURATION_SECONDS: ${HOLD_DURATION_SECONDS:-600}
       CORS_ALLOWED_ORIGINS: ${CORS_ALLOWED_ORIGINS:-*}
       ASPNETCORE_HTTP_PORTS: "8080"
+      SIGN_IN_REQUIRED: ${SIGN_IN_REQUIRED:-false}
+      RATE_LIMITS_ENABLED: ${RATE_LIMITS_ENABLED:-false}
+      HOLD_COOLDOWN_SECONDS: ${HOLD_COOLDOWN_SECONDS:-0}
       # First school office account. Change both before anyone else can reach the app.
       ADMIN_EMAIL: ${ADMIN_EMAIL:-admin@bhortidesk.local}
       ADMIN_PASSWORD: ${ADMIN_PASSWORD:-change-this-local-password}
@@ -67,6 +74,7 @@ services:
       # "/api" goes through this container's nginx to the backend, so the page and the
       # API share one origin and the session cookie stays first-party.
       API_BASE_URL: ${API_BASE_URL:-/api}
+      SIGN_IN_REQUIRED: ${SIGN_IN_REQUIRED:-false}
     depends_on:
       - backend
     restart: unless-stopped

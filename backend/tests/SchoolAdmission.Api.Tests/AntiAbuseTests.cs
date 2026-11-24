@@ -40,7 +40,7 @@ public class AntiAbuseTests
     [Fact]
     public async Task One_family_cannot_hold_more_than_three_unpaid_seats_even_all_at_once()
     {
-        await using var api = new AdmissionApiFactory();
+        await using var api = new AdmissionApiFactory(signInRequired: true);
         var staff = api.CreateSignedInClient();
         var classes = new List<string>();
         for (var i = 0; i < 6; i++) classes.Add(await ApiCalls.CreateClassAsync(staff, 10, $"Class {i}"));
@@ -61,7 +61,7 @@ public class AntiAbuseTests
     [Fact]
     public async Task A_hold_that_ran_out_blocks_the_same_class_for_a_while()
     {
-        await using var api = new AdmissionApiFactory(holdSeconds: 1, cooldownSeconds: 60);
+        await using var api = new AdmissionApiFactory(holdSeconds: 1, cooldownSeconds: 60, signInRequired: true);
         var client = api.CreateSignedInClient();
         var classId = await ApiCalls.CreateClassAsync(client, 5);
         var student = ApiCalls.NewStudentId();
@@ -83,7 +83,7 @@ public class AntiAbuseTests
     [Fact]
     public async Task Cancelling_does_not_start_a_cooldown()
     {
-        await using var api = new AdmissionApiFactory(cooldownSeconds: 60);
+        await using var api = new AdmissionApiFactory(cooldownSeconds: 60, signInRequired: true);
         var client = api.CreateSignedInClient();
         var classId = await ApiCalls.CreateClassAsync(client, 5);
         var student = ApiCalls.NewStudentId();
@@ -96,7 +96,7 @@ public class AntiAbuseTests
     [Fact]
     public async Task Sign_in_attempts_from_one_address_are_limited()
     {
-        await using var api = new AdmissionApiFactory(rateLimits: true);
+        await using var api = new AdmissionApiFactory(rateLimits: true, signInRequired: true);
         var client = api.CreateAnonymousClient();
 
         var statuses = new List<HttpStatusCode>();

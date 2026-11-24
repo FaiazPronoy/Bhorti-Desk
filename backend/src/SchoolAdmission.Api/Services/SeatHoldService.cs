@@ -82,12 +82,16 @@ public class SeatHoldService(AdmissionDatabase database, AdmissionSettings setti
         // 0. Lock the guardian's row first. Holds by one family then run one at a time, so
         //    the "at most N holds at once" rule cannot be beaten by clicking in several
         //    classes at the same moment. Always guardian first, class second: no deadlock.
-        await connection.ExecuteAsync("""
-            select g.id from guardians g
-              join students s on s.guardian_id = g.id
-             where s.birth_registration_number = @studentId
-               for update of g
-            """, new { studentId }, transaction);
+        //    Only with sign-in on: without it a student has no guardian.
+        if (settings.SignInRequired)
+        {
+            await connection.ExecuteAsync("""
+                select g.id from guardians g
+                  join students s on s.guardian_id = g.id
+                 where s.birth_registration_number = @studentId
+                   for update of g
+                """, new { studentId }, transaction);
+        }
 
         // 1. Lock the class row. Every hold request for this class now waits here in line,
         //    whichever backend process it came from. This is what keeps held + confirmed
@@ -137,15 +141,18 @@ public class SeatHoldService(AdmissionDatabase database, AdmissionSettings setti
         }
 
         // 3b. One family can hold only a few unpaid seats at once, across all classes.
-        var familyHolds = await connection.ExecuteScalarAsync<long>("""
-            select count(*) from seat_holds h
-              join students s on s.birth_registration_number = h.student_birth_registration_number
-             where s.guardian_id = (select guardian_id from students where birth_registration_number = @studentId)
-               and h.status = 'HELD' and h.expires_at > clock_timestamp()
-            """, new { studentId }, transaction);
-        if (familyHolds >= settings.MaxActiveHoldsPerGuardian)
+        if (settings.SignInRequired)
         {
-            throw AdmissionRuleException.TooManyHolds(settings.MaxActiveHoldsPerGuardian);
+            var familyHolds = await connection.ExecuteScalarAsync<long>("""
+                select count(*) from seat_holds h
+                  join students s on s.birth_registration_number = h.student_birth_registration_number
+                 where s.guardian_id = (select guardian_id from students where birth_registration_number = @studentId)
+                   and h.status = 'HELD' and h.expires_at > clock_timestamp()
+                """, new { studentId }, transaction);
+            if (familyHolds >= settings.MaxActiveHoldsPerGuardian)
+            {
+                throw AdmissionRuleException.TooManyHolds(settings.MaxActiveHoldsPerGuardian);
+            }
         }
 
         // 4. Count the taken seats while we still hold the lock.

@@ -54,7 +54,7 @@ public class SeatInvariantStressTests
     {
         await using var first = new AdmissionApiFactory();
         await using var second = new AdmissionApiFactory(connectionString: first.ConnectionString);
-        var clients = new[] { first.CreateSignedInClient(), second.CreateSignedInClient() };
+        var clients = new[] { first.CreateClient(), second.CreateClient() };
 
         int[] seatCounts = [1, 2, 7, 25];
         var classIds = new List<string>();
@@ -105,7 +105,7 @@ public class SeatInvariantStressTests
         for (var round = 0; round < 3; round++)
         {
             await using var api = new AdmissionApiFactory(holdSeconds: 1);
-            var client = api.CreateSignedInClient();
+            var client = api.CreateClient();
             var classId = await ApiCalls.CreateClassAsync(client, 1);
             var owner = ApiCalls.NewStudentId();
             var holdId = await ApiCalls.ApplyAndGetHoldIdAsync(client, classId, owner);
@@ -140,7 +140,7 @@ public class SeatInvariantStressTests
     public async Task Cancel_and_reapply_storm_keeps_the_count_right()
     {
         await using var api = new AdmissionApiFactory();
-        var client = api.CreateSignedInClient();
+        var client = api.CreateClient();
         const int totalSeats = 3;
         var classId = await ApiCalls.CreateClassAsync(client, totalSeats);
 
@@ -172,20 +172,18 @@ public class SeatInvariantStressTests
         // Durability across a restart of the API: a new host on the same database sees
         // the same classes and holds.
         string classId, holdId, student = ApiCalls.NewStudentId();
-        // This one only owns the database for the whole test; the two hosts below come
-        // and go on top of it, like a restarted container on the same volume.
-        await using var database = new AdmissionApiFactory();
-        var connectionString = database.ConnectionString;
-        await using (var before = new AdmissionApiFactory(connectionString: connectionString))
+        string connectionString;
+        await using (var before = new AdmissionApiFactory())
         {
-            var client = before.CreateSignedInClient();
+            var client = before.CreateClient();
+            connectionString = before.ConnectionString;
             classId = await ApiCalls.CreateClassAsync(client, 4);
             holdId = await ApiCalls.ApplyAndGetHoldIdAsync(client, classId, student);
             Assert.Equal(HttpStatusCode.OK, (await ApiCalls.ConfirmAsync(client, holdId, student)).StatusCode);
         }
 
         await using var after = new AdmissionApiFactory(connectionString: connectionString);
-        var restarted = after.CreateSignedInClient();
+        var restarted = after.CreateClient();
         var seats = await ApiCalls.GetJsonAsync(restarted, $"/classes/{classId}");
         Assert.Equal(1, seats.GetProperty("confirmedSeats").GetInt32());
         var hold = await ApiCalls.GetJsonAsync(restarted, $"/holds/{holdId}");

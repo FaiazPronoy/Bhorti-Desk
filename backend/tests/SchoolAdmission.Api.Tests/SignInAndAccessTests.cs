@@ -38,7 +38,7 @@ public class SignInAndAccessTests
     [Fact]
     public async Task Applying_needs_a_signed_in_guardian()
     {
-        await using var api = new AdmissionApiFactory();
+        await using var api = new AdmissionApiFactory(signInRequired: true);
         var staff = api.CreateSignedInClient();
         var classId = await ApiCalls.CreateClassAsync(staff, 5);
 
@@ -50,7 +50,7 @@ public class SignInAndAccessTests
     [Fact]
     public async Task Otp_sign_in_then_apply_for_your_own_child()
     {
-        await using var api = new AdmissionApiFactory();
+        await using var api = new AdmissionApiFactory(signInRequired: true);
         var classId = await ApiCalls.CreateClassAsync(api.CreateSignedInClient(), 5);
         var guardian = await SignInByOtpAsync(api, "01712345678");
 
@@ -65,7 +65,7 @@ public class SignInAndAccessTests
     [Fact]
     public async Task Nobody_can_apply_in_another_familys_childs_name()
     {
-        await using var api = new AdmissionApiFactory();
+        await using var api = new AdmissionApiFactory(signInRequired: true);
         var classId = await ApiCalls.CreateClassAsync(api.CreateSignedInClient(), 5);
         var parent = await SignInByOtpAsync(api, "01712345678");
         var stranger = await SignInByOtpAsync(api, "01812345678");
@@ -86,7 +86,7 @@ public class SignInAndAccessTests
     [Fact]
     public async Task Birth_year_must_match_the_number()
     {
-        await using var api = new AdmissionApiFactory();
+        await using var api = new AdmissionApiFactory(signInRequired: true);
         var guardian = await SignInByOtpAsync(api, "01712345678");
         var wrong = new { birthRegistrationNumber = "20160123456789012", fullName = "Ayesha Rahman", dateOfBirth = "2014-03-14", gender = "FEMALE" };
 
@@ -99,7 +99,7 @@ public class SignInAndAccessTests
     [Fact]
     public async Task Only_the_school_office_can_create_a_class()
     {
-        await using var api = new AdmissionApiFactory();
+        await using var api = new AdmissionApiFactory(signInRequired: true);
         var guardian = await SignInByOtpAsync(api, "01712345678");
 
         var response = await guardian.SendAsync(Post("/classes", new { name = "Class 6", totalSeats = 10 }));
@@ -114,7 +114,7 @@ public class SignInAndAccessTests
     public async Task A_request_without_the_app_header_is_refused()
     {
         // A forged form on another site can send the cookie but not a custom header.
-        await using var api = new AdmissionApiFactory();
+        await using var api = new AdmissionApiFactory(signInRequired: true);
         var guardian = await SignInByOtpAsync(api, "01712345678");
 
         var response = await guardian.SendAsync(Post("/me/students", Student("20160123456789012"), csrf: false));
@@ -125,7 +125,7 @@ public class SignInAndAccessTests
     [Fact]
     public async Task A_wrong_code_five_times_burns_it_and_a_code_works_once()
     {
-        await using var api = new AdmissionApiFactory();
+        await using var api = new AdmissionApiFactory(signInRequired: true);
         var client = api.CreateAnonymousClient();
         const string phone = "01712345678";
         await client.SendAsync(Post("/auth/otp/request", new { phone }));
@@ -145,7 +145,7 @@ public class SignInAndAccessTests
     [Fact]
     public async Task Codes_cannot_be_asked_for_again_and_again()
     {
-        await using var api = new AdmissionApiFactory();
+        await using var api = new AdmissionApiFactory(signInRequired: true);
         var client = api.CreateAnonymousClient();
         await client.SendAsync(Post("/auth/otp/request", new { phone = "01712345678" }));
 
@@ -160,7 +160,7 @@ public class SignInAndAccessTests
     [InlineData("017123456789")]
     public async Task Bad_phone_numbers_are_refused(string phone)
     {
-        await using var api = new AdmissionApiFactory();
+        await using var api = new AdmissionApiFactory(signInRequired: true);
         var response = await api.CreateAnonymousClient().SendAsync(Post("/auth/otp/request", new { phone }));
         Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
         Assert.Equal("PHONE_INVALID", await ApiCalls.ErrorCodeAsync(response));
@@ -185,7 +185,7 @@ public class SignInAndAccessTests
     [Fact]
     public async Task Signing_out_ends_the_session()
     {
-        await using var api = new AdmissionApiFactory();
+        await using var api = new AdmissionApiFactory(signInRequired: true);
         var guardian = await SignInByOtpAsync(api, "01712345678");
         Assert.Equal(HttpStatusCode.NoContent, (await guardian.SendAsync(Post("/auth/logout"))).StatusCode);
 

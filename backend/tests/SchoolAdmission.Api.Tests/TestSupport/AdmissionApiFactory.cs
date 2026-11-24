@@ -14,19 +14,22 @@ public class AdmissionApiFactory : WebApplicationFactory<Program>
     private readonly int holdSeconds;
     private readonly string? adminEmail;
     private readonly string? adminPassword;
-    private readonly int cooldownSeconds;
+    private readonly int? cooldownSeconds;
     private readonly bool rateLimits;
+    private readonly bool signInRequired;
 
     public string ConnectionString { get; }
 
     // Pass a connection string to put a second API process on the same database.
+    // Anything not passed is left unset, so the original contract tests really run on the
+    // app's default settings.
     public AdmissionApiFactory(int holdSeconds = 600, string? connectionString = null,
-        string? adminEmail = null, string? adminPassword = null, int cooldownSeconds = 0, bool rateLimits = false)
+        string? adminEmail = null, string? adminPassword = null, int? cooldownSeconds = null, bool rateLimits = false,
+        bool signInRequired = false)
     {
-        // Off by default: the seat tests send hundreds of requests from one address and
-        // re-apply right after an expiry. The anti-abuse tests switch them on.
         this.cooldownSeconds = cooldownSeconds;
         this.rateLimits = rateLimits;
+        this.signInRequired = signInRequired;
         this.holdSeconds = holdSeconds;
         this.adminEmail = adminEmail;
         this.adminPassword = adminPassword;
@@ -41,18 +44,25 @@ public class AdmissionApiFactory : WebApplicationFactory<Program>
     public override async ValueTask DisposeAsync()
     {
         await base.DisposeAsync();
+        GC.SuppressFinalize(this);
         if (!ownsDatabase) return;
 
-        var builder = new NpgsqlConnectionStringBuilder(ConnectionString);
-        var databaseName = builder.Database;
-        NpgsqlConnection.ClearAllPools();
-        await using var admin = new NpgsqlConnection(AdminConnectionString);
-        await admin.OpenAsync();
-        // "with (force)" closes any connection still open to it.
-        await using var command = new NpgsqlCommand($"drop database if exists \"{databaseName}\" with (force)", admin);
-        await command.ExecuteNonQueryAsync();
-        GC.SuppressFinalize(this);
+        // The restart test stops one host and starts another on the same database, so a
+        // finished database is not dropped at once. Only the oldest ones are, which keeps
+        // the throwaway PostgreSQL from filling its memory.
+        RetiredDatabases.Enqueue(new NpgsqlConnectionStringBuilder(ConnectionString).Database!);
+        while (RetiredDatabases.Count > DatabasesToKeep && RetiredDatabases.TryDequeue(out var oldest))
+        {
+            await using var admin = new NpgsqlConnection(AdminConnectionString);
+            await admin.OpenAsync();
+            // "with (force)" closes any connection still open to it.
+            await using var command = new NpgsqlCommand($"drop database if exists \"{oldest}\" with (force)", admin);
+            await command.ExecuteNonQueryAsync();
+        }
     }
+
+    private const int DatabasesToKeep = 16;
+    private static readonly System.Collections.Concurrent.ConcurrentQueue<string> RetiredDatabases = new();
 
     private static string AdminConnectionString =>
         Environment.GetEnvironmentVariable("TEST_DATABASE_ADMIN_CONNECTION_STRING")
@@ -64,8 +74,9 @@ public class AdmissionApiFactory : WebApplicationFactory<Program>
         builder.UseSetting("HOLD_DURATION_SECONDS", holdSeconds.ToString());
         builder.UseSetting("CORS_ALLOWED_ORIGINS", "*");
         builder.UseSetting("COOKIE_SECURE", "false");
-        builder.UseSetting("HOLD_COOLDOWN_SECONDS", cooldownSeconds.ToString());
-        builder.UseSetting("RATE_LIMITS_ENABLED", rateLimits ? "true" : "false");
+        if (cooldownSeconds is not null) builder.UseSetting("HOLD_COOLDOWN_SECONDS", cooldownSeconds.Value.ToString());
+        if (rateLimits) builder.UseSetting("RATE_LIMITS_ENABLED", "true");
+        if (signInRequired) builder.UseSetting("SIGN_IN_REQUIRED", "true");
         if (adminEmail is not null) builder.UseSetting("ADMIN_EMAIL", adminEmail);
         if (adminPassword is not null) builder.UseSetting("ADMIN_PASSWORD", adminPassword);
         builder.ConfigureTestServices(services => services.AddSingleton<ISmsSender>(Sms));

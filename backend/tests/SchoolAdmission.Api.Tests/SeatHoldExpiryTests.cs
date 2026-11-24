@@ -11,7 +11,7 @@ public class SeatHoldExpiryTests
         // A two second hold keeps the test short. Nothing runs in the background to
         // expire it: the next read or the next application has to notice on its own.
         await using var api = new AdmissionApiFactory(holdSeconds: 2);
-        var client = api.CreateSignedInClient();
+        var client = api.CreateClient();
         var classId = await ApiCalls.CreateClassAsync(client, 1);
         var firstStudent = ApiCalls.NewStudentId();
         var holdId = await ApiCalls.ApplyAndGetHoldIdAsync(client, classId, firstStudent);
@@ -41,7 +41,7 @@ public class SeatHoldExpiryTests
     public async Task Student_can_apply_again_after_their_own_hold_expires()
     {
         await using var api = new AdmissionApiFactory(holdSeconds: 2);
-        var client = api.CreateSignedInClient();
+        var client = api.CreateClient();
         var classId = await ApiCalls.CreateClassAsync(client, 3);
         var student = ApiCalls.NewStudentId();
         var firstHold = await ApiCalls.ApplyAndGetHoldIdAsync(client, classId, student);
