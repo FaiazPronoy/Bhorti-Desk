@@ -1,56 +1,75 @@
 # Bhorti Desk (ভর্তি ডেস্ক)
 
-**An online school admission system. Parents apply for a seat, the seat is held for 10 minutes, and they pay the fee to confirm it.**
-First come, first served. If the fee is not paid in time, the seat goes back to the class for the next person.
+**An online school admission desk. Guardians apply for a seat, the seat is held for ten minutes, and they pay to keep it. The school office runs the season: the window, the fees, the review and the reports.**
+
+First come, first served, with a fair waiting list. However many people apply at once, a class never has more seats in use than it has.
 
 | | |
 |---|---|
-| **Type** | Take-home assignment, solo (not for a course) |
+| **Type** | Portfolio project, built from a take-home assignment |
 | **Made by** | Faiaz Abrar Zaman Pronoy |
-| **History** | Built in November 2026 |
-| **Docs** | [Assumptions](ASSUMPTIONS.md) |
+| **Docs** | [Assumptions](ASSUMPTIONS.md), [Architecture](docs/architecture.md), [Security review](docs/security.md) |
 
 | | |
 |---|---|
-| ![Class list with live seat numbers](docs/images/class-list.png) | ![Confirmed application with the paid seal](docs/images/application.png) |
-| ![Class list in dark mode](docs/images/class-list-dark.png) | ![My applications with every status](docs/images/my-applications.png) |
+| ![Home on a phone, with the session countdown and the register of classes](docs/images/home-phone.png) | ![Application with the seat token, the countdown line, the form and the documents](docs/images/application.png) |
+| ![Admission slip with the photo, the masked number and the QR](docs/images/slip-phone.png) | ![School office dashboard: applications per hour, the funnel and the seats filled per class](docs/images/office-dashboard.png) |
+
+**Walkthrough** (36 seconds, recorded with Playwright on the real app): the session opens, a guardian applies, fills the form, adds a photo, pays in the sandbox, the stamp lands, the slip with its QR, and the public check.
+
+![Walkthrough of one admission, from the session opening to the slip check](docs/images/walkthrough.gif)
 
 ---
 
-## Features
+## What it does
+
+**For guardians**
+- See whether admission is open, with a countdown on the server's clock
+- Apply with one tap; the seat is held for ten minutes with a live countdown
+- Fill in the student's details and upload a photo and the birth certificate
+- Pay the fee through a sandbox gateway that follows a real flow. No real money moves, and every screen says so
+- Join the waiting list of a full class; a freed seat is offered in order, with its own timer
+- Print the admission slip, or save it as a PDF; its QR opens a public check page
+- Notices for every step: on hold, two minutes left, paid, verified, rejected, time over, seat offered
 
 **For the school office**
-- Create a class with a name and a number of seats
-- Each shift is its own class, for example "Class 6 - Morning Shift"
-- A live table of every class: total, on hold, confirmed and free seats
-- The form checks every field before it sends anything
+- Admission sessions with an opening and a closing time
+- A fee and an age rule per class (minimum and maximum age on a cut-off date)
+- Review paid applications: look at the documents, verify, or reject with a reason. A rejection frees the seat at once and marks the fee as due for refund
+- Edit, close and reopen classes. Seats can go down, but never below the seats in use
+- A dashboard: applications per hour, the funnel, seats filled per class, the waiting lists, sandbox revenue. CSV export
+- An audit log of every office action, filterable and exportable
 
-**For parents**
-- Type the student's 17 digit birth registration number once, at the top of the page
-- Bangla digits, spaces and hyphens are fine. The box counts the digits for you
-- See every class with live seat numbers. They update every few seconds
-- Apply with one tap. The seat is held for you
-- A large countdown shows the time left. The last minute turns red
-- Pay the fee to confirm the seat. The payment is a demo. No real money moves
-- Cancel if you change your mind. The seat goes back to the class
-- When the time runs out, the page shows EXPIRED at once. No reload needed
-- "My applications" lists every application for this number
-- Close the browser and come back later. Your running application is still there
+**Rules that always hold**
+- Held plus confirmed seats never exceed a class's total, from one backend or two
+- Seat counts are counted from the rows, never stored
+- One active application per student per class
+- A payment is taken once, however many times the button or the callback fires
+- The birth registration number is masked to its last four digits everywhere
+- The original eight endpoints answer exactly as the assignment says, with no login, on default settings
 
-**The seat rules**
-- A class never has more held and confirmed seats than its total, however many people apply at once
-- One student can have only one active application in a class
-- Only the owner can pay for or cancel an application
-- Paying twice still counts one seat
-- Expired seats free themselves. No background job is needed
-- Data stays after a restart
+---
 
-**Everything else**
-- Bangla and English, with Bangla first
-- Light and dark mode
-- Works on phone, tablet and desktop
-- Every error has a plain message. No blank pages
-- A banner shows when the server cannot be reached, and the app keeps trying
+## Numbers
+
+All measured on 24 November 2026 on one Windows laptop with Docker Desktop 29.9.2 (8 CPUs, about 3.8 GB for Docker). .NET SDK 10.0.404, Node 22.23.5, PostgreSQL 17.11, nginx 1.29.8, k6 2.4.0.
+
+**Tests.** 99 backend tests against a real PostgreSQL, 47 frontend tests. The eight original contract test files are byte for byte the ones submitted for the assignment.
+
+**Load test** (`loadtest/`). 600 guardians at once, each pressing Apply twice, for the last 10 seats of a class of 50, through nginx in front of two backends:
+
+| | |
+|---|---|
+| Requests | 1242 |
+| Seats taken in the rush | 10 of 10 |
+| Server errors | 0 |
+| Median wait | 5.81 s |
+| 95th percentile wait | 12.87 s |
+| SQL check afterwards | 0 classes over their total, 0 students with two live seats |
+
+Every request for one class waits its turn at the class's row lock, so a crowd for one class is served one at a time; that is the price of never overbooking. These numbers come from the laptop above, not from any free hosting plan.
+
+**First load on a phone** (Playwright, 390 px wide, no cache): 4 requests, 178 KB (167 KB of JavaScript), up from 161 KB before the season features. Fonts are self-hosted and split by script. Lighthouse was not run.
 
 ---
 
@@ -58,41 +77,11 @@ First come, first served. If the fee is not paid in time, the seat goes back to 
 
 | Part | Tools |
 |---|---|
-| API | C#, .NET 10, ASP.NET Core |
-| Database | PostgreSQL 17, Npgsql, Dapper with plain SQL |
+| API | C#, .NET 10, ASP.NET Core, Dapper with plain SQL, QRCoder (MIT) |
+| Database | PostgreSQL 17 |
 | Web app | React 19, TypeScript, Vite, Tailwind CSS 4, TanStack Query, React Router |
-| Tests | xUnit against a real PostgreSQL, Vitest, Testing Library |
-| Running it | Docker Compose, nginx |
-
----
-
-## How it works
-
-```mermaid
-flowchart LR
-  UI[React app] -->|REST + X-Student-Id| API[ASP.NET Core API]
-  API --> PG[(PostgreSQL)]
-```
-
-1. **Apply.** The API opens one transaction and locks the class row. Every other request for that class waits its turn.
-2. **Count.** Inside the lock, it counts the seats in use: confirmed ones, and held ones whose time is not over.
-3. **Hold.** If a seat is free, it saves the hold with an end time from the database clock.
-4. **Pay.** Paying takes the same lock, so it can never race with a new applicant at the last second.
-5. **Expire.** Nothing runs on a timer. A hold whose time has passed simply stops counting.
-
-The lock lives in PostgreSQL, so this also holds when two copies of the API share one database.
-More detail in [ASSUMPTIONS.md](ASSUMPTIONS.md).
-
----
-
-## Tests
-
-| Suite | Tests | What they check |
-|---|---|---|
-| Backend | 27 | 300 students at once for 10 seats and for 1 seat. 900 requests with repeat clicks on two backends. Paying in the exact second a hold ends. Expiry, owner checks, bad input, the API contract, restarts |
-| Frontend | 19 | The countdown reaches EXPIRED without a reload. The number box. Both languages have the same words. Error messages. Server down |
-
-After each stress test, the database is checked with plain SQL. No class may have more seats in use than it has.
+| Tests | xUnit against a real PostgreSQL, Vitest, Testing Library, k6 |
+| Running it | Docker Compose, nginx, GitHub Actions |
 
 ---
 
@@ -100,70 +89,60 @@ After each stress test, the database is checked with plain SQL. No class may hav
 
 You only need Docker.
 
-- **Windows:** double-click `RUN-BhortiDesk.bat`. It starts Docker if needed, builds and starts the containers, waits for the API and opens the app.
-- **Any system:**
-
 ```bash
 docker compose up
 ```
 
 - App: http://localhost:3000
 - API: http://localhost:8080 (try http://localhost:8080/classes)
+- API description: http://localhost:8080/openapi/v1.json
 
-The first run builds everything. It takes a few minutes.
-A new database is empty. Open "স্কুল অফিস" (School office) and create a class first.
+A new database is empty. Open "স্কুল অফিস" (School office) and create a class first. The office tabs other than Classes need the staff login below.
 
-`docker compose down` stops the app and keeps the data.
-`docker compose down -v` also deletes the data.
+**Local demo logins** (change both in `.env` before anyone else can reach the app):
+- School office: `admin@bhortidesk.local` / `change-this-local-password`
+- Guardian sign-in (only with `SIGN_IN_REQUIRED=true`): any 01X mobile number; the code is printed by `docker compose logs backend`
+
+`docker compose down` keeps the data. `docker compose down -v` deletes it.
 
 ### Settings
 
-It works without a `.env` file. To change a value, copy `.env.example` to `.env`.
+Every value has a default; copy `.env.example` to `.env` to change one.
 
 | Variable | Default | What it does |
 |---|---|---|
 | `HOLD_DURATION_SECONDS` | `600` | How long a seat stays on hold |
-| `API_BASE_URL` | `http://localhost:8080` | Where the web app finds the API |
-| `CORS_ALLOWED_ORIGINS` | `*` | Which sites may call the API |
-| `FRONTEND_PORT` | `3000` | Port for the web app |
-| `POSTGRES_DB`, `POSTGRES_USER`, `POSTGRES_PASSWORD` | local values | Database login. For local use only |
+| `SIGN_IN_REQUIRED` | `false` | `true`: guardians and staff must sign in. Off keeps the original no-login API |
+| `RATE_LIMITS_ENABLED` | `false` | Limits on sign-in and applying. Turn on for real use |
+| `HOLD_COOLDOWN_SECONDS` | `0` | Wait before re-applying after an unpaid hold ran out |
+| `DEMO_MODE` | `false` | Public demo: a banner, the sign-in code on screen, a daily reset |
+| `PAYMENT_SANDBOX_SECRET`, `SLIP_SECRET` | local value | Secrets for payment callbacks and slip codes. Set both |
+| `SEASON_WORKER_SECONDS` | `5` | How often freed seats are offered to the waiting list |
+| `PUBLIC_APP_URL` | the request's origin | Address the slip QR points to |
 
-### Run the tests
+### Tests
 
 ```bash
 docker compose -f docker-compose.tests.yml run --rm backend-tests
-```
-
-```bash
 docker compose -f docker-compose.tests.yml run --rm frontend-tests
-```
-
-```bash
 docker compose -f docker-compose.tests.yml down
 ```
 
-### Try the rules yourself
-
-**Expiry.** Start with a 30 second hold. Apply, then watch the countdown reach zero.
+### Load test
 
 ```bash
-HOLD_DURATION_SECONDS=30 docker compose up
+docker compose -p bhorti-load -f docker-compose.yml -f loadtest/docker-compose.loadtest.yml --profile two-backends up -d --build postgres backend backend-second loadbalancer
+docker compose -p bhorti-load -f docker-compose.yml -f loadtest/docker-compose.loadtest.yml --profile two-backends run --rm k6
+docker compose -p bhorti-load -f docker-compose.yml -f loadtest/docker-compose.loadtest.yml --profile two-backends exec -T postgres psql -U school_admission -d school_admission < loadtest/check-seats.sql
+docker compose -p bhorti-load -f docker-compose.yml -f loadtest/docker-compose.loadtest.yml --profile two-backends down -v
 ```
 
-On Windows PowerShell: `$env:HOLD_DURATION_SECONDS=30; docker compose up`
+### Health and metrics
 
-**Two backends.** A second API runs on port 8081 with the same database.
-
-```bash
-docker compose --profile two-backends up
-```
-
-**Restart.** Run `docker compose down`, then `docker compose up`. Your classes and applications are still there.
-
-### If a port is busy
-
-- Port 3000: set `FRONTEND_PORT=3001` and open http://localhost:3001.
-- Port 8080: change the backend port in `docker-compose.yml` to `"8090:8080"` and set `API_BASE_URL=http://localhost:8090`.
+- `GET /health`: the database answers
+- `GET /ready`: the database answers and the schema is in place
+- `GET /metrics`: holds created, seat conflicts, waiting-list offers, payment callbacks, since this process started
+- Logs are one JSON object per line; every line written during a request carries its `X-Request-Id`
 
 ---
 
@@ -171,15 +150,14 @@ docker compose --profile two-backends up
 
 ```
 backend/
-  src/SchoolAdmission.Api/          controllers, services with plain SQL, database schema
+  src/SchoolAdmission.Api/          controllers, services with plain SQL, the schema
   tests/SchoolAdmission.Api.Tests/  tests against a real PostgreSQL
 frontend/
-  src/features/                     classes, applications, school office, number box
+  src/features/                     classes, applications, payments, slip, waiting list, school office
   src/i18n/                         Bangla and English words
-  nginx/                            web server settings
-  tests/
-docker-compose.yml                  database, API and web app
-docker-compose.tests.yml            backend and frontend tests
+  nginx/                            web server settings and security headers
+loadtest/                           k6 rush on two backends, and the SQL check
+docs/                               architecture, decisions, security review
 ```
 
 ---
