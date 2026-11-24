@@ -140,6 +140,19 @@ public class SeatHoldService(AdmissionDatabase database, AdmissionSettings setti
             throw AdmissionRuleException.AlreadyApplied(existingHoldId);
         }
 
+        // 3. (continued) While anyone is still waiting in line for this class, a newcomer
+        //    cannot take a seat. Without this, a seat freed by a cancel that commits in the
+        //    middle of this transaction (cancel does not take the class lock) would go to the
+        //    newcomer instead of the next person in line.
+        var lineIsWaiting = await connection.ExecuteScalarAsync<bool>("""
+            select exists (select 1 from waitlist_entries where admission_class_id = @classId and status = 'WAITING')
+            """, new { classId }, transaction);
+        if (lineIsWaiting)
+        {
+            SeasonMetrics.SeatConflict();
+            throw AdmissionRuleException.ClassFull();
+        }
+
         // 3a. A hold that ran out without payment blocks the same class for a while.
         //     Otherwise one person could keep a seat away from everyone by applying
         //     again every ten minutes and never paying.

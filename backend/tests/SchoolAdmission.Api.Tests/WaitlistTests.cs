@@ -118,11 +118,13 @@ public class WaitlistTests
         }
         var workers = new[] { first, second }.Select(api => ActivatorUtilities.CreateInstance<SeasonWorker>(api.Services)).ToArray();
         var storm = new List<Task>();
-        storm.AddRange(holders.Select((holder, i) => ApiCalls.CancelAsync(clients[i % 2], holder.HoldId, holder.Student)));
+        var cancels = holders.Select((holder, i) => ApiCalls.CancelAsync(clients[i % 2], holder.HoldId, holder.Student)).ToList();
+        storm.AddRange(cancels);
         storm.AddRange(Enumerable.Range(0, 40).Select(i => ApiCalls.ApplyAsync(clients[i % 2], classId, ApiCalls.NewStudentId())));
         storm.AddRange(Enumerable.Range(0, 6).Select(i => workers[i % 2].RunOnceAsync()));
         storm.AddRange(Enumerable.Range(0, 20).Select(i => JoinAsync(clients[i % 2], classId, ApiCalls.NewStudentId())));
         await Task.WhenAll(storm);
+        foreach (var cancel in cancels) Assert.Equal(HttpStatusCode.NoContent, (await cancel).StatusCode);
         await workers[0].RunOnceAsync();
 
         await using var connection = new NpgsqlConnection(first.ConnectionString);
@@ -147,6 +149,19 @@ public class WaitlistTests
         {
             while (await reader.ReadAsync()) offeredStudents.Add(reader.GetString(0));
         }
-        Assert.Equal(line.Take(seats), offeredStudents);
+        if (!line.Take(seats).SequenceEqual(offeredStudents))
+        {
+            // Who holds the seats, to see where the line was jumped.
+            await using var who = new NpgsqlCommand("""
+                select h.student_birth_registration_number || ' ' || h.status || ' ' || coalesce(w.status, 'no-entry') || ' ' || coalesce(w.id::text, '')
+                  from seat_holds h left join waitlist_entries w on w.offered_hold_id = h.id
+                 where h.admission_class_id = @classId and h.status = 'HELD' order by h.created_at
+                """, connection);
+            who.Parameters.AddWithValue("classId", Guid.Parse(classId));
+            var holders2 = new List<string>();
+            await using (var reader = await who.ExecuteReaderAsync()) while (await reader.ReadAsync()) holders2.Add(reader.GetString(0));
+            var lineIndex = string.Join(",", holders2.Select(h => line.IndexOf(h[..17])));
+            Assert.Fail($"Offers out of order. Seat holders: {string.Join(" | ", holders2)}. Their place in line: {lineIndex}");
+        }
     }
 }
