@@ -39,6 +39,8 @@ builder.Services.AddScoped<ReviewService>();
 builder.Services.AddSingleton<WaitlistOffers>();
 builder.Services.AddScoped<WaitlistService>();
 builder.Services.AddScoped<NoticeService>();
+builder.Services.AddSingleton<SlipCodes>();
+builder.Services.AddScoped<SlipService>();
 if (settings.SeasonWorkerSeconds > 0)
 {
     SeasonWorker.Interval = TimeSpan.FromSeconds(settings.SeasonWorkerSeconds);

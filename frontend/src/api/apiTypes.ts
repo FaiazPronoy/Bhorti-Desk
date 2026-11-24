@@ -177,6 +177,27 @@ export interface Notice {
   createdAt: string;
 }
 
+export type AdmissionStatus = "PAID" | "VERIFIED" | "REJECTED";
+
+export interface Slip {
+  holdId: string;
+  serial: string;
+  className: string;
+  maskedStudentId: string;
+  admissionStatus: AdmissionStatus;
+  studentNameBn: string | null;
+  studentNameEn: string | null;
+  hasPhoto: boolean;
+  verifyCode: string;
+  qr: boolean[][];
+}
+
+export interface SlipCheck {
+  className: string;
+  maskedStudentId: string;
+  admissionStatus: AdmissionStatus;
+}
+
 export interface OfficeApplication {
   holdId: string;
   serial: string;

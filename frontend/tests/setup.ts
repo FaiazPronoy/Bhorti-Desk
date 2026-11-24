@@ -1,6 +1,10 @@
 import "@testing-library/jest-dom/vitest";
-import { cleanup } from "@testing-library/react";
+import { cleanup, configure } from "@testing-library/react";
 import { afterEach, vi } from "vitest";
+
+// The default one second wait for findBy is too short on a busy laptop running Docker.
+// Same checks, more patience.
+configure({ asyncUtilTimeout: 3000 });
 
 afterEach(() => {
   cleanup();

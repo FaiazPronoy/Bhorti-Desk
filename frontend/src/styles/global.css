@@ -1588,6 +1588,143 @@
   max-width: 32rem;
 }
 
+/* The slip is ruled paper, like the register. */
+.slip {
+  padding: var(--space-6);
+  border: 1px solid var(--rule);
+  border-radius: var(--radius-sheet);
+  background-color: var(--sheet);
+  background-image: repeating-linear-gradient(to bottom, transparent 0 31px, var(--paper-rule) 31px 32px);
+}
+
+.slip__head {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  align-items: center;
+  gap: var(--space-3);
+  padding-bottom: var(--space-4);
+  border-bottom: 2px solid var(--ink);
+}
+
+.slip__title {
+  font-size: var(--text-24);
+}
+
+.slip__body {
+  display: grid;
+  grid-template-columns: 96px minmax(0, 1fr);
+  gap: var(--space-4);
+  margin-top: var(--space-4);
+}
+
+.slip__photo {
+  display: grid;
+  place-items: center;
+  width: 96px;
+  height: 120px;
+  border: 1px solid var(--rule-strong);
+  background: var(--sheet);
+  font-size: var(--text-13);
+  color: var(--ink-soft);
+  overflow: hidden;
+}
+
+.slip__photo img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.slip__facts {
+  margin: 0;
+  display: grid;
+  gap: var(--space-2);
+}
+
+.slip__facts dt {
+  font-size: var(--text-13);
+  color: var(--ink-soft);
+}
+
+.slip__facts dd {
+  margin: 0;
+  font-weight: 600;
+  overflow-wrap: anywhere;
+}
+
+.slip__latin {
+  display: block;
+  font-weight: 400;
+}
+
+.slip__qr {
+  grid-column: 1 / -1;
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  margin: 0;
+}
+
+.qr {
+  width: 120px;
+  height: 120px;
+}
+
+.slip__qr figcaption {
+  font-size: var(--text-13);
+  color: var(--ink-soft);
+}
+
+.slip__note {
+  margin-top: var(--space-4);
+  font-size: var(--text-13);
+  color: var(--ink-soft);
+}
+
+.slip-actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-4);
+  margin-top: var(--space-6);
+}
+
+@media (min-width: 640px) {
+  .slip__body {
+    grid-template-columns: 96px minmax(0, 1fr) auto;
+  }
+  .slip__qr {
+    grid-column: auto;
+    flex-direction: column;
+  }
+}
+
+@media print {
+  .slip-actions {
+    display: none !important;
+  }
+  .slip {
+    border: 1px solid #000000;
+    background-image: none;
+  }
+}
+
+.verify__result {
+  font-size: var(--text-20);
+  font-weight: 700;
+  margin-top: var(--space-4);
+}
+
+.verify--rejected .verify__result {
+  color: var(--cancelled);
+}
+
+.verify--paid .verify__result,
+.verify--verified .verify__result {
+  color: var(--confirmed);
+}
+
 .register-row__action {
   display: grid;
   gap: var(--space-2);

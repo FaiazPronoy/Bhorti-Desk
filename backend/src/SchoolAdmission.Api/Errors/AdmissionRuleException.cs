@@ -116,5 +116,8 @@ public class AdmissionRuleException(int statusCode, string code, string message,
     public static AdmissionRuleException AlreadyWaiting() =>
         new(StatusCodes.Status409Conflict, ApiErrorCode.AlreadyWaiting, "This student is already on the waiting list of this class.");
 
+    public static AdmissionRuleException SlipInvalid() =>
+        new(StatusCodes.Status404NotFound, ApiErrorCode.SlipInvalid, "This slip code is not valid.");
+
     public int? RetryAfterSeconds { get; init; }
 }

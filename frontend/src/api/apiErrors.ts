@@ -62,6 +62,7 @@ const messageByCode: Record<string, MessageKey> = {
   NOT_PAID_YET: "error.notPaidYet",
   SEATS_STILL_FREE: "error.seatsStillFree",
   ALREADY_WAITING: "error.alreadyWaiting",
+  SLIP_INVALID: "error.slipInvalid",
   SESSION_ALREADY_PUBLISHED: "error.sessionAlreadyPublished",
 };
 

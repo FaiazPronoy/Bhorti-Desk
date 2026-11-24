@@ -175,9 +175,9 @@ function ApplicationView({ holdId }: { holdId: string }) {
         {currentStatus === "CONFIRMED" && (
           <>
             <p className="token__note token__note--confirmed">{t("application.confirmedNote")}</p>
-            <Button variant="secondary" className="token__print" onClick={() => window.print()}>
-              {t("application.print")}
-            </Button>
+            <Link to={`/applications/${holdId}/slip`} className="button button--secondary token__print">
+              <span>{t("application.print")}</span>
+            </Link>
           </>
         )}
         {currentStatus === "EXPIRED" && <p className="token__note">{t("application.expiredNote")}</p>}

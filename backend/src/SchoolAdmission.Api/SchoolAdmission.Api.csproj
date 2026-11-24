@@ -10,6 +10,8 @@
   <ItemGroup>
     <PackageReference Include="Dapper" Version="2.1.89" />
     <PackageReference Include="Npgsql" Version="10.0.3" />
+    <!-- MIT licence. Turns the slip's verify address into QR modules; nothing else. -->
+    <PackageReference Include="QRCoder" Version="1.6.0" />
   </ItemGroup>
 
   <ItemGroup>

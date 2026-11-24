@@ -9,6 +9,8 @@ import { LoginPage } from "./features/account/LoginPage";
 import { StaffLoginPage } from "./features/account/StaffLoginPage";
 import { StudentsPage } from "./features/account/StudentsPage";
 import { SandboxPayPage } from "./features/payments/SandboxPayPage";
+import { SlipPage } from "./features/slip/SlipPage";
+import { VerifyPage } from "./features/slip/VerifyPage";
 
 export const routes: RouteObject[] = [
   {
@@ -23,6 +25,8 @@ export const routes: RouteObject[] = [
       { path: "staff/login", element: <StaffLoginPage /> },
       { path: "students", element: <StudentsPage /> },
       { path: "pay/:paymentId", element: <SandboxPayPage /> },
+      { path: "applications/:holdId/slip", element: <SlipPage /> },
+      { path: "verify/:code", element: <VerifyPage /> },
       { path: "*", element: <NotFoundPage /> },
     ],
   },

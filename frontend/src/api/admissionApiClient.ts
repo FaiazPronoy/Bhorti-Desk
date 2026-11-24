@@ -23,6 +23,8 @@ import type {
   PaymentStart,
   SandboxPage,
   SessionForm,
+  Slip,
+  SlipCheck,
   Student,
   StudentHold,
 } from "./apiTypes";
@@ -236,6 +238,10 @@ export const admissionApi = {
 
   leaveWaitlist: (classId: string, studentId: string) =>
     request<void>(`/classes/${encodeURIComponent(classId)}/waitlist`, { method: "DELETE", studentId }),
+
+  slip: (holdId: string, studentId: string) => request<Slip>(`/applications/${encodeURIComponent(holdId)}/slip`, { studentId }),
+
+  verifySlip: (code: string) => request<SlipCheck>(`/verify/${encodeURIComponent(code)}`),
 
   myNotices: (studentId: string) => request<Notice[]>("/me/notices", { studentId }),
 

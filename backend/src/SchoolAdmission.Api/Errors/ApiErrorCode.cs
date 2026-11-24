@@ -46,4 +46,5 @@ public static class ApiErrorCode
     public const string NotPaidYet = "NOT_PAID_YET";
     public const string SeatsStillFree = "SEATS_STILL_FREE";
     public const string AlreadyWaiting = "ALREADY_WAITING";
+    public const string SlipInvalid = "SLIP_INVALID";
 }
