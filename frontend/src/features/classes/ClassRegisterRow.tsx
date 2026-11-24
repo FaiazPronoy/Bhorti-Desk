@@ -12,6 +12,8 @@ interface ClassRegisterRowProps {
   myActiveHold?: StudentHold;
   applying: boolean;
   applyDisabled: boolean;
+  // Inside an admission session that is not open right now.
+  notOpen?: boolean;
   errorKey?: MessageKey;
   errorHoldId?: string;
   onApply: () => void;
@@ -19,7 +21,7 @@ interface ClassRegisterRowProps {
 
 // One line of the register. From 768 px up the cells line up under the column heads;
 // below that the same cells stack into a small sheet with their own labels.
-export function ClassRegisterRow({ seats, showActions, myActiveHold, applying, applyDisabled, errorKey, errorHoldId, onApply }: ClassRegisterRowProps) {
+export function ClassRegisterRow({ seats, showActions, myActiveHold, applying, applyDisabled, notOpen = false, errorKey, errorHoldId, onApply }: ClassRegisterRowProps) {
   const { t, number } = useLanguage();
   const isFull = seats.availableSeats <= 0;
 
@@ -59,8 +61,8 @@ export function ClassRegisterRow({ seats, showActions, myActiveHold, applying, a
               </Link>
             </div>
           ) : (
-            <Button wide pending={applying} disabled={isFull || applyDisabled} onClick={onApply}>
-              {isFull ? t("classes.full") : t("classes.apply")}
+            <Button wide pending={applying} disabled={isFull || applyDisabled || notOpen} onClick={onApply}>
+              {notOpen ? t("classes.notOpen") : isFull ? t("classes.full") : t("classes.apply")}
             </Button>
           )}
           {errorKey && (

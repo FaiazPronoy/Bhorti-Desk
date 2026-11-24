@@ -52,6 +52,9 @@ const messageByCode: Record<string, MessageKey> = {
   RATE_LIMITED: "error.rateLimited",
   TOO_MANY_HOLDS: "error.tooManyHolds",
   APPLY_COOLDOWN: "error.applyCooldown",
+  SESSION_NOT_OPEN: "error.sessionNotOpen",
+  SESSION_NOT_FOUND: "error.notFound",
+  SESSION_ALREADY_PUBLISHED: "error.sessionAlreadyPublished",
 };
 
 // The plain words to show for an error, as a dictionary key.

@@ -28,6 +28,7 @@ builder.Services.AddScoped<AdmissionClassService>();
 builder.Services.AddScoped<SeatHoldService>();
 builder.Services.AddScoped<AuthService>();
 builder.Services.AddScoped<StudentService>();
+builder.Services.AddScoped<SessionService>();
 builder.Services.AddSingleton<ISmsSender, NoSmsSender>();
 RateLimits.Add(builder.Services, settings);
 
@@ -49,7 +50,7 @@ builder.Services.AddCors(options => options.AddDefaultPolicy(policy =>
     }
     // Credentials are never allowed cross-origin: the web app reaches the API through its
     // own nginx at the same origin, so the session cookie never needs CORS.
-    policy.WithMethods("GET", "POST", "DELETE")
+    policy.WithMethods("GET", "POST", "PUT", "DELETE")
           .WithHeaders("Content-Type", StudentIdHeader.HeaderName, SessionCookie.CsrfHeader)
           .WithExposedHeaders("Retry-After");
 }));

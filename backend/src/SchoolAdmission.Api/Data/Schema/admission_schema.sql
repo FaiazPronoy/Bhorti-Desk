@@ -90,3 +90,41 @@ create table if not exists students (
 );
 
 create index if not exists ix_students_by_guardian on students (guardian_id);
+
+-- ---------------------------------------------------------------- admission season
+
+-- An academic year's admission window. Only one can be published at a time.
+create table if not exists admission_sessions (
+    id            uuid         primary key,
+    academic_year integer      not null check (academic_year between 2000 and 2100),
+    name          varchar(100) not null,
+    opens_at      timestamptz  not null,
+    closes_at     timestamptz  not null,
+    status        varchar(10)  not null default 'DRAFT' check (status in ('DRAFT', 'PUBLISHED', 'CLOSED')),
+    created_at    timestamptz  not null default clock_timestamp(),
+    check (closes_at > opens_at)
+);
+
+create unique index if not exists ux_admission_sessions_one_published
+    on admission_sessions ((true))
+    where status = 'PUBLISHED';
+
+-- Null for a class made through the original POST /classes: it has no window and is
+-- always open, exactly as the original contract says.
+alter table admission_classes add column if not exists session_id uuid null references admission_sessions (id);
+
+-- ---------------------------------------------------------------- audit log
+
+-- Every office action, written in the same transaction as the change it records.
+create table if not exists audit_log (
+    id          bigint       generated always as identity primary key,
+    actor_id    uuid         not null,
+    actor_role  varchar(10)  not null,
+    action      varchar(40)  not null,
+    target_type varchar(20)  not null,
+    target_id   varchar(40)  not null,
+    detail      varchar(300) null,
+    created_at  timestamptz  not null default clock_timestamp()
+);
+
+create index if not exists ix_audit_log_newest on audit_log (created_at desc);

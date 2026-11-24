@@ -80,5 +80,14 @@ public class AdmissionRuleException(int statusCode, string code, string message,
             $"Your last hold in this class ran out without payment. You can apply again in {Math.Max(1, (seconds + 59) / 60)} minutes.")
         { RetryAfterSeconds = seconds };
 
+    public static AdmissionRuleException SessionNotFound() =>
+        new(StatusCodes.Status404NotFound, ApiErrorCode.SessionNotFound, "No admission session has this id.");
+
+    public static AdmissionRuleException SessionNotOpen() =>
+        new(StatusCodes.Status409Conflict, ApiErrorCode.SessionNotOpen, "Admission for this class is not open right now.");
+
+    public static AdmissionRuleException SessionAlreadyPublished() =>
+        new(StatusCodes.Status409Conflict, ApiErrorCode.SessionAlreadyPublished, "Another session is already published. Close it first.");
+
     public int? RetryAfterSeconds { get; init; }
 }

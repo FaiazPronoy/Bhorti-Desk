@@ -10,7 +10,9 @@ import { effectiveStatus } from "../applications/holdStatus";
 import { useMyHolds } from "../applications/useMyHolds";
 import { useApplyForSeat } from "../applications/useSeatHold";
 import { useStudentId } from "../student-identity/useStudentId";
-import { serverNow } from "../../lib/serverClock";
+import { serverNow, useServerNow } from "../../lib/serverClock";
+import { SessionStatus } from "../season/SessionStatus";
+import { useSeason, windowAt } from "../season/useSeason";
 import { ClassRegisterRow } from "./ClassRegisterRow";
 import { useClassList } from "./useClassList";
 
@@ -25,6 +27,7 @@ export function ClassListPage() {
 
   return (
     <section className="page">
+      <SessionStatus />
       <h1 className="page-title">{t("classes.title")}</h1>
       <p className="page-intro">{t("classes.intro")}</p>
       {/* Keeps the heading order h1, h2, h3 for screen readers; the table speaks for itself on screen. */}
@@ -44,6 +47,10 @@ export function ClassRegister({ showActions }: { showActions: boolean }) {
   const { studentId, askForNumber } = useStudentId();
   const apply = useApplyForSeat();
   const [rowError, setRowError] = useState<RowError | null>(null);
+  const session = useSeason().data?.session;
+  const now = useServerNow();
+  // Only classes inside a session that is not open wait. The API checks this again.
+  const isWaiting = (classId: string) => Boolean(session?.classIds.includes(classId) && windowAt(session, now) !== "OPEN");
 
   function activeHoldFor(classId: string) {
     const now = serverNow();
@@ -139,6 +146,7 @@ export function ClassRegister({ showActions }: { showActions: boolean }) {
             myActiveHold={activeHoldFor(seats.id)}
             applying={apply.isPending && apply.variables?.classId === seats.id}
             applyDisabled={apply.isPending}
+            notOpen={isWaiting(seats.id)}
             errorKey={rowError?.classId === seats.id ? rowError.key : undefined}
             errorHoldId={rowError?.classId === seats.id ? rowError.holdId : undefined}
             onApply={() => onApply(seats)}

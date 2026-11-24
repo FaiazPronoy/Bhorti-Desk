@@ -33,4 +33,9 @@ public static class ApiErrorCode
     public const string RateLimited = "RATE_LIMITED";
     public const string TooManyHolds = "TOO_MANY_HOLDS";
     public const string Cooldown = "APPLY_COOLDOWN";
+
+    // The admission season.
+    public const string SessionNotFound = "SESSION_NOT_FOUND";
+    public const string SessionNotOpen = "SESSION_NOT_OPEN";
+    public const string SessionAlreadyPublished = "SESSION_ALREADY_PUBLISHED";
 }

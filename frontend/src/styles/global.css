@@ -1327,6 +1327,71 @@
   }
 }
 
+/* ---------------------------------------------------------------- admission season */
+
+.season {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-4) var(--space-8);
+  padding-bottom: var(--space-6);
+  margin-bottom: var(--space-6);
+  border-bottom: 1px solid var(--rule-strong);
+}
+
+.season__title {
+  font-size: var(--text-24);
+}
+
+.season__state {
+  color: var(--ink-soft);
+}
+
+.season__clock {
+  display: flex;
+  gap: var(--space-4);
+}
+
+.season__unit {
+  display: flex;
+  flex-direction: column;
+  min-width: 3rem;
+}
+
+.season__digits {
+  font-size: var(--text-32);
+  font-weight: 700;
+  line-height: 1.1;
+  font-variant-numeric: tabular-nums;
+}
+
+.season__label {
+  font-size: var(--text-13);
+  color: var(--ink-soft);
+}
+
+.office-section {
+  margin-top: var(--space-12);
+}
+
+.office-sessions {
+  display: grid;
+  gap: var(--space-6);
+}
+
+.office-session__actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-2);
+}
+
+.office-session__actions .field__input {
+  width: auto;
+  max-width: 100%;
+}
+
 /* ---------------------------------------------------------------- account */
 
 /* Student names in the picker are words, not digits, so they use the text font. */

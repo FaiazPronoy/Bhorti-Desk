@@ -2,13 +2,16 @@ import { useSyncExternalStore } from "react";
 import { ApiError } from "./apiErrors";
 import type {
   AdmissionClass,
+  AdmissionSession,
   ApiErrorBody,
   ClassSeatSummary,
   ConfirmedHold,
   CreatedHold,
+  CurrentSeason,
   HoldDetails,
   Me,
   NewStudent,
+  SessionForm,
   Student,
   StudentHold,
 } from "./apiTypes";
@@ -41,7 +44,7 @@ export function useServerReachable(): boolean {
 // ---- The one function that talks to the API.
 
 interface RequestOptions {
-  method?: "GET" | "POST" | "DELETE";
+  method?: "GET" | "POST" | "PUT" | "DELETE";
   studentId?: string;
   body?: unknown;
 }
@@ -127,6 +130,23 @@ export const admissionApi = {
 
   cancelHold: (holdId: string, studentId: string) =>
     request<void>(`/holds/${encodeURIComponent(holdId)}`, { method: "DELETE", studentId }),
+
+  currentSeason: async () => {
+    const season = await request<CurrentSeason>("/season/current");
+    rememberServerTime(season.serverTime);
+    return season;
+  },
+
+  officeSessions: () => request<AdmissionSession[]>("/office/sessions"),
+
+  createSession: (form: SessionForm) => request<AdmissionSession>("/office/sessions", { method: "POST", body: form }),
+
+  publishSession: (id: string) => request<AdmissionSession>(`/office/sessions/${encodeURIComponent(id)}/publish`, { method: "POST" }),
+
+  closeSession: (id: string) => request<AdmissionSession>(`/office/sessions/${encodeURIComponent(id)}/close`, { method: "POST" }),
+
+  addClassToSession: (id: string, classId: string) =>
+    request<AdmissionSession>(`/office/sessions/${encodeURIComponent(id)}/classes`, { method: "POST", body: { classId } }),
 
   me: () => request<Me>("/auth/me"),
 

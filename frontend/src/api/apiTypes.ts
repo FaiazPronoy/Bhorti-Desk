@@ -65,6 +65,31 @@ export interface Me {
   role: "ADMIN" | "OFFICER" | null;
 }
 
+export type SessionWindow = "UPCOMING" | "OPEN" | "ENDED";
+
+export interface AdmissionSession {
+  id: string;
+  academicYear: number;
+  name: string;
+  opensAt: string;
+  closesAt: string;
+  status: "DRAFT" | "PUBLISHED" | "CLOSED";
+  window: SessionWindow;
+  classIds: string[];
+}
+
+export interface CurrentSeason {
+  session: AdmissionSession | null;
+  serverTime: string;
+}
+
+export interface SessionForm {
+  academicYear: number | null;
+  name: string;
+  opensAt: string;
+  closesAt: string;
+}
+
 export type Gender = "MALE" | "FEMALE" | "OTHER";
 
 export interface Student {

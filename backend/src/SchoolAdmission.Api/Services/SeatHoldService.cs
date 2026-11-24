@@ -104,6 +104,20 @@ public class SeatHoldService(AdmissionDatabase database, AdmissionSettings setti
             throw AdmissionRuleException.ClassNotFound();
         }
 
+        // 1a. A class inside an admission session only takes applications in its window.
+        //     A class with no session (every class from the original POST /classes) is
+        //     always open. Checked under the lock, on the database clock.
+        var windowOpen = await connection.ExecuteScalarAsync<bool?>("""
+            select s.status = 'PUBLISHED' and s.opens_at <= clock_timestamp() and s.closes_at > clock_timestamp()
+              from admission_classes c
+              join admission_sessions s on s.id = c.session_id
+             where c.id = @classId
+            """, new { classId }, transaction);
+        if (windowOpen == false)
+        {
+            throw AdmissionRuleException.SessionNotOpen();
+        }
+
         // 2. Mark this class's holds whose time has passed. Without this, the unique index
         //    in step 5 would block a student whose old hold expired from applying again.
         await connection.ExecuteAsync("""
