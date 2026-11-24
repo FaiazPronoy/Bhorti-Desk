@@ -24,7 +24,8 @@ server {
         proxy_set_header Host $host;
         proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
         proxy_set_header X-Forwarded-Proto $scheme;
-        client_max_body_size 6m;
+        client_max_body_size 2m;
+        add_header X-Content-Type-Options "nosniff" always;
     }
 
     location /assets/ {
@@ -39,6 +40,8 @@ server {
         add_header X-Content-Type-Options "nosniff" always;
         add_header X-Frame-Options "DENY" always;
         add_header Referrer-Policy "no-referrer" always;
+        add_header Permissions-Policy "camera=(), microphone=(), geolocation=(), payment=(), usb=()" always;
+        add_header Cross-Origin-Opener-Policy "same-origin" always;
         add_header Content-Security-Policy "default-src 'self'; connect-src 'self' http: https:; img-src 'self' data: blob:; style-src 'self' 'unsafe-inline'; frame-ancestors 'none'; base-uri 'self'; form-action 'self'" always;
         try_files $uri /index.html;
     }

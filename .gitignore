@@ -14,3 +14,6 @@ coverage/
 .env.local
 .vs/
 .idea/
+
+# Load test output
+loadtest/results/

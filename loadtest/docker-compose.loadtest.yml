@@ -1,0 +1,42 @@
+# Runs the k6 load test against two backends behind nginx, on its own throwaway database.
+#   docker compose -p bhorti-load -f docker-compose.yml -f loadtest/docker-compose.loadtest.yml --profile two-backends up -d --build postgres backend backend-second loadbalancer
+#   docker compose -p bhorti-load -f docker-compose.yml -f loadtest/docker-compose.loadtest.yml --profile two-backends run --rm k6
+#   docker compose -p bhorti-load -f docker-compose.yml -f loadtest/docker-compose.loadtest.yml --profile two-backends down -v
+# Nothing is published to the host, so it never clashes with a running copy of the app.
+services:
+  postgres:
+    command: ["postgres", "-c", "max_connections=200"]
+
+  backend:
+    ports: !reset []
+    environment:
+      HOLD_DURATION_SECONDS: "600"
+
+  backend-second:
+    ports: !reset []
+    environment:
+      HOLD_DURATION_SECONDS: "600"
+
+  frontend:
+    profiles: ["never"]
+
+  loadbalancer:
+    profiles: ["two-backends"]
+    image: nginx:1.29-alpine
+    volumes:
+      - ./loadtest/nginx.conf:/etc/nginx/nginx.conf:ro
+    depends_on:
+      - backend
+      - backend-second
+
+  k6:
+    profiles: ["two-backends"]
+    image: grafana/k6:latest
+    volumes:
+      - ./loadtest:/scripts:ro
+      - ./loadtest/results:/results
+    environment:
+      API: http://loadbalancer:8080
+    command: ["run", "--summary-export=/results/summary.json", "/scripts/last-seats.js"]
+    depends_on:
+      - loadbalancer
