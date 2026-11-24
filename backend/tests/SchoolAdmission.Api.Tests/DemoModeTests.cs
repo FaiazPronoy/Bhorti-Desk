@@ -30,8 +30,11 @@ public class DemoModeTests
         await ApiCalls.CreateClassAsync(client, 3);
         var reset = api.Services.GetRequiredService<DemoReset>();
 
-        Assert.True(await reset.ResetIfNewDayAsync(new DateOnly(2026, 11, 25)));
-        Assert.False(await reset.ResetIfNewDayAsync(new DateOnly(2026, 11, 25)));
+        // A day far ahead, so the reset the app itself runs at start (for today) never
+        // counts as this one.
+        var day = new DateOnly(2099, 1, 1);
+        Assert.True(await reset.ResetIfNewDayAsync(day));
+        Assert.False(await reset.ResetIfNewDayAsync(day));
         Assert.Equal(0, (await ApiCalls.GetJsonAsync(client, "/classes")).GetArrayLength());
     }
 }

@@ -38,7 +38,12 @@ builder.Services.AddOpenApi(options => options.AddOperationTransformer((operatio
 
 // Registered with a factory so the container owns it and closes its connections when
 // the host stops. Each test host would otherwise leave a full pool open.
-builder.Services.AddSingleton(_ => NpgsqlDataSource.Create(settings.ConnectionString));
+// In a rush every request for one class waits its turn at the class lock while holding a
+// connection, so the others wait for a free connection. They should wait in line, not
+// fail: a pool wait of at least 60 seconds.
+var connectionString = new NpgsqlConnectionStringBuilder(settings.ConnectionString);
+if (connectionString.Timeout < 60) connectionString.Timeout = 60;
+builder.Services.AddSingleton(_ => NpgsqlDataSource.Create(connectionString.ConnectionString));
 builder.Services.AddSingleton<AdmissionDatabase>();
 builder.Services.AddScoped<AdmissionClassService>();
 builder.Services.AddScoped<SeatHoldService>();
