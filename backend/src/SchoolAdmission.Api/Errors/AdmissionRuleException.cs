@@ -89,5 +89,8 @@ public class AdmissionRuleException(int statusCode, string code, string message,
     public static AdmissionRuleException SessionAlreadyPublished() =>
         new(StatusCodes.Status409Conflict, ApiErrorCode.SessionAlreadyPublished, "Another session is already published. Close it first.");
 
+    public static AdmissionRuleException DocumentNotFound() =>
+        new(StatusCodes.Status404NotFound, ApiErrorCode.DocumentNotFound, "No such document for this application.");
+
     public int? RetryAfterSeconds { get; init; }
 }

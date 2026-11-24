@@ -1419,6 +1419,53 @@
   }
 }
 
+.documents {
+  margin-top: var(--space-8);
+}
+
+.documents__grid {
+  display: grid;
+  gap: var(--space-6);
+}
+
+@media (min-width: 640px) {
+  .documents__grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+.document-slot {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: var(--space-2);
+}
+
+.document-slot__preview {
+  display: grid;
+  place-items: center;
+  width: 120px;
+  height: 150px;
+  border: 1px dashed var(--rule-strong);
+  border-radius: var(--radius-control);
+  background: var(--sheet);
+  color: var(--ink-soft);
+  font-size: var(--text-13);
+  text-align: center;
+  overflow: hidden;
+}
+
+.document-slot__preview img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.document-slot__pick:focus-within {
+  outline: 2px solid var(--ink);
+  outline-offset: 2px;
+}
+
 .register-row__fee {
   font-size: var(--text-15);
   color: var(--ink-soft);

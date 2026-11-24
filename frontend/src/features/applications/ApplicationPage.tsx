@@ -14,6 +14,7 @@ import { useServerNow } from "../../lib/serverClock";
 import { useClassList } from "../classes/useClassList";
 import { useStudentId } from "../student-identity/useStudentId";
 import { ApplicantForm, applicationKey } from "./ApplicantForm";
+import { DocumentUploads } from "./DocumentUploads";
 import { HoldCountdown } from "./HoldCountdown";
 import { effectiveStatus } from "./holdStatus";
 import { SeatToken } from "./SeatToken";
@@ -171,7 +172,10 @@ function ApplicationView({ holdId }: { holdId: string }) {
       </SeatToken>
 
       {currentStatus === "HELD" && application.data && studentId && (
-        <ApplicantForm key={application.data.holdId} application={application.data} studentId={studentId} />
+        <>
+          <ApplicantForm key={application.data.holdId} application={application.data} studentId={studentId} />
+          <DocumentUploads application={application.data} studentId={studentId} />
+        </>
       )}
 
       <div className="token-actions" aria-live="polite">

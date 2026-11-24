@@ -122,6 +122,15 @@ export interface ApplicationDetails {
   serverTime: string;
   rules: ClassRules | null;
   applicant: Applicant | null;
+  documents: DocumentInfo[];
+}
+
+export type DocumentKind = "PHOTO" | "CERTIFICATE";
+
+export interface DocumentInfo {
+  kind: DocumentKind;
+  contentType: string;
+  sizeBytes: number;
 }
 
 export type Gender = "MALE" | "FEMALE" | "OTHER";

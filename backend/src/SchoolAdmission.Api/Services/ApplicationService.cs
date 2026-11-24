@@ -15,7 +15,9 @@ public class ApplicationService(AdmissionDatabase database)
                {SeatHoldStatus.EffectiveStatusSql} as status,
                h.expires_at, clock_timestamp() as server_time,
                r.min_age, r.max_age, r.age_cutoff_date, r.fee_taka, r.admission_class_id as rules_class_id,
-               a.student_name_bn, a.student_name_en, a.date_of_birth, a.guardian_name, a.guardian_phone, a.previous_school
+               a.student_name_bn, a.student_name_en, a.date_of_birth, a.guardian_name, a.guardian_phone, a.previous_school,
+               coalesce((select string_agg(d.kind || ':' || d.content_type || ':' || d.size_bytes, ',' order by d.kind)
+                           from application_documents d where d.seat_hold_id = h.id), '') as documents
         from seat_holds h
         join admission_classes c on c.id = h.admission_class_id
         left join class_rules r on r.admission_class_id = c.id
@@ -133,6 +135,7 @@ public class ApplicationService(AdmissionDatabase database)
         public string? GuardianName { get; set; }
         public string? GuardianPhone { get; set; }
         public string? PreviousSchool { get; set; }
+        public string Documents { get; set; } = "";
 
         public ApplicationResponse ToResponse()
         {
@@ -143,7 +146,11 @@ public class ApplicationService(AdmissionDatabase database)
             var serial = $"BD-{CreatedAt.ToUniversalTime().Year}-{SerialNumber:D7}";
             return new ApplicationResponse(HoldId, serial, ClassId, ClassName, Status,
                 DateTime.SpecifyKind(ExpiresAt.ToUniversalTime(), DateTimeKind.Utc),
-                DateTime.SpecifyKind(ServerTime.ToUniversalTime(), DateTimeKind.Utc), rules, applicant);
+                DateTime.SpecifyKind(ServerTime.ToUniversalTime(), DateTimeKind.Utc), rules, applicant,
+                Documents.Split(',', StringSplitOptions.RemoveEmptyEntries)
+                    .Select(item => item.Split(':'))
+                    .Select(parts => new DocumentInfo(parts[0], parts[1], int.Parse(parts[2])))
+                    .ToArray());
         }
     }
 }

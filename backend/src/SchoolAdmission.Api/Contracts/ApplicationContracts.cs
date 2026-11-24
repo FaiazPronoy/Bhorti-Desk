@@ -32,4 +32,7 @@ public record ApplicationResponse(
     [property: JsonConverter(typeof(UtcSecondsDateTimeConverter))] DateTime ExpiresAt,
     [property: JsonConverter(typeof(UtcMillisecondsDateTimeConverter))] DateTime ServerTime,
     ClassRulesResponse? Rules,
-    ApplicantResponse? Applicant);
+    ApplicantResponse? Applicant,
+    DocumentInfo[] Documents);
+
+public record DocumentInfo(string Kind, string ContentType, int SizeBytes);

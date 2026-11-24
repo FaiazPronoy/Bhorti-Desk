@@ -156,3 +156,18 @@ create table if not exists applicant_details (
     previous_school varchar(150) null,
     updated_at      timestamptz  not null default clock_timestamp()
 );
+-- ---------------------------------------------------------------- documents
+
+-- The file bytes live in the database, never under a web path, and get a random id.
+-- The name the guardian's file had is not kept.
+create table if not exists application_documents (
+    id            uuid        primary key,
+    seat_hold_id  uuid        not null references seat_holds (id),
+    kind          varchar(12) not null check (kind in ('PHOTO', 'CERTIFICATE')),
+    content_type  varchar(40) not null check (content_type in ('image/jpeg', 'image/png', 'application/pdf')),
+    size_bytes    integer     not null check (size_bytes between 1 and 1048576),
+    sha256        char(64)    not null,
+    data          bytea       not null,
+    created_at    timestamptz not null default clock_timestamp(),
+    unique (seat_hold_id, kind)
+);

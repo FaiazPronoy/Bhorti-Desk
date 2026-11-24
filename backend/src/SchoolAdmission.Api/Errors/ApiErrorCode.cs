@@ -38,4 +38,5 @@ public static class ApiErrorCode
     public const string SessionNotFound = "SESSION_NOT_FOUND";
     public const string SessionNotOpen = "SESSION_NOT_OPEN";
     public const string SessionAlreadyPublished = "SESSION_ALREADY_PUBLISHED";
+    public const string DocumentNotFound = "DOCUMENT_NOT_FOUND";
 }

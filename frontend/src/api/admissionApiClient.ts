@@ -12,6 +12,7 @@ import type {
   ConfirmedHold,
   CreatedHold,
   CurrentSeason,
+  DocumentKind,
   HoldDetails,
   Me,
   NewStudent,
@@ -96,6 +97,27 @@ async function request<T>(path: string, options: RequestOptions = {}): Promise<T
   return (await readJson<T>(response)) as T;
 }
 
+// Files need a multipart body and come back as bytes, so they skip the JSON helper but
+// keep the same headers, timeout and error handling.
+async function sendFile(path: string, studentId: string, method: "GET" | "PUT", body?: FormData): Promise<Response> {
+  let response: Response;
+  try {
+    response = await fetch(apiBaseUrl() + path, {
+      method,
+      headers: { "X-Bhorti-Request": "1", "X-Student-Id": studentId },
+      body,
+      credentials: "include",
+      signal: AbortSignal.timeout(30_000),
+    });
+  } catch {
+    setServerReachable(false);
+    throw new ApiError("network", 0);
+  }
+  setServerReachable(response.status < 500);
+  if (!response.ok) throw new ApiError(response.status >= 500 ? "network" : "api", response.status, await readJson<ApiErrorBody>(response));
+  return response;
+}
+
 async function readJson<T>(response: Response): Promise<T | undefined> {
   try {
     return (await response.json()) as T;
@@ -157,6 +179,17 @@ export const admissionApi = {
 
   saveApplicant: (holdId: string, studentId: string, applicant: ApplicantInput) =>
     request<ApplicationDetails>(`/applications/${encodeURIComponent(holdId)}/applicant`, { method: "PUT", studentId, body: applicant }),
+
+  uploadDocument: async (holdId: string, studentId: string, kind: DocumentKind, file: File) => {
+    const body = new FormData();
+    body.append("file", file);
+    await sendFile(`/applications/${encodeURIComponent(holdId)}/documents/${kind.toLowerCase()}`, studentId, "PUT", body);
+  },
+
+  // The file comes back as bytes and is shown through a short-lived object URL, because
+  // an <img src> cannot send the X-Student-Id header.
+  documentBlob: async (holdId: string, studentId: string, kind: DocumentKind) =>
+    (await sendFile(`/applications/${encodeURIComponent(holdId)}/documents/${kind.toLowerCase()}`, studentId, "GET")).blob(),
 
   classRules: () => request<ClassRules[]>("/season/class-rules"),
 

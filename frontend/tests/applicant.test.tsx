@@ -14,6 +14,7 @@ const application = {
   serverTime: new Date().toISOString(),
   rules: null,
   applicant: null,
+  documents: [],
 };
 
 function api(onSave: () => { status: number; body?: unknown }) {
@@ -64,5 +65,17 @@ describe("applicant details", () => {
     expect(body.dateOfBirth).toBeNull();
     expect(calls.every((call) => !call.url.includes(VALID_STUDENT_ID))).toBe(true);
     expect(await screen.findByText("Details saved.")).toBeInTheDocument();
+  });
+
+  it("stops a photo that is too large before it is sent", async () => {
+    const { calls } = api(() => ({ status: 200, body: application }));
+    const user = userEvent.setup();
+    renderApp("/applications/h1");
+
+    const big = new File([new Uint8Array(400 * 1024)], "big.png", { type: "image/png" });
+    await user.upload(await screen.findByLabelText("Add Student's photo"), big);
+
+    expect(await screen.findByText("The photo is too large. Use one under 300 KB.")).toBeInTheDocument();
+    expect(calls.some((call) => call.url.includes("/documents/"))).toBe(false);
   });
 });

@@ -30,6 +30,7 @@ builder.Services.AddScoped<AuthService>();
 builder.Services.AddScoped<StudentService>();
 builder.Services.AddScoped<SessionService>();
 builder.Services.AddScoped<ApplicationService>();
+builder.Services.AddScoped<DocumentService>();
 builder.Services.AddSingleton<ISmsSender, NoSmsSender>();
 RateLimits.Add(builder.Services, settings);
 
