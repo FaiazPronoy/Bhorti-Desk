@@ -7,6 +7,9 @@ import type {
   ConfirmedHold,
   CreatedHold,
   HoldDetails,
+  Me,
+  NewStudent,
+  Student,
   StudentHold,
 } from "./apiTypes";
 import { apiBaseUrl } from "../lib/runtimeConfig";
@@ -44,7 +47,9 @@ interface RequestOptions {
 }
 
 async function request<T>(path: string, options: RequestOptions = {}): Promise<T> {
-  const headers: Record<string, string> = {};
+  // Marks every call as coming from this app. The API refuses a signed-in request
+  // without it, which stops forged form posts from other sites.
+  const headers: Record<string, string> = { "X-Bhorti-Request": "1" };
   if (options.body !== undefined) headers["Content-Type"] = "application/json";
   // The birth registration number only ever travels in this header, never in the URL.
   if (options.studentId) headers["X-Student-Id"] = options.studentId;
@@ -55,6 +60,8 @@ async function request<T>(path: string, options: RequestOptions = {}): Promise<T
       method: options.method ?? "GET",
       headers,
       body: options.body === undefined ? undefined : JSON.stringify(options.body),
+      // The session cookie is HttpOnly: the page never sees it, the browser just sends it.
+      credentials: "include",
       signal: AbortSignal.timeout(REQUEST_TIMEOUT_MS),
     });
   } catch {
@@ -120,6 +127,21 @@ export const admissionApi = {
 
   cancelHold: (holdId: string, studentId: string) =>
     request<void>(`/holds/${encodeURIComponent(holdId)}`, { method: "DELETE", studentId }),
+
+  me: () => request<Me>("/auth/me"),
+
+  requestOtp: (phone: string) => request<void>("/auth/otp/request", { method: "POST", body: { phone } }),
+
+  verifyOtp: (phone: string, code: string) => request<Me>("/auth/otp/verify", { method: "POST", body: { phone, code } }),
+
+  staffLogin: (email: string, password: string) =>
+    request<Me>("/auth/staff/login", { method: "POST", body: { email, password } }),
+
+  logout: () => request<void>("/auth/logout", { method: "POST" }),
+
+  myStudents: () => request<Student[]>("/me/students"),
+
+  addStudent: (student: NewStudent) => request<Student>("/me/students", { method: "POST", body: student }),
 
   myHolds: async (studentId: string) => {
     const holds = await request<StudentHold[]>("/me/holds", { studentId });

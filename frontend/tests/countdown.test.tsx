@@ -1,23 +1,26 @@
 import { act, screen } from "@testing-library/react";
 import { describe, expect, it, vi } from "vitest";
 import { formatCountdown, secondsLeft } from "../src/features/applications/holdStatus";
-import { mockApi, renderApp, VALID_STUDENT_ID } from "./renderApp";
+import { asGuardian, mockApi, renderApp, VALID_STUDENT_ID } from "./renderApp";
 
 // Whole seconds, like the API sends them.
 const isoInSeconds = (ms: number) => new Date(ms).toISOString().replace(/\.\d+Z$/, "Z");
 
 function holdApi(expiresAt: string, serverTime: string) {
-  return mockApi((url) => {
+  return mockApi(asGuardian((url) => {
     if (url === "/holds/h1") {
       // The server keeps saying HELD for a moment after the time passes, as it may
       // between polls. The page must not believe it.
-      return { status: 200, body: { holdId: "h1", classId: "c1", className: "Class 6", status: "HELD", expiresAt, serverTime } };
+      return {
+        status: 200,
+        body: { holdId: "h1", classId: "c1", className: "Class 6", status: "HELD", expiresAt, serverTime, serial: "BD-2026-0001234" },
+      };
     }
     if (url === "/classes") {
       return { status: 200, body: [{ id: "c1", name: "Class 6", totalSeats: 1, heldSeats: 1, confirmedSeats: 0, availableSeats: 0 }] };
     }
     if (url === "/me/holds") return { status: 200, body: [] };
-  });
+  }));
 }
 
 describe("countdown", () => {
@@ -29,29 +32,32 @@ describe("countdown", () => {
 
   it("reaches zero, shows EXPIRED and disables the pay button without a reload", async () => {
     vi.useFakeTimers({ shouldAdvanceTime: true });
-    localStorage.setItem("bhorti-desk.student-id", VALID_STUDENT_ID);
     const start = Date.now();
     holdApi(isoInSeconds(start + 3000), isoInSeconds(start));
 
     renderApp("/applications/h1");
 
-    expect(await screen.findByText("Seat on hold (HELD)")).toBeInTheDocument();
+    expect(await screen.findByText("Seat on hold")).toBeInTheDocument();
     expect(screen.getByRole("button", { name: "Pay admission fee" })).toBeEnabled();
+    // The token shows the human serial and the masked number, never the hold id or the full number.
+    expect(screen.getByText("BD-2026-0001234")).toBeInTheDocument();
+    expect(screen.queryByText("h1")).not.toBeInTheDocument();
+    expect(document.body.textContent).not.toContain(VALID_STUDENT_ID);
 
     await act(async () => {
       await vi.advanceTimersByTimeAsync(4000);
     });
 
-    expect(screen.getByText("Time over (EXPIRED)")).toBeInTheDocument();
+    expect(screen.getByText("Time over")).toBeInTheDocument();
     expect(screen.getByRole("button", { name: "Pay admission fee" })).toBeDisabled();
-    expect(screen.queryByText("Seat on hold (HELD)")).not.toBeInTheDocument();
+    expect(screen.queryByText("Seat on hold")).not.toBeInTheDocument();
     expect(screen.queryByRole("button", { name: "Cancel" })).not.toBeInTheDocument();
 
     // Later polls that still say HELD must not bring the old status back.
     await act(async () => {
       await vi.advanceTimersByTimeAsync(6000);
     });
-    expect(screen.getByText("Time over (EXPIRED)")).toBeInTheDocument();
+    expect(screen.getByText("Time over")).toBeInTheDocument();
   });
 
   it("shows EXPIRED on first load for a hold that has already run out", async () => {
@@ -60,7 +66,7 @@ describe("countdown", () => {
 
     renderApp("/applications/h1");
 
-    expect(await screen.findByText("Time over (EXPIRED)")).toBeInTheDocument();
+    expect(await screen.findByText("Time over")).toBeInTheDocument();
     expect(screen.getByRole("button", { name: "Pay admission fee" })).toBeDisabled();
   });
 

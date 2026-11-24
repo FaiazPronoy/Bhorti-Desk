@@ -26,10 +26,10 @@ describe("dictionaries", () => {
     expect(bn["application.cancel"]).toBe("বাতিল");
   });
 
-  it("show the status code next to every status word", () => {
+  it("keep every status word in one language", () => {
     for (const status of ["HELD", "CONFIRMED", "EXPIRED", "CANCELLED"] as const) {
-      expect(en[`status.${status}`]).toContain(`(${status})`);
-      expect(bn[`status.${status}`]).toContain(`(${status})`);
+      expect(en[`status.${status}`]).not.toMatch(/[ঀ-৿]/);
+      expect(bn[`status.${status}`]).not.toMatch(/[A-Za-z]/);
     }
   });
 });

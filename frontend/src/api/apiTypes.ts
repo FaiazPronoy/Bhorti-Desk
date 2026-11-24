@@ -32,6 +32,8 @@ export interface HoldDetails {
   className?: string;
   createdAt?: string;
   serverTime?: string;
+  // Human serial such as BD-2026-0001234. The hold id stays internal.
+  serial?: string;
 }
 
 export interface ConfirmedHold {
@@ -47,6 +49,7 @@ export interface StudentHold {
   expiresAt: string;
   createdAt?: string;
   serverTime?: string;
+  serial?: string;
 }
 
 export interface ApiErrorBody {
@@ -54,4 +57,27 @@ export interface ApiErrorBody {
   message: string;
   fieldErrors?: Record<string, string>;
   holdId?: string;
+}
+
+export interface Me {
+  kind: "GUARDIAN" | "STAFF";
+  id: string;
+  role: "ADMIN" | "OFFICER" | null;
+}
+
+export type Gender = "MALE" | "FEMALE" | "OTHER";
+
+export interface Student {
+  id: string;
+  birthRegistrationNumber: string;
+  fullName: string;
+  dateOfBirth: string;
+  gender: Gender;
+}
+
+export interface NewStudent {
+  birthRegistrationNumber: string;
+  fullName: string;
+  dateOfBirth: string;
+  gender: Gender | "";
 }

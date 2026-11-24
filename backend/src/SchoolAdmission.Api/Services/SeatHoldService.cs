@@ -79,6 +79,20 @@ public class SeatHoldService(AdmissionDatabase database, AdmissionSettings setti
         // leak to the next request that gets this connection from the pool.
         await connection.ExecuteAsync("set local lock_timeout = '20s'", transaction: transaction);
 
+        // 0. Lock the guardian's row first. Holds by one family then run one at a time, so
+        //    the "at most N holds at once" rule cannot be beaten by clicking in several
+        //    classes at the same moment. Always guardian first, class second: no deadlock.
+        //    Only with sign-in on: without it a student has no guardian.
+        if (settings.SignInRequired)
+        {
+            await connection.ExecuteAsync("""
+                select g.id from guardians g
+                  join students s on s.guardian_id = g.id
+                 where s.birth_registration_number = @studentId
+                   for update of g
+                """, new { studentId }, transaction);
+        }
+
         // 1. Lock the class row. Every hold request for this class now waits here in line,
         //    whichever backend process it came from. This is what keeps held + confirmed
         //    at or under total_seats, and it also works for two backends on one database.
@@ -106,6 +120,39 @@ public class SeatHoldService(AdmissionDatabase database, AdmissionSettings setti
         if (existingHoldId is not null)
         {
             throw AdmissionRuleException.AlreadyApplied(existingHoldId);
+        }
+
+        // 3a. A hold that ran out without payment blocks the same class for a while.
+        //     Otherwise one person could keep a seat away from everyone by applying
+        //     again every ten minutes and never paying.
+        if (settings.HoldCooldownSeconds > 0)
+        {
+            var waitSeconds = await connection.ExecuteScalarAsync<int?>("""
+                select ceil(extract(epoch from max(expires_at) + make_interval(secs => @cooldown) - clock_timestamp()))::int
+                  from seat_holds
+                 where admission_class_id = @classId and student_birth_registration_number = @studentId
+                   and status in ('HELD', 'EXPIRED') and expires_at <= clock_timestamp()
+                   and expires_at > clock_timestamp() - make_interval(secs => @cooldown)
+                """, new { classId, studentId, cooldown = settings.HoldCooldownSeconds }, transaction);
+            if (waitSeconds is > 0)
+            {
+                throw AdmissionRuleException.Cooldown(waitSeconds.Value);
+            }
+        }
+
+        // 3b. One family can hold only a few unpaid seats at once, across all classes.
+        if (settings.SignInRequired)
+        {
+            var familyHolds = await connection.ExecuteScalarAsync<long>("""
+                select count(*) from seat_holds h
+                  join students s on s.birth_registration_number = h.student_birth_registration_number
+                 where s.guardian_id = (select guardian_id from students where birth_registration_number = @studentId)
+                   and h.status = 'HELD' and h.expires_at > clock_timestamp()
+                """, new { studentId }, transaction);
+            if (familyHolds >= settings.MaxActiveHoldsPerGuardian)
+            {
+                throw AdmissionRuleException.TooManyHolds(settings.MaxActiveHoldsPerGuardian);
+            }
         }
 
         // 4. Count the taken seats while we still hold the lock.

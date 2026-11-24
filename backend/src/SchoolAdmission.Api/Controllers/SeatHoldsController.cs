@@ -1,14 +1,17 @@
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.RateLimiting;
+using SchoolAdmission.Api.Auth;
 using SchoolAdmission.Api.Contracts;
 using SchoolAdmission.Api.Domain;
 using SchoolAdmission.Api.Errors;
+using SchoolAdmission.Api.Security;
 using SchoolAdmission.Api.Services;
 
 namespace SchoolAdmission.Api.Controllers;
 
 [ApiController]
 [Route("holds")]
-public class SeatHoldsController(SeatHoldService holdService) : ControllerBase
+public class SeatHoldsController(SeatHoldService holdService, StudentService students) : ControllerBase
 {
     // 5. GET /holds/{holdId}. No header, as in the assignment.
     [HttpGet("{holdId}")]
@@ -19,17 +22,21 @@ public class SeatHoldsController(SeatHoldService holdService) : ControllerBase
 
     // 6. POST /holds/{holdId}/confirm, with X-Student-Id. This is the "pay the fee" step.
     [HttpPost("{holdId}/confirm")]
+    [EnableRateLimiting(RateLimits.Apply)]
     public async Task<SeatHoldConfirmedResponse> Confirm(string holdId)
     {
         var studentId = StudentIdHeader.Read(Request);
+        await StudentAccess.RequireOwnAsync(HttpContext, students, studentId);
         return await holdService.ConfirmAsync(ParseHoldId(holdId), studentId);
     }
 
     // 7. DELETE /holds/{holdId}, with X-Student-Id.
     [HttpDelete("{holdId}")]
+    [EnableRateLimiting(RateLimits.Apply)]
     public async Task<IActionResult> Cancel(string holdId)
     {
         var studentId = StudentIdHeader.Read(Request);
+        await StudentAccess.RequireOwnAsync(HttpContext, students, studentId);
         await holdService.CancelAsync(ParseHoldId(holdId), studentId);
         return NoContent();
     }

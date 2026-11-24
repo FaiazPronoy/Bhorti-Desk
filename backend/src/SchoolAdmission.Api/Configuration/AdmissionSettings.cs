@@ -8,6 +8,25 @@ public class AdmissionSettings
     public required int HoldDurationSeconds { get; init; }
     public required string[] CorsAllowedOrigins { get; init; }
 
+    // Off by default, so the eight original endpoints answer exactly as the contract says:
+    // no login, identity from X-Student-Id. Turn it on for a real deployment.
+    public bool SignInRequired { get; init; }
+
+    // Anti-abuse limits. All off by default for the same reason.
+    public int MaxActiveHoldsPerGuardian { get; init; } = 3;
+    public int HoldCooldownSeconds { get; init; }
+    public bool RateLimitsEnabled { get; init; }
+
+    // First admin account, created at start when there is no staff yet.
+    public string? AdminEmail { get; init; }
+    public string? AdminPassword { get; init; }
+
+    // Without an SMS provider the one-time code is written to the log. Only for local use.
+    public bool LogOtpCodes { get; init; }
+
+    // Off only for plain http on localhost. Behind HTTPS it must be on.
+    public bool SecureCookies { get; init; } = true;
+
     // Problems found while reading the settings. Logged once the app has a logger.
     public List<string> Warnings { get; } = new();
 
@@ -49,8 +68,26 @@ public class AdmissionSettings
             ConnectionString = connectionString,
             HoldDurationSeconds = holdSeconds,
             CorsAllowedOrigins = origins,
+            SignInRequired = IsTrue(configuration["SIGN_IN_REQUIRED"]),
+            MaxActiveHoldsPerGuardian = PositiveOr(configuration["MAX_ACTIVE_HOLDS_PER_GUARDIAN"], 3, allowZero: false),
+            HoldCooldownSeconds = PositiveOr(configuration["HOLD_COOLDOWN_SECONDS"], 0, allowZero: true),
+            RateLimitsEnabled = IsTrue(configuration["RATE_LIMITS_ENABLED"]),
+            AdminEmail = configuration["ADMIN_EMAIL"]?.Trim(),
+            AdminPassword = configuration["ADMIN_PASSWORD"],
+            LogOtpCodes = IsTrue(configuration["OTP_LOG_CODES"]),
+            SecureCookies = !IsFalse(configuration["COOKIE_SECURE"]),
         };
         settings.Warnings.AddRange(warnings);
+        if (settings.LogOtpCodes)
+        {
+            settings.Warnings.Add("OTP_LOG_CODES is on: sign-in codes are written to the log. Never use this in production.");
+        }
         return settings;
     }
+
+    private static int PositiveOr(string? value, int fallback, bool allowZero) =>
+        int.TryParse(value, out var parsed) && (parsed > 0 || (allowZero && parsed == 0)) ? parsed : fallback;
+
+    private static bool IsTrue(string? value) => value?.Trim().ToLowerInvariant() is "true" or "1" or "yes";
+    private static bool IsFalse(string? value) => value?.Trim().ToLowerInvariant() is "false" or "0" or "no";
 }

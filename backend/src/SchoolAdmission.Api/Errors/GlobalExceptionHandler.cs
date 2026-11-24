@@ -24,9 +24,21 @@ public class GlobalExceptionHandler(ILogger<GlobalExceptionHandler> logger) : IE
                 {
                     context.HttpContext.Response.Headers.RetryAfter = "2";
                 }
+                else if (rule.RetryAfterSeconds is { } retry)
+                {
+                    context.HttpContext.Response.Headers.RetryAfter = retry.ToString();
+                }
                 context.Result = new ObjectResult(new ApiErrorResponse(rule.Code, rule.Message, HoldId: rule.HoldId))
                 {
                     StatusCode = rule.StatusCode,
+                };
+                break;
+
+            case FieldValidationException fields:
+                context.Result = new ObjectResult(new ApiErrorResponse(ApiErrorCode.InvalidRequest,
+                    "Some information is not correct.", fields.FieldErrors))
+                {
+                    StatusCode = StatusCodes.Status400BadRequest,
                 };
                 break;
 

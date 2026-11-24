@@ -5,6 +5,9 @@ import { ApplicationPage } from "./features/applications/ApplicationPage";
 import { MyApplicationsPage } from "./features/applications/MyApplicationsPage";
 import { ClassListPage } from "./features/classes/ClassListPage";
 import { CreateClassPage } from "./features/school-office/CreateClassPage";
+import { LoginPage } from "./features/account/LoginPage";
+import { StaffLoginPage } from "./features/account/StaffLoginPage";
+import { StudentsPage } from "./features/account/StudentsPage";
 
 export const routes: RouteObject[] = [
   {
@@ -15,6 +18,9 @@ export const routes: RouteObject[] = [
       { path: "applications", element: <MyApplicationsPage /> },
       { path: "applications/:holdId", element: <ApplicationPage /> },
       { path: "school-office", element: <CreateClassPage /> },
+      { path: "login", element: <LoginPage /> },
+      { path: "staff/login", element: <StaffLoginPage /> },
+      { path: "students", element: <StudentsPage /> },
       { path: "*", element: <NotFoundPage /> },
     ],
   },
