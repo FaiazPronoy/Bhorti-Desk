@@ -65,6 +65,19 @@ public class GlobalExceptionHandler(ILogger<GlobalExceptionHandler> logger) : IE
                 };
                 break;
 
+            // Every connection in the pool stayed busy past its wait time. Like a lock wait,
+            // this means "too many people at once", not a bug.
+            case NpgsqlException { InnerException: TimeoutException }:
+                logger.LogWarning("503 SERVER_BUSY (connection pool wait) on {Method} {Path}",
+                    context.HttpContext.Request.Method, context.HttpContext.Request.Path);
+                context.HttpContext.Response.Headers.RetryAfter = "2";
+                context.Result = new ObjectResult(new ApiErrorResponse(ApiErrorCode.ServerBusy,
+                    "Many people are applying right now. Please try again in a moment."))
+                {
+                    StatusCode = StatusCodes.Status503ServiceUnavailable,
+                };
+                break;
+
             default:
                 // A real bug. Log the details, but never send them to the caller.
                 logger.LogError(context.Exception, "Unexpected error on {Method} {Path}",

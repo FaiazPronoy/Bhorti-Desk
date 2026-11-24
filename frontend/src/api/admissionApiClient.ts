@@ -16,6 +16,10 @@ import type {
   HoldDetails,
   Me,
   NewStudent,
+  OfficeApplication,
+  PaymentInfo,
+  PaymentStart,
+  SandboxPage,
   SessionForm,
   Student,
   StudentHold,
@@ -52,6 +56,7 @@ interface RequestOptions {
   method?: "GET" | "POST" | "PUT" | "DELETE";
   studentId?: string;
   body?: unknown;
+  idempotencyKey?: string;
 }
 
 async function request<T>(path: string, options: RequestOptions = {}): Promise<T> {
@@ -61,6 +66,7 @@ async function request<T>(path: string, options: RequestOptions = {}): Promise<T
   if (options.body !== undefined) headers["Content-Type"] = "application/json";
   // The birth registration number only ever travels in this header, never in the URL.
   if (options.studentId) headers["X-Student-Id"] = options.studentId;
+  if (options.idempotencyKey) headers["Idempotency-Key"] = options.idempotencyKey;
 
   let response: Response;
   try {
@@ -190,6 +196,36 @@ export const admissionApi = {
   // an <img src> cannot send the X-Student-Id header.
   documentBlob: async (holdId: string, studentId: string, kind: DocumentKind) =>
     (await sendFile(`/applications/${encodeURIComponent(holdId)}/documents/${kind.toLowerCase()}`, studentId, "GET")).blob(),
+
+  startPayment: (holdId: string, studentId: string, idempotencyKey: string) =>
+    request<PaymentStart>(`/applications/${encodeURIComponent(holdId)}/payments`, { method: "POST", studentId, idempotencyKey }),
+
+  sandboxPage: (paymentId: string) => request<SandboxPage>(`/sandbox-gateway/payments/${encodeURIComponent(paymentId)}`),
+
+  sandboxDecide: (paymentId: string, outcome: "PAID" | "FAILED") =>
+    request<{ status: PaymentInfo["status"] }>(`/sandbox-gateway/payments/${encodeURIComponent(paymentId)}/decide`, { method: "POST", body: { outcome } }),
+
+  officeApplications: () => request<OfficeApplication[]>("/office/applications"),
+
+  verifyApplication: (holdId: string) => request<OfficeApplication>(`/office/applications/${encodeURIComponent(holdId)}/verify`, { method: "POST" }),
+
+  rejectApplication: (holdId: string, reason: string) =>
+    request<OfficeApplication>(`/office/applications/${encodeURIComponent(holdId)}/reject`, { method: "POST", body: { reason } }),
+
+  officeDocumentBlob: async (holdId: string, kind: DocumentKind) => {
+    let response: Response;
+    try {
+      response = await fetch(`${apiBaseUrl()}/office/applications/${encodeURIComponent(holdId)}/documents/${kind.toLowerCase()}`, {
+        headers: { "X-Bhorti-Request": "1" },
+        credentials: "include",
+        signal: AbortSignal.timeout(30_000),
+      });
+    } catch {
+      throw new ApiError("network", 0);
+    }
+    if (!response.ok) throw new ApiError("api", response.status, await readJson<ApiErrorBody>(response));
+    return response.blob();
+  },
 
   classRules: () => request<ClassRules[]>("/season/class-rules"),
 

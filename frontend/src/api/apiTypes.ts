@@ -123,6 +123,52 @@ export interface ApplicationDetails {
   rules: ClassRules | null;
   applicant: Applicant | null;
   documents: DocumentInfo[];
+  payment: PaymentInfo | null;
+  review: ReviewInfo | null;
+}
+
+export interface PaymentInfo {
+  paymentId: string;
+  gateway: "SANDBOX";
+  status: "PENDING" | "PAID" | "FAILED" | "LATE";
+  amountTaka: number;
+  finishedAt: string | null;
+}
+
+export interface ReviewInfo {
+  decision: "VERIFIED" | "REJECTED";
+  reason: string | null;
+  refundDue: boolean;
+}
+
+export interface PaymentStart {
+  paymentId: string;
+  amountTaka: number;
+  gateway: string;
+  status: string;
+  hostedPageUrl: string;
+}
+
+export interface SandboxPage {
+  paymentId: string;
+  holdId: string;
+  className: string;
+  serial: string;
+  amountTaka: number;
+  status: PaymentInfo["status"];
+}
+
+export interface OfficeApplication {
+  holdId: string;
+  serial: string;
+  classId: string;
+  className: string;
+  status: HoldStatus;
+  studentIdLastFour: string;
+  applicant: Applicant | null;
+  documents: DocumentInfo[];
+  payment: PaymentInfo | null;
+  review: ReviewInfo | null;
 }
 
 export type DocumentKind = "PHOTO" | "CERTIFICATE";

@@ -1,4 +1,4 @@
-import { useQuery } from "@tanstack/react-query";
+import { useMutation, useQuery } from "@tanstack/react-query";
 import { useEffect, useState } from "react";
 import { Link, useNavigate, useParams } from "react-router";
 import { admissionApi } from "../../api/admissionApiClient";
@@ -15,6 +15,7 @@ import { useClassList } from "../classes/useClassList";
 import { useStudentId } from "../student-identity/useStudentId";
 import { ApplicantForm, applicationKey } from "./ApplicantForm";
 import { DocumentUploads } from "./DocumentUploads";
+import { PaymentReceipt } from "../payments/PaymentReceipt";
 import { HoldCountdown } from "./HoldCountdown";
 import { effectiveStatus } from "./holdStatus";
 import { SeatToken } from "./SeatToken";
@@ -40,6 +41,9 @@ function ApplicationView({ holdId }: { holdId: string }) {
   });
   const classes = useClassList();
   const pay = usePayFee(holdId);
+  // One key for this visit, so a double tap or a retry starts one payment, not two.
+  const [paymentKey] = useState(() => crypto.randomUUID());
+  const startPayment = useMutation({ mutationFn: (id: string) => admissionApi.startPayment(holdId, id, paymentKey) });
   const cancel = useCancelHold(holdId);
   const applyAgain = useApplyForSeat();
   const refreshSeats = useRefreshSeats();
@@ -115,6 +119,15 @@ function ApplicationView({ holdId }: { holdId: string }) {
       askForNumber();
       return;
     }
+    // A class with a fee goes through the sandbox gateway. One with no fee confirms
+    // directly through the original endpoint, as before.
+    if ((application.data?.rules?.feeTaka ?? 0) > 0) {
+      startPayment.mutate(studentId, {
+        onSuccess: (started) => navigate(started.hostedPageUrl),
+        onError: (error) => setActionError(errorMessageKey(error)),
+      });
+      return;
+    }
     pay.mutate(studentId, { onError: (error) => setActionError(errorMessageKey(error)) });
   }
 
@@ -171,6 +184,8 @@ function ApplicationView({ holdId }: { holdId: string }) {
         {currentStatus === "CANCELLED" && <p className="token__note">{t("application.cancelledNote")}</p>}
       </SeatToken>
 
+      {application.data && <PaymentReceipt application={application.data} />}
+
       {currentStatus === "HELD" && application.data && studentId && (
         <>
           <ApplicantForm key={application.data.holdId} application={application.data} studentId={studentId} />
@@ -181,7 +196,7 @@ function ApplicationView({ holdId }: { holdId: string }) {
       <div className="token-actions" aria-live="polite">
         {(currentStatus === "HELD" || currentStatus === "EXPIRED") && (
           <div className="token-actions__pay">
-            <Button wide pending={pay.isPending} disabled={!canPay} onClick={onPay}>
+            <Button wide pending={pay.isPending || startPayment.isPending} disabled={!canPay} onClick={onPay}>
               {t("application.pay")}
             </Button>
             <p className="token-actions__note">{t("application.payNote")}</p>

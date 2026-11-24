@@ -4,6 +4,7 @@ import { useLanguage } from "../../i18n/LanguageProvider";
 import { signInRequired } from "../../lib/runtimeConfig";
 import { ClassRegister } from "../classes/ClassListPage";
 import { CreateClassForm } from "./CreateClassForm";
+import { OfficeReview } from "./OfficeReview";
 import { OfficeSessions } from "./OfficeSessions";
 
 export function CreateClassPage() {
@@ -36,6 +37,10 @@ export function CreateClassPage() {
           <ClassRegister showActions={false} />
         </div>
       </div>
+      <section className="office-section">
+        <h2 className="section-title">{t("review.title")}</h2>
+        <OfficeReview />
+      </section>
       <section className="office-section">
         <h2 className="section-title">{t("office.sessionsTitle")}</h2>
         <OfficeSessions />

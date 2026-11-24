@@ -31,6 +31,11 @@ builder.Services.AddScoped<StudentService>();
 builder.Services.AddScoped<SessionService>();
 builder.Services.AddScoped<ApplicationService>();
 builder.Services.AddScoped<DocumentService>();
+builder.Services.AddSingleton<SchoolAdmission.Api.Payments.SandboxGateway>();
+builder.Services.AddSingleton<SchoolAdmission.Api.Payments.IPaymentGateway>(provider => provider.GetRequiredService<SchoolAdmission.Api.Payments.SandboxGateway>());
+builder.Services.AddSingleton<Notices>();
+builder.Services.AddScoped<PaymentService>();
+builder.Services.AddScoped<ReviewService>();
 builder.Services.AddSingleton<ISmsSender, NoSmsSender>();
 RateLimits.Add(builder.Services, settings);
 
@@ -53,7 +58,7 @@ builder.Services.AddCors(options => options.AddDefaultPolicy(policy =>
     // Credentials are never allowed cross-origin: the web app reaches the API through its
     // own nginx at the same origin, so the session cookie never needs CORS.
     policy.WithMethods("GET", "POST", "PUT", "DELETE")
-          .WithHeaders("Content-Type", StudentIdHeader.HeaderName, SessionCookie.CsrfHeader)
+          .WithHeaders("Content-Type", StudentIdHeader.HeaderName, SessionCookie.CsrfHeader, "Idempotency-Key")
           .WithExposedHeaders("Retry-After");
 }));
 

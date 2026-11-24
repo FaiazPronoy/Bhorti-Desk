@@ -1466,6 +1466,128 @@
   outline-offset: 2px;
 }
 
+.sandbox__banner {
+  padding: var(--space-3) var(--space-4);
+  margin-bottom: var(--space-6);
+  border: 2px dashed var(--held);
+  border-radius: var(--radius-control);
+  background: var(--held-tint);
+  color: var(--held);
+  font-weight: 700;
+}
+
+.sandbox__facts,
+.receipt__lines {
+  display: grid;
+  gap: var(--space-3);
+  margin: var(--space-6) 0;
+}
+
+.sandbox__facts div,
+.receipt__lines div {
+  display: flex;
+  justify-content: space-between;
+  gap: var(--space-4);
+  padding-bottom: var(--space-2);
+  border-bottom: 1px solid var(--rule);
+}
+
+.sandbox__facts dt,
+.receipt__lines dt {
+  color: var(--ink-soft);
+}
+
+.sandbox__facts dd,
+.receipt__lines dd {
+  margin: 0;
+  font-weight: 600;
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+}
+
+.sandbox__amount {
+  font-size: var(--text-24);
+}
+
+.sandbox__actions,
+.review-row__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-3);
+}
+
+.receipt {
+  margin-top: var(--space-8);
+}
+
+.receipt__review {
+  font-weight: 600;
+}
+
+.receipt__review--verified {
+  color: var(--confirmed);
+}
+
+.receipt__review--rejected {
+  color: var(--cancelled);
+}
+
+.review-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  border: 1px solid var(--rule);
+  border-radius: var(--radius-sheet);
+  background: var(--sheet);
+}
+
+.review-row {
+  display: grid;
+  gap: var(--space-3);
+  padding: var(--space-4);
+  border-bottom: 1px solid var(--rule);
+}
+
+.review-row:last-child {
+  border-bottom: 0;
+}
+
+.review-row__head {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: var(--space-4);
+}
+
+.review-row__docs {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  gap: var(--space-3);
+}
+
+.review-row__preview {
+  width: 96px;
+  height: 120px;
+  object-fit: cover;
+  border: 1px solid var(--rule);
+  border-radius: var(--radius-control);
+}
+
+.review-row__doc {
+  font-size: var(--text-15);
+}
+
+.review-row__doc--missing {
+  color: var(--ink-soft);
+}
+
+.review-row__reject {
+  display: grid;
+  gap: var(--space-3);
+  max-width: 32rem;
+}
+
 .register-row__fee {
   font-size: var(--text-15);
   color: var(--ink-soft);

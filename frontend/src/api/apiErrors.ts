@@ -55,6 +55,11 @@ const messageByCode: Record<string, MessageKey> = {
   SESSION_NOT_OPEN: "error.sessionNotOpen",
   SESSION_NOT_FOUND: "error.notFound",
   DOCUMENT_NOT_FOUND: "error.notFound",
+  PAYMENT_NOT_FOUND: "error.notFound",
+  PAYMENT_KEY_REUSED: "error.paymentKeyReused",
+  BAD_SIGNATURE: "error.badSignature",
+  ALREADY_REVIEWED: "error.alreadyReviewed",
+  NOT_PAID_YET: "error.notPaidYet",
   SESSION_ALREADY_PUBLISHED: "error.sessionAlreadyPublished",
 };
 

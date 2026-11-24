@@ -92,5 +92,23 @@ public class AdmissionRuleException(int statusCode, string code, string message,
     public static AdmissionRuleException DocumentNotFound() =>
         new(StatusCodes.Status404NotFound, ApiErrorCode.DocumentNotFound, "No such document for this application.");
 
+    public static AdmissionRuleException PaymentNotFound() =>
+        new(StatusCodes.Status404NotFound, ApiErrorCode.PaymentNotFound, "No payment has this id.");
+
+    public static AdmissionRuleException PaymentKeyReused() =>
+        new(StatusCodes.Status409Conflict, ApiErrorCode.PaymentKeyReused, "This Idempotency-Key was already used for another application.");
+
+    public static AdmissionRuleException AlreadyPaid() =>
+        new(StatusCodes.Status409Conflict, ApiErrorCode.HoldAlreadyConfirmed, "This admission is already paid.");
+
+    public static AdmissionRuleException BadSignature() =>
+        new(StatusCodes.Status400BadRequest, ApiErrorCode.BadSignature, "The payment callback could not be verified.");
+
+    public static AdmissionRuleException AlreadyReviewed() =>
+        new(StatusCodes.Status409Conflict, ApiErrorCode.AlreadyReviewed, "This application already has a decision.");
+
+    public static AdmissionRuleException NotPaidYet() =>
+        new(StatusCodes.Status409Conflict, ApiErrorCode.NotPaidYet, "Only a paid application can be reviewed.");
+
     public int? RetryAfterSeconds { get; init; }
 }

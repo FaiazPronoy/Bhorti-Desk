@@ -96,27 +96,26 @@ public class SeatHoldService(AdmissionDatabase database, AdmissionSettings setti
         // 1. Lock the class row. Every hold request for this class now waits here in line,
         //    whichever backend process it came from. This is what keeps held + confirmed
         //    at or under total_seats, and it also works for two backends on one database.
-        var totalSeats = await connection.QuerySingleOrDefaultAsync<int?>(
-            "select total_seats from admission_classes where id = @classId for update",
-            new { classId }, transaction);
-        if (totalSeats is null)
+        //    The same statement reads the admission window: a class inside a session only
+        //    takes applications while it is open. A class with no session (every class
+        //    from the original POST /classes) is always open. Database clock only.
+        var locked = await connection.QuerySingleOrDefaultAsync<(int TotalSeats, bool WindowOpen)?>("""
+            select c.total_seats,
+                   (s.id is null or (s.status = 'PUBLISHED' and s.opens_at <= clock_timestamp() and s.closes_at > clock_timestamp())) as window_open
+              from admission_classes c
+              left join admission_sessions s on s.id = c.session_id
+             where c.id = @classId
+               for update of c
+            """, new { classId }, transaction);
+        if (locked is null)
         {
             throw AdmissionRuleException.ClassNotFound();
         }
-
-        // 1a. A class inside an admission session only takes applications in its window.
-        //     A class with no session (every class from the original POST /classes) is
-        //     always open. Checked under the lock, on the database clock.
-        var windowOpen = await connection.ExecuteScalarAsync<bool?>("""
-            select s.status = 'PUBLISHED' and s.opens_at <= clock_timestamp() and s.closes_at > clock_timestamp()
-              from admission_classes c
-              join admission_sessions s on s.id = c.session_id
-             where c.id = @classId
-            """, new { classId }, transaction);
-        if (windowOpen == false)
+        if (!locked.Value.WindowOpen)
         {
             throw AdmissionRuleException.SessionNotOpen();
         }
+        var totalSeats = locked.Value.TotalSeats;
 
         // 2. Mark this class's holds whose time has passed. Without this, the unique index
         //    in step 5 would block a student whose old hold expired from applying again.

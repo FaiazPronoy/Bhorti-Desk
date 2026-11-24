@@ -33,6 +33,8 @@ public record ApplicationResponse(
     [property: JsonConverter(typeof(UtcMillisecondsDateTimeConverter))] DateTime ServerTime,
     ClassRulesResponse? Rules,
     ApplicantResponse? Applicant,
-    DocumentInfo[] Documents);
+    DocumentInfo[] Documents,
+    PaymentInfo? Payment,
+    ReviewInfo? Review);
 
 public record DocumentInfo(string Kind, string ContentType, int SizeBytes);

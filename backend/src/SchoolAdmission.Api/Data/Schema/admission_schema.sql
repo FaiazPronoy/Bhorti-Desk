@@ -171,3 +171,45 @@ create table if not exists application_documents (
     created_at    timestamptz not null default clock_timestamp(),
     unique (seat_hold_id, kind)
 );
+-- ---------------------------------------------------------------- payments and review
+
+-- One row per payment attempt. The idempotency key makes a double click or a repeated
+-- request create the attempt once. Only the sandbox gateway exists.
+create table if not exists payments (
+    id              uuid         primary key,
+    seat_hold_id    uuid         not null references seat_holds (id),
+    amount_taka     integer      not null check (amount_taka >= 0),
+    gateway         varchar(20)  not null check (gateway in ('SANDBOX')),
+    status          varchar(10)  not null default 'PENDING' check (status in ('PENDING', 'PAID', 'FAILED', 'LATE')),
+    idempotency_key varchar(80)  not null unique,
+    created_at      timestamptz  not null default clock_timestamp(),
+    finished_at     timestamptz  null
+);
+
+-- A hold can be paid once. A second callback finds this row and changes nothing.
+create unique index if not exists ux_payments_one_paid_per_hold on payments (seat_hold_id) where status = 'PAID';
+
+-- The office decision after payment. A rejection frees the seat (the hold becomes
+-- CANCELLED, so it stops counting) and marks a refund as due. Nothing is paid back here.
+create table if not exists application_reviews (
+    seat_hold_id uuid         primary key references seat_holds (id),
+    decision     varchar(10)  not null check (decision in ('VERIFIED', 'REJECTED')),
+    reason       varchar(300) null,
+    refund_due   boolean      not null default false,
+    reviewer_id  uuid         not null,
+    decided_at   timestamptz  not null default clock_timestamp()
+);
+-- ---------------------------------------------------------------- notices
+
+-- One notice per event per application, so a repeated event never shows twice.
+create table if not exists notices (
+    id                                bigint      generated always as identity primary key,
+    seat_hold_id                      uuid        not null references seat_holds (id),
+    student_birth_registration_number varchar(17) not null,
+    kind                              varchar(20) not null check (kind in ('HELD', 'TWO_MINUTES_LEFT', 'PAID', 'VERIFIED', 'REJECTED', 'EXPIRED', 'OFFERED')),
+    created_at                        timestamptz not null default clock_timestamp(),
+    sms_logged_at                     timestamptz null,
+    unique (seat_hold_id, kind)
+);
+
+create index if not exists ix_notices_by_student on notices (student_birth_registration_number, created_at desc);

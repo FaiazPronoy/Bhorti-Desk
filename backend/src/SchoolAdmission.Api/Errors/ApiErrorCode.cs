@@ -39,4 +39,9 @@ public static class ApiErrorCode
     public const string SessionNotOpen = "SESSION_NOT_OPEN";
     public const string SessionAlreadyPublished = "SESSION_ALREADY_PUBLISHED";
     public const string DocumentNotFound = "DOCUMENT_NOT_FOUND";
+    public const string PaymentNotFound = "PAYMENT_NOT_FOUND";
+    public const string PaymentKeyReused = "PAYMENT_KEY_REUSED";
+    public const string BadSignature = "BAD_SIGNATURE";
+    public const string AlreadyReviewed = "ALREADY_REVIEWED";
+    public const string NotPaidYet = "NOT_PAID_YET";
 }

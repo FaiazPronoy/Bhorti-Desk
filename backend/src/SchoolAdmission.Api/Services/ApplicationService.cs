@@ -17,11 +17,15 @@ public class ApplicationService(AdmissionDatabase database)
                r.min_age, r.max_age, r.age_cutoff_date, r.fee_taka, r.admission_class_id as rules_class_id,
                a.student_name_bn, a.student_name_en, a.date_of_birth, a.guardian_name, a.guardian_phone, a.previous_school,
                coalesce((select string_agg(d.kind || ':' || d.content_type || ':' || d.size_bytes, ',' order by d.kind)
-                           from application_documents d where d.seat_hold_id = h.id), '') as documents
+                           from application_documents d where d.seat_hold_id = h.id), '') as documents,
+               p.id as payment_id, p.gateway, p.status as payment_status, p.amount_taka, p.finished_at,
+               rv.decision, rv.reason, rv.refund_due
         from seat_holds h
         join admission_classes c on c.id = h.admission_class_id
         left join class_rules r on r.admission_class_id = c.id
         left join applicant_details a on a.seat_hold_id = h.id
+        left join lateral (select * from payments p where p.seat_hold_id = h.id order by (p.status = 'PAID') desc, p.created_at desc limit 1) p on true
+        left join application_reviews rv on rv.seat_hold_id = h.id
         where h.id = @holdId
         """;
 
@@ -136,6 +140,14 @@ public class ApplicationService(AdmissionDatabase database)
         public string? GuardianPhone { get; set; }
         public string? PreviousSchool { get; set; }
         public string Documents { get; set; } = "";
+        public Guid? PaymentId { get; set; }
+        public string? Gateway { get; set; }
+        public string? PaymentStatus { get; set; }
+        public int? AmountTaka { get; set; }
+        public DateTime? FinishedAt { get; set; }
+        public string? Decision { get; set; }
+        public string? Reason { get; set; }
+        public bool? RefundDue { get; set; }
 
         public ApplicationResponse ToResponse()
         {
@@ -143,14 +155,17 @@ public class ApplicationService(AdmissionDatabase database)
                 AgeCutoffDate is { } cutoff ? DateOnly.FromDateTime(cutoff) : null, FeeTaka ?? 0);
             var applicant = StudentNameBn is null ? null : new ApplicantResponse(StudentNameBn, StudentNameEn!,
                 DateOnly.FromDateTime(DateOfBirth!.Value), GuardianName!, GuardianPhone!, PreviousSchool);
-            var serial = $"BD-{CreatedAt.ToUniversalTime().Year}-{SerialNumber:D7}";
+            var serial = Serials.Format(CreatedAt, SerialNumber);
             return new ApplicationResponse(HoldId, serial, ClassId, ClassName, Status,
                 DateTime.SpecifyKind(ExpiresAt.ToUniversalTime(), DateTimeKind.Utc),
                 DateTime.SpecifyKind(ServerTime.ToUniversalTime(), DateTimeKind.Utc), rules, applicant,
                 Documents.Split(',', StringSplitOptions.RemoveEmptyEntries)
                     .Select(item => item.Split(':'))
                     .Select(parts => new DocumentInfo(parts[0], parts[1], int.Parse(parts[2])))
-                    .ToArray());
+                    .ToArray(),
+                PaymentId is null ? null : new PaymentInfo(PaymentId.Value, Gateway!, PaymentStatus!, AmountTaka ?? 0,
+                    FinishedAt is { } finished ? DateTime.SpecifyKind(finished.ToUniversalTime(), DateTimeKind.Utc) : null),
+                Decision is null ? null : new ReviewInfo(Decision, Reason, RefundDue ?? false));
         }
     }
 }

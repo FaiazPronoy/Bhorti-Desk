@@ -8,6 +8,7 @@ import { CreateClassPage } from "./features/school-office/CreateClassPage";
 import { LoginPage } from "./features/account/LoginPage";
 import { StaffLoginPage } from "./features/account/StaffLoginPage";
 import { StudentsPage } from "./features/account/StudentsPage";
+import { SandboxPayPage } from "./features/payments/SandboxPayPage";
 
 export const routes: RouteObject[] = [
   {
@@ -21,6 +22,7 @@ export const routes: RouteObject[] = [
       { path: "login", element: <LoginPage /> },
       { path: "staff/login", element: <StaffLoginPage /> },
       { path: "students", element: <StudentsPage /> },
+      { path: "pay/:paymentId", element: <SandboxPayPage /> },
       { path: "*", element: <NotFoundPage /> },
     ],
   },

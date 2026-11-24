@@ -24,6 +24,11 @@ public class AdmissionSettings
     // Without an SMS provider the one-time code is written to the log. Only for local use.
     public bool LogOtpCodes { get; init; }
 
+    // Shared secret for signing sandbox payment callbacks and slip codes.
+    public string PaymentSandboxSecret { get; init; } = DefaultLocalSecret;
+    public string SlipSecret { get; init; } = DefaultLocalSecret;
+    public const string DefaultLocalSecret = "local-only-secret-change-me";
+
     // Off only for plain http on localhost. Behind HTTPS it must be on.
     public bool SecureCookies { get; init; } = true;
 
@@ -76,7 +81,13 @@ public class AdmissionSettings
             AdminPassword = configuration["ADMIN_PASSWORD"],
             LogOtpCodes = IsTrue(configuration["OTP_LOG_CODES"]),
             SecureCookies = !IsFalse(configuration["COOKIE_SECURE"]),
+            PaymentSandboxSecret = NonEmptyOr(configuration["PAYMENT_SANDBOX_SECRET"], DefaultLocalSecret),
+            SlipSecret = NonEmptyOr(configuration["SLIP_SECRET"], DefaultLocalSecret),
         };
+        if (settings.PaymentSandboxSecret == DefaultLocalSecret || settings.SlipSecret == DefaultLocalSecret)
+        {
+            settings.Warnings.Add("PAYMENT_SANDBOX_SECRET or SLIP_SECRET is the local default. Set both before anyone else can reach the app.");
+        }
         settings.Warnings.AddRange(warnings);
         if (settings.LogOtpCodes)
         {
@@ -87,6 +98,8 @@ public class AdmissionSettings
 
     private static int PositiveOr(string? value, int fallback, bool allowZero) =>
         int.TryParse(value, out var parsed) && (parsed > 0 || (allowZero && parsed == 0)) ? parsed : fallback;
+
+    private static string NonEmptyOr(string? value, string fallback) => string.IsNullOrWhiteSpace(value) ? fallback : value;
 
     private static bool IsTrue(string? value) => value?.Trim().ToLowerInvariant() is "true" or "1" or "yes";
     private static bool IsFalse(string? value) => value?.Trim().ToLowerInvariant() is "false" or "0" or "no";
