@@ -110,5 +110,11 @@ public class AdmissionRuleException(int statusCode, string code, string message,
     public static AdmissionRuleException NotPaidYet() =>
         new(StatusCodes.Status409Conflict, ApiErrorCode.NotPaidYet, "Only a paid application can be reviewed.");
 
+    public static AdmissionRuleException SeatsStillFree() =>
+        new(StatusCodes.Status409Conflict, ApiErrorCode.SeatsStillFree, "This class still has a free seat. Apply instead.");
+
+    public static AdmissionRuleException AlreadyWaiting() =>
+        new(StatusCodes.Status409Conflict, ApiErrorCode.AlreadyWaiting, "This student is already on the waiting list of this class.");
+
     public int? RetryAfterSeconds { get; init; }
 }

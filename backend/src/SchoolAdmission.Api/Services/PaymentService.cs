@@ -87,6 +87,7 @@ public class PaymentService(AdmissionDatabase database, SandboxGateway gateway, 
     // a repeat changes nothing.
     public async Task<string> HandleCallbackAsync(string body, string? signature)
     {
+        SeasonMetrics.PaymentCallback();
         if (!gateway.IsGenuine(body, signature)) throw AdmissionRuleException.BadSignature();
         var callback = JsonSerializer.Deserialize<PaymentCallback>(body, Json) ?? throw AdmissionRuleException.BadSignature();
 

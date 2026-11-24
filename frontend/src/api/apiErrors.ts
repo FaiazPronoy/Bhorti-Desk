@@ -60,6 +60,8 @@ const messageByCode: Record<string, MessageKey> = {
   BAD_SIGNATURE: "error.badSignature",
   ALREADY_REVIEWED: "error.alreadyReviewed",
   NOT_PAID_YET: "error.notPaidYet",
+  SEATS_STILL_FREE: "error.seatsStillFree",
+  ALREADY_WAITING: "error.alreadyWaiting",
   SESSION_ALREADY_PUBLISHED: "error.sessionAlreadyPublished",
 };
 

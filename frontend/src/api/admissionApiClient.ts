@@ -16,7 +16,9 @@ import type {
   HoldDetails,
   Me,
   NewStudent,
+  Notice,
   OfficeApplication,
+  WaitlistPlace,
   PaymentInfo,
   PaymentStart,
   SandboxPage,
@@ -226,6 +228,16 @@ export const admissionApi = {
     if (!response.ok) throw new ApiError("api", response.status, await readJson<ApiErrorBody>(response));
     return response.blob();
   },
+
+  myWaitlist: (studentId: string) => request<WaitlistPlace[]>("/me/waitlist", { studentId }),
+
+  joinWaitlist: (classId: string, studentId: string) =>
+    request<WaitlistPlace>(`/classes/${encodeURIComponent(classId)}/waitlist`, { method: "POST", studentId }),
+
+  leaveWaitlist: (classId: string, studentId: string) =>
+    request<void>(`/classes/${encodeURIComponent(classId)}/waitlist`, { method: "DELETE", studentId }),
+
+  myNotices: (studentId: string) => request<Notice[]>("/me/notices", { studentId }),
 
   classRules: () => request<ClassRules[]>("/season/class-rules"),
 

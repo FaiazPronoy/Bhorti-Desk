@@ -44,4 +44,6 @@ public static class ApiErrorCode
     public const string BadSignature = "BAD_SIGNATURE";
     public const string AlreadyReviewed = "ALREADY_REVIEWED";
     public const string NotPaidYet = "NOT_PAID_YET";
+    public const string SeatsStillFree = "SEATS_STILL_FREE";
+    public const string AlreadyWaiting = "ALREADY_WAITING";
 }

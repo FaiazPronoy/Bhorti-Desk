@@ -15,6 +15,9 @@ interface ClassRegisterRowProps {
   // Inside an admission session that is not open right now.
   notOpen?: boolean;
   feeTaka?: number;
+  waitingPosition?: number;
+  joining?: boolean;
+  onJoinWaitlist?: () => void;
   errorKey?: MessageKey;
   errorHoldId?: string;
   onApply: () => void;
@@ -22,7 +25,7 @@ interface ClassRegisterRowProps {
 
 // One line of the register. From 768 px up the cells line up under the column heads;
 // below that the same cells stack into a small sheet with their own labels.
-export function ClassRegisterRow({ seats, showActions, myActiveHold, applying, applyDisabled, notOpen = false, feeTaka, errorKey, errorHoldId, onApply }: ClassRegisterRowProps) {
+export function ClassRegisterRow({ seats, showActions, myActiveHold, applying, applyDisabled, notOpen = false, feeTaka, waitingPosition, joining = false, onJoinWaitlist, errorKey, errorHoldId, onApply }: ClassRegisterRowProps) {
   const { t, number } = useLanguage();
   const isFull = seats.availableSeats <= 0;
 
@@ -66,6 +69,15 @@ export function ClassRegisterRow({ seats, showActions, myActiveHold, applying, a
             <Button wide pending={applying} disabled={isFull || applyDisabled || notOpen} onClick={onApply}>
               {notOpen ? t("classes.notOpen") : isFull ? t("classes.full") : t("classes.apply")}
             </Button>
+          )}
+          {!myActiveHold && isFull && !notOpen && onJoinWaitlist && (
+            waitingPosition ? (
+              <p className="register-row__waiting">{t("waitlist.position", { position: number(waitingPosition) })}</p>
+            ) : (
+              <Button variant="secondary" wide pending={joining} onClick={onJoinWaitlist}>
+                {t("waitlist.join")}
+              </Button>
+            )
           )}
           {errorKey && (
             <p className="action-error" role="alert">

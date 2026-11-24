@@ -16,6 +16,7 @@ import { useSeason, windowAt } from "../season/useSeason";
 import { ClassRegisterRow } from "./ClassRegisterRow";
 import { useClassList } from "./useClassList";
 import { useClassRules } from "./useClassRules";
+import { useJoinWaitlist, useWaitlist } from "../waitlist/useWaitlist";
 
 interface RowError {
   classId: string;
@@ -49,6 +50,8 @@ export function ClassRegister({ showActions }: { showActions: boolean }) {
   const apply = useApplyForSeat();
   const [rowError, setRowError] = useState<RowError | null>(null);
   const rules = useClassRules();
+  const waitlist = useWaitlist();
+  const join = useJoinWaitlist();
   const session = useSeason().data?.session;
   const now = useServerNow();
   // Only classes inside a session that is not open wait. The API checks this again.
@@ -150,6 +153,16 @@ export function ClassRegister({ showActions }: { showActions: boolean }) {
             applyDisabled={apply.isPending}
             notOpen={isWaiting(seats.id)}
             feeTaka={rules.data?.find((rule) => rule.classId === seats.id)?.feeTaka}
+            waitingPosition={waitlist.data?.find((place) => place.classId === seats.id && place.status === "WAITING")?.position}
+            joining={join.isPending && join.variables === seats.id}
+            onJoinWaitlist={() => {
+              setRowError(null);
+              if (!studentId) {
+                askForNumber();
+                return;
+              }
+              join.mutate(seats.id, { onError: (error) => setRowError({ classId: seats.id, key: errorMessageKey(error) }) });
+            }}
             errorKey={rowError?.classId === seats.id ? rowError.key : undefined}
             errorHoldId={rowError?.classId === seats.id ? rowError.holdId : undefined}
             onApply={() => onApply(seats)}

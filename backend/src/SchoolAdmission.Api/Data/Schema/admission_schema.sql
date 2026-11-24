@@ -213,3 +213,23 @@ create table if not exists notices (
 );
 
 create index if not exists ix_notices_by_student on notices (student_birth_registration_number, created_at desc);
+-- ---------------------------------------------------------------- waiting list
+
+-- A first in, first out queue per class. The identity id is the place in line.
+create table if not exists waitlist_entries (
+    id                                bigint      generated always as identity primary key,
+    admission_class_id                uuid        not null references admission_classes (id),
+    student_birth_registration_number varchar(17) not null check (student_birth_registration_number ~ '^[0-9]{17}$'),
+    status                            varchar(10) not null default 'WAITING' check (status in ('WAITING', 'OFFERED', 'LEFT')),
+    offered_hold_id                   uuid        null references seat_holds (id),
+    created_at                        timestamptz not null default clock_timestamp(),
+    offered_at                        timestamptz null
+);
+
+create unique index if not exists ux_waitlist_one_place_per_student
+    on waitlist_entries (admission_class_id, student_birth_registration_number)
+    where status = 'WAITING';
+
+create index if not exists ix_waitlist_waiting_in_order
+    on waitlist_entries (admission_class_id, id)
+    where status = 'WAITING';

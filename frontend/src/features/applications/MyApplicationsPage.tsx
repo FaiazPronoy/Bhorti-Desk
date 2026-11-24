@@ -10,6 +10,7 @@ import { HoldCountdown } from "./HoldCountdown";
 import { effectiveStatus } from "./holdStatus";
 import { StatusStamp } from "./StatusStamp";
 import { useMyHolds } from "./useMyHolds";
+import { NoticeList, WaitlistPlaces } from "../waitlist/WaitlistAndNotices";
 
 export function MyApplicationsPage() {
   const { t, language } = useLanguage();
@@ -84,7 +85,9 @@ export function MyApplicationsPage() {
     <section className="page page--narrow">
       <h1 className="page-title">{t("myApplications.title")}</h1>
       <p className="page-intro">{t("myApplications.intro")}</p>
+      {studentId && <WaitlistPlaces />}
       {content}
+      {studentId && <NoticeList />}
     </section>
   );
 }

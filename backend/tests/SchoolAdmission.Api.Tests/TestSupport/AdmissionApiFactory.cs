@@ -17,6 +17,7 @@ public class AdmissionApiFactory : WebApplicationFactory<Program>
     private readonly int? cooldownSeconds;
     private readonly bool rateLimits;
     private readonly bool signInRequired;
+    private readonly int? workerSeconds;
 
     public string ConnectionString { get; }
 
@@ -25,8 +26,9 @@ public class AdmissionApiFactory : WebApplicationFactory<Program>
     // app's default settings.
     public AdmissionApiFactory(int holdSeconds = 600, string? connectionString = null,
         string? adminEmail = null, string? adminPassword = null, int? cooldownSeconds = null, bool rateLimits = false,
-        bool signInRequired = false)
+        bool signInRequired = false, int? workerSeconds = null)
     {
+        this.workerSeconds = workerSeconds;
         this.cooldownSeconds = cooldownSeconds;
         this.rateLimits = rateLimits;
         this.signInRequired = signInRequired;
@@ -77,6 +79,7 @@ public class AdmissionApiFactory : WebApplicationFactory<Program>
         if (cooldownSeconds is not null) builder.UseSetting("HOLD_COOLDOWN_SECONDS", cooldownSeconds.Value.ToString());
         if (rateLimits) builder.UseSetting("RATE_LIMITS_ENABLED", "true");
         if (signInRequired) builder.UseSetting("SIGN_IN_REQUIRED", "true");
+        if (workerSeconds is not null) builder.UseSetting("SEASON_WORKER_SECONDS", workerSeconds.Value.ToString());
         if (adminEmail is not null) builder.UseSetting("ADMIN_EMAIL", adminEmail);
         if (adminPassword is not null) builder.UseSetting("ADMIN_PASSWORD", adminPassword);
         builder.ConfigureTestServices(services => services.AddSingleton<ISmsSender>(Sms));

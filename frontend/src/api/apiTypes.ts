@@ -158,6 +158,25 @@ export interface SandboxPage {
   status: PaymentInfo["status"];
 }
 
+export interface WaitlistPlace {
+  entryId: number;
+  classId: string;
+  className: string;
+  status: "WAITING" | "OFFERED";
+  position: number;
+  offeredHoldId: string | null;
+}
+
+export type NoticeKind = "HELD" | "TWO_MINUTES_LEFT" | "PAID" | "VERIFIED" | "REJECTED" | "EXPIRED" | "OFFERED";
+
+export interface Notice {
+  id: number;
+  holdId: string;
+  className: string;
+  kind: NoticeKind;
+  createdAt: string;
+}
+
 export interface OfficeApplication {
   holdId: string;
   serial: string;

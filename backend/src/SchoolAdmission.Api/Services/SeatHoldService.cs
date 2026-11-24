@@ -9,7 +9,7 @@ using SchoolAdmission.Api.Errors;
 
 namespace SchoolAdmission.Api.Services;
 
-public class SeatHoldService(AdmissionDatabase database, AdmissionSettings settings, ILogger<SeatHoldService> logger)
+public class SeatHoldService(AdmissionDatabase database, AdmissionSettings settings, WaitlistOffers waitlistOffers, ILogger<SeatHoldService> logger)
 {
     // Every read of a hold goes through this select, so the status is always the effective one.
     private static readonly string HoldSelectSql = $"""
@@ -35,6 +35,7 @@ public class SeatHoldService(AdmissionDatabase database, AdmissionSettings setti
         // A student who already holds a seat here is told so even when the class is full.
         if (await IsClassFullAsync(classId, studentId))
         {
+            SeasonMetrics.SeatConflict();
             throw AdmissionRuleException.ClassFull();
         }
 
@@ -124,6 +125,10 @@ public class SeatHoldService(AdmissionDatabase database, AdmissionSettings setti
              where admission_class_id = @classId and status = 'HELD' and expires_at <= clock_timestamp()
             """, new { classId }, transaction);
 
+        // 2a. People on the waiting list get a freed seat before anyone new. This is also
+        //     how an offer still happens when the background worker is not running.
+        await waitlistOffers.OfferUnderLockAsync(connection, transaction, classId, totalSeats);
+
         // 3. One active application or admission per student per class.
         var existingHoldId = await connection.QueryFirstOrDefaultAsync<Guid?>("""
             select id from seat_holds
@@ -176,6 +181,7 @@ public class SeatHoldService(AdmissionDatabase database, AdmissionSettings setti
             """, new { classId }, transaction);
         if (takenSeats >= totalSeats)
         {
+            SeasonMetrics.SeatConflict();
             throw AdmissionRuleException.ClassFull();
         }
 
@@ -193,6 +199,7 @@ public class SeatHoldService(AdmissionDatabase database, AdmissionSettings setti
 
         await transaction.CommitAsync();
 
+        SeasonMetrics.HoldCreated();
         logger.LogInformation("Hold created: {HoldId} in class {ClassId} for student {Student}",
             holdId, classId, StudentIdHeader.Masked(studentId));
 

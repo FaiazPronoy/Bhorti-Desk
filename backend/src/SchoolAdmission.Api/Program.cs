@@ -36,7 +36,15 @@ builder.Services.AddSingleton<SchoolAdmission.Api.Payments.IPaymentGateway>(prov
 builder.Services.AddSingleton<Notices>();
 builder.Services.AddScoped<PaymentService>();
 builder.Services.AddScoped<ReviewService>();
-builder.Services.AddSingleton<ISmsSender, NoSmsSender>();
+builder.Services.AddSingleton<WaitlistOffers>();
+builder.Services.AddScoped<WaitlistService>();
+builder.Services.AddScoped<NoticeService>();
+if (settings.SeasonWorkerSeconds > 0)
+{
+    SeasonWorker.Interval = TimeSpan.FromSeconds(settings.SeasonWorkerSeconds);
+    builder.Services.AddHostedService<SeasonWorker>();
+}
+builder.Services.AddSingleton<ISmsSender, LogSmsSender>();
 RateLimits.Add(builder.Services, settings);
 
 builder.WebHost.ConfigureKestrel(options =>
