@@ -27,6 +27,7 @@ services:
       SIGN_IN_REQUIRED: ${SIGN_IN_REQUIRED:-false}
       RATE_LIMITS_ENABLED: ${RATE_LIMITS_ENABLED:-false}
       HOLD_COOLDOWN_SECONDS: ${HOLD_COOLDOWN_SECONDS:-0}
+      DEMO_MODE: ${DEMO_MODE:-false}
       # First school office account. Change both before anyone else can reach the app.
       ADMIN_EMAIL: ${ADMIN_EMAIL:-admin@bhortidesk.local}
       ADMIN_PASSWORD: ${ADMIN_PASSWORD:-change-this-local-password}
@@ -54,6 +55,7 @@ services:
       SIGN_IN_REQUIRED: ${SIGN_IN_REQUIRED:-false}
       RATE_LIMITS_ENABLED: ${RATE_LIMITS_ENABLED:-false}
       HOLD_COOLDOWN_SECONDS: ${HOLD_COOLDOWN_SECONDS:-0}
+      DEMO_MODE: ${DEMO_MODE:-false}
       # First school office account. Change both before anyone else can reach the app.
       ADMIN_EMAIL: ${ADMIN_EMAIL:-admin@bhortidesk.local}
       ADMIN_PASSWORD: ${ADMIN_PASSWORD:-change-this-local-password}
@@ -75,6 +77,7 @@ services:
       # API share one origin and the session cookie stays first-party.
       API_BASE_URL: ${API_BASE_URL:-/api}
       SIGN_IN_REQUIRED: ${SIGN_IN_REQUIRED:-false}
+      DEMO_MODE: ${DEMO_MODE:-false}
     depends_on:
       - backend
     restart: unless-stopped

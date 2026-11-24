@@ -271,7 +271,7 @@ export const admissionApi = {
 
   me: () => request<Me>("/auth/me"),
 
-  requestOtp: (phone: string) => request<void>("/auth/otp/request", { method: "POST", body: { phone } }),
+  requestOtp: (phone: string) => request<{ demoCode?: string } | undefined>("/auth/otp/request", { method: "POST", body: { phone } }),
 
   verifyOtp: (phone: string, code: string) => request<Me>("/auth/otp/verify", { method: "POST", body: { phone, code } }),
 

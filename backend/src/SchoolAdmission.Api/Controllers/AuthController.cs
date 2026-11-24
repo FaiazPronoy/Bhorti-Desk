@@ -18,8 +18,9 @@ public class AuthController(AuthService auth, AdmissionSettings settings) : Cont
     [EnableRateLimiting(RateLimits.SignIn)]
     public async Task<IActionResult> RequestOtp([FromBody] RequestOtpRequest? request)
     {
-        await auth.RequestOtpAsync(request?.Phone);
-        return Accepted();
+        var demoCode = await auth.RequestOtpAsync(request?.Phone);
+        // Only a public demo sends the code back, so visitors can sign in without a phone.
+        return demoCode is null ? Accepted() : Accepted(new { demoCode });
     }
 
     [HttpPost("otp/verify")]

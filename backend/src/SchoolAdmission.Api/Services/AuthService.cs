@@ -20,7 +20,9 @@ public class AuthService(AdmissionDatabase database, AdmissionSettings settings,
 
     // ---------------------------------------------------------------- guardians
 
-    public async Task RequestOtpAsync(string? rawPhone)
+    // Returns the code only in a public demo, where it is shown on screen and labelled as
+    // a demo. Everywhere else it returns null and the code goes only by SMS.
+    public async Task<string?> RequestOtpAsync(string? rawPhone)
     {
         var phone = PhoneNumber.Normalize(rawPhone) ?? throw AdmissionRuleException.PhoneInvalid();
         await using var connection = await database.OpenConnectionAsync();
@@ -44,6 +46,7 @@ public class AuthService(AdmissionDatabase database, AdmissionSettings settings,
         {
             logger.LogWarning("Sign-in code for {Phone}: {Code} (OTP_LOG_CODES is on)", phone, code);
         }
+        return settings.DemoMode ? code : null;
     }
 
     public async Task<string> VerifyOtpAsync(string? rawPhone, string? code)

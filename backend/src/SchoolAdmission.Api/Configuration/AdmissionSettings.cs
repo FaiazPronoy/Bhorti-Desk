@@ -24,6 +24,9 @@ public class AdmissionSettings
     // Without an SMS provider the one-time code is written to the log. Only for local use.
     public bool LogOtpCodes { get; init; }
 
+    // A public demo: the sign-in code is shown on screen, and all data is wiped once a day.
+    public bool DemoMode { get; init; }
+
     // How often the background worker offers freed seats and writes timed notices. 0 is off.
     public int SeasonWorkerSeconds { get; init; } = 5;
 
@@ -84,6 +87,7 @@ public class AdmissionSettings
             AdminPassword = configuration["ADMIN_PASSWORD"],
             LogOtpCodes = IsTrue(configuration["OTP_LOG_CODES"]),
             SecureCookies = !IsFalse(configuration["COOKIE_SECURE"]),
+            DemoMode = IsTrue(configuration["DEMO_MODE"]),
             SeasonWorkerSeconds = PositiveOr(configuration["SEASON_WORKER_SECONDS"], 5, allowZero: true),
             PaymentSandboxSecret = NonEmptyOr(configuration["PAYMENT_SANDBOX_SECRET"], DefaultLocalSecret),
             SlipSecret = NonEmptyOr(configuration["SLIP_SECRET"], DefaultLocalSecret),

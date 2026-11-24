@@ -281,6 +281,8 @@ export const bn: Record<MessageKey, string> = {
   "audit.action": "কাজ",
   "audit.target": "যার ওপর",
   "audit.detail": "বিস্তারিত",
+  "demo.banner": "পাবলিক ডেমো। প্রতিদিন সব তথ্য মুছে যায়। পেমেন্ট শুধু স্যান্ডবক্সে।",
+  "demo.code": "শুধু ডেমোর জন্য, আপনার কোড:",
   "slip.title": "ভর্তির স্লিপ",
   "slip.student": "শিক্ষার্থী",
   "slip.noPhoto": "ছবি নেই",

@@ -280,6 +280,8 @@ export const en = {
   "audit.action": "Action",
   "audit.target": "On",
   "audit.detail": "Detail",
+  "demo.banner": "Public demo. Data resets every day. Payments are sandbox only.",
+  "demo.code": "Demo only, your code is:",
   "slip.title": "Admission slip",
   "slip.student": "Student",
   "slip.noPhoto": "No photo",

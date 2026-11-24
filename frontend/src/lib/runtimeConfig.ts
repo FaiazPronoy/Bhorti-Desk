@@ -1,6 +1,6 @@
 declare global {
   interface Window {
-    __RUNTIME_CONFIG__?: { apiBaseUrl?: string; signInRequired?: boolean };
+    __RUNTIME_CONFIG__?: { apiBaseUrl?: string; signInRequired?: boolean; demoMode?: boolean };
   }
 }
 
@@ -16,6 +16,11 @@ export function apiBaseUrl(): string {
 
 // Off by default: the guardian types the birth registration number, as in the original
 // contract. On: guardians and staff sign in. Set from SIGN_IN_REQUIRED, like the API.
+// A public demo shows a banner and the sign-in code on screen. Set from DEMO_MODE.
+export function demoMode(): boolean {
+  return window.__RUNTIME_CONFIG__?.demoMode === true;
+}
+
 export function signInRequired(): boolean {
   return window.__RUNTIME_CONFIG__?.signInRequired === true;
 }

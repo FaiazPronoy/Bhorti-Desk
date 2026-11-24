@@ -58,6 +58,8 @@ builder.Services.AddScoped<NoticeService>();
 builder.Services.AddSingleton<SlipCodes>();
 builder.Services.AddScoped<SlipService>();
 builder.Services.AddScoped<OfficeService>();
+builder.Services.AddSingleton<DemoReset>();
+builder.Services.AddHostedService(provider => provider.GetRequiredService<DemoReset>());
 if (settings.SeasonWorkerSeconds > 0)
 {
     SeasonWorker.Interval = TimeSpan.FromSeconds(settings.SeasonWorkerSeconds);

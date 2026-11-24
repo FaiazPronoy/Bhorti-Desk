@@ -6,6 +6,7 @@ import { ThemeToggle } from "./components/ThemeToggle";
 import { StudentIdProvider } from "./features/student-identity/useStudentId";
 import { RunningHoldBar } from "./features/applications/RunningHoldBar";
 import { useLanguage } from "./i18n/LanguageProvider";
+import { demoMode } from "./lib/runtimeConfig";
 
 // The frame around every page: header with the account bar, the server banner, the
 // running hold bar, the page itself and a one line footer.
@@ -16,6 +17,7 @@ export function App() {
   return (
     <StudentIdProvider>
       <div className="app">
+        {demoMode() && <p className="demo-banner">{t("demo.banner")}</p>}
         <SiteHeader />
         <ServerStatusBanner />
         <RunningHoldBar />

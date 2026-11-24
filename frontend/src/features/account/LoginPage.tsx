@@ -22,6 +22,8 @@ export function LoginPage() {
   const [step, setStep] = useState<"phone" | "code">("phone");
   const [pending, setPending] = useState(false);
   const [error, setError] = useState<MessageKey | null>(null);
+  // Only a public demo sends the code back. It is shown and clearly marked as a demo.
+  const [demoCode, setDemoCode] = useState<string | null>(null);
 
   const cleanPhone = toLatinDigits(phone).replace(/[^0-9+]/g, "");
   const from = (location.state as { from?: string } | null)?.from;
@@ -31,7 +33,8 @@ export function LoginPage() {
     setError(null);
     setPending(true);
     try {
-      await admissionApi.requestOtp(cleanPhone);
+      const answer = await admissionApi.requestOtp(cleanPhone);
+      setDemoCode(answer?.demoCode ?? null);
       setStep("code");
     } catch (caught) {
       setError(errorMessageKey(caught));
@@ -80,6 +83,11 @@ export function LoginPage() {
       ) : (
         <form className="sheet office-form" onSubmit={verify} noValidate>
           <InlineAlert tone="info">{t("account.codeSent", { phone: cleanPhone })}</InlineAlert>
+          {demoCode && (
+            <p className="demo-code">
+              {t("demo.code")} <strong className="mono">{demoCode}</strong>
+            </p>
+          )}
           <TextField
             label={t("account.code")}
             inputMode="numeric"
